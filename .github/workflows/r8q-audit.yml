@@ -1,0 +1,74 @@
+name: R8Q audit and tools
+on:
+  push:
+    branches: [r8q-audit-20261031]
+  workflow_dispatch:
+    inputs:
+      publish_gofile:
+        description: Mirror the small tools/audit bundle to GoFile
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: r8q-audit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      R8Q_PROJECT_ROOT: ${{ github.workspace }}
+      MKSH_BINARY: /usr/bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install build and shell tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex mksh
+          mkdir -p ci-results output
+      - name: Generate and verify the small delivery kits
+        run: |
+          python3 tools/prepare_p0r7_installer.py
+          python3 tools/package_p0r7_kit.py
+          python3 tools/package_readonly_r8q_probe.py
+          bash -n delivery/Revisao-P0r7-Windows/p0r7-assets/installer-template.sh
+          mksh -n delivery/Revisao-P0r7-Windows/p0r7-assets/installer-template.sh
+      - name: Unit and 32-bit shell regression tests
+        run: |
+          set -o pipefail
+          python3 -m unittest discover -s ci-r8q/tests -v 2>&1 | tee ci-results/unit-tests.txt
+          R8Q_TEST_REPORT="$PWD/ci-results" python3 ci-r8q/regression/installer_mock_mksh.py 2>&1 | tee ci-results/installer-mksh-tests.txt
+          python3 ci-r8q/regression/shell32_regression.py --report-dir ci-results 2>&1 | tee ci-results/shell32-tests.txt
+      - name: Build pinned modern SELinux compiler
+        run: bash ci-r8q/tools/build_secilc.sh
+      - name: Compile exact original and isolated candidate policy
+        id: policy
+        continue-on-error: true
+        run: |
+          python3 tools/run_policy_audit.py --secilc build/secilc-host --cap-checker build/check-policy-caps --inputs-dir .deps/policy-bundle --output-dir ci-results/policy
+      - name: Package reviewable artifacts
+        if: always()
+        run: python3 ci-r8q/tools/make_delivery_bundle.py
+      - name: Save tools and audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r8q-audit-${{ github.run_number }}
+          path: |
+            output/Auditoria-R8Q-20261031.zip
+            output/Auditoria-R8Q-20261031.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Mirror tools bundle to GoFile
+        if: ${{ always() && (github.event_name == 'push' || inputs.publish_gofile) }}
+        env:
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+        run: python3 ci-r8q/tools/gofile_upload.py output/Auditoria-R8Q-20261031.zip --summary "$GITHUB_STEP_SUMMARY" --result output/gofile.json
+      - name: Report strict policy audit result
+        if: ${{ always() && steps.policy.outcome == 'failure' }}
+        run: |
+          echo 'Policy compilation/capability/neverallow audit needs review; see evidence/policy in artifact.'
+          exit 1
