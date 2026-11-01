@@ -1,0 +1,44 @@
+name: Export pinned P1 host tools only
+on:
+  push:
+    branches: [r8q-p1-tools-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  host-tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Build exact modern SELinux library and relinkable helpers
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex
+          bash ci-r8q/tools/build_secilc.sh
+          cc -D_GNU_SOURCE -I.deps/selinux/libsepol/include -I.deps/selinux/libsepol/cil/include -c .deps/selinux/secilc/secilc.c -o build/secilc-host.o
+          cc build/secilc-host.o .deps/selinux/libsepol/src/libsepol.a -o build/secilc-host
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include -c ci-r8q/tools/check_contexts.c -o build/check-contexts.o
+          cc build/check-contexts.o .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include -c ci-r8q/tools/check_context_traits.c -o build/check-context-traits.o
+          cc build/check-context-traits.o .deps/selinux/libsepol/src/libsepol.a -o build/check-context-traits
+          cc -I.deps/selinux/libsepol/include -c .deps/policy-bundle/check_policy_caps.c -o build/check-policy-caps.o
+          cc build/check-policy-caps.o .deps/selinux/libsepol/src/libsepol.a -o build/check-policy-caps
+      - name: Export pinned official Android17 tools and corresponding SELinux source
+        run: python3 ci-r8q/tools/export_p1_host_tools.py
+      - name: Record dynamic loader dependencies
+        run: |
+          LD_LIBRARY_PATH="$PWD/host-tools-output/p1-host/aosp/lib64" ldd host-tools-output/p1-host/aosp/bin/checkvintf > host-tools-output/checkvintf-ldd.txt
+          cat host-tools-output/checkvintf-ldd.txt
+          if grep -q 'not found' host-tools-output/checkvintf-ldd.txt; then exit 1; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-P1-HOST-TOOLS-NOT-FLASHABLE
+          path: |
+            host-tools-output/R8Q-P1-HOST-TOOLS-NOT-FLASHABLE.tar.gz
+            host-tools-output/R8Q-P1-HOST-TOOLS-NOT-FLASHABLE.tar.gz.sha256
+            host-tools-output/checkvintf-ldd.txt
+          if-no-files-found: error
+          retention-days: 14
