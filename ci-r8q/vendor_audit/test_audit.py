@@ -74,6 +74,8 @@ class Tests(unittest.TestCase):
         self.assertTrue(audit.selected_config('/etc/selinux/vendor_file_contexts'))
         self.assertTrue(audit.selected_config('/etc/selinux/vendor_property_contexts'))
         self.assertTrue(audit.selected_config('/etc/libnfc-nxp.conf'))
+        self.assertTrue(audit.selected_config('/bin/enforcing.sh'))
+        self.assertTrue(audit.selected_config('/bin/brightness_sync.sh'))
         self.assertFalse(audit.selected_config('/lib64/libhardware.so'))
 
     def test_actual_baseline_archive_loads(self):

@@ -29,6 +29,7 @@ Arquivos acima de 64 MiB não são hasheados e aparecem explicitamente no limite
 
 Publicar somente `RELATORIO-VENDOR-1610.zip`, `analysis.json` e `e2fsck.txt` como
 artefatos de análise. O ZIP contém os configs antigos/novos para comparação,
+incluindo scripts `/bin/*.sh` da vendor nova (exportados como texto, sem executar),
 não contém os APK/SO completos nem a imagem reconstruída.
 
 `baseline-vendor.zip` foi exportado do vendor original efetivamente usado na P0:

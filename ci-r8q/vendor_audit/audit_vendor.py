@@ -34,7 +34,8 @@ def safe_internal(path):
 
 
 def selected_config(path):
-    return path in ('/build.prop', '/default.prop', '/ueventd.rc') or path.startswith('/etc/') and (
+    return path in ('/build.prop', '/default.prop', '/ueventd.rc') or (
+        path.startswith('/bin/') and path.endswith('.sh')) or path.startswith('/etc/') and (
         path.startswith('/etc/selinux/') or
         path.endswith(('.cil', '.rc', '.xml', '.prop', '.json', '.sha256', '.txt', '.pb', '.conf')) or
         '/fstab' in path)
