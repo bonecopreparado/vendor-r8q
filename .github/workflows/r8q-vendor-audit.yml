@@ -1,0 +1,59 @@
+name: Compare ColorOS vendor for R8Q
+on:
+  push:
+    branches: [r8q-vendor-audit-20261031]
+  workflow_dispatch:
+    inputs:
+      publish_gofile:
+        description: Mirror the vendor comparison report to GoFile
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  vendor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Prepare Python and read-only filesystem tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends e2fsprogs python3-venv
+          python3 -m venv .venv
+          .venv/bin/pip install -r ci-r8q/vendor_audit/requirements.txt
+          .venv/bin/python ci-r8q/vendor_audit/test_audit.py
+      - name: Download the exact vendor asset
+        run: |
+          mkdir -p downloads
+          curl --fail --location --retry 1 --connect-timeout 20 --max-time 600 \
+            https://github.com/bonecopreparado/aaa-67-vendor/releases/download/Vendor/vendor.new.dat.br \
+            --output downloads/vendor.new.dat.br
+          printf '%s  %s\n' 2d80788f5336cf82aa1a3e8c625f8942aac410be014a820186369173946199af downloads/vendor.new.dat.br | sha256sum -c -
+          printf '%s  %s\n' 320fab260c5b571fb3cde1288d30d67b904ef7c5381e4b1d73715ddf2867699e ci-r8q/vendor_audit/data/baseline-vendor.zip | sha256sum -c -
+          printf '%s  %s\n' 842d27abf8b27160c57ebf8bf0872c358e4adb75c374f15c6b7e947794a70e26 ci-r8q/vendor_audit/data/vendor.transfer.list | sha256sum -c -
+      - name: Reconstruct and compare without modifying the ROM
+        run: |
+          .venv/bin/python ci-r8q/vendor_audit/audit_vendor.py audit \
+            --source downloads/vendor.new.dat.br \
+            --transfer ci-r8q/vendor_audit/data/vendor.transfer.list \
+            --baseline ci-r8q/vendor_audit/data/baseline-vendor.zip \
+            --output vendor-analysis
+      - name: Save comparison evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: r8q-vendor-comparison-${{ github.run_number }}
+          path: |
+            vendor-analysis/RELATORIO-VENDOR-1610.zip
+            vendor-analysis/analysis.json
+            vendor-analysis/e2fsck.txt
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Mirror report to GoFile
+        if: ${{ success() && (github.event_name == 'push' || inputs.publish_gofile) }}
+        env:
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+        run: .venv/bin/python ci-r8q/tools/gofile_upload.py vendor-analysis/RELATORIO-VENDOR-1610.zip --summary "$GITHUB_STEP_SUMMARY" --result vendor-analysis/gofile.json

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "baseline_zip": {
+    "bytes": 2306551,
+    "sha256": "320fab260c5b571fb3cde1288d30d67b904ef7c5381e4b1d73715ddf2867699e"
+  },
+  "transfer_list": {
+    "bytes": 15584,
+    "sha256": "842d27abf8b27160c57ebf8bf0872c358e4adb75c374f15c6b7e947794a70e26"
+  },
+  "new_source": {
+    "url": "https://github.com/bonecopreparado/aaa-67-vendor/releases/download/Vendor/vendor.new.dat.br",
+    "bytes": 936067987,
+    "sha256": "2d80788f5336cf82aa1a3e8c625f8942aac410be014a820186369173946199af"
+  },
+  "interpretation": "Pinned content identities; no new vendor download or boot validation performed here"
+}
