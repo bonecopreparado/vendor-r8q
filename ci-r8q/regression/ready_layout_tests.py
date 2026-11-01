@@ -10,9 +10,9 @@ import json
 import os
 import subprocess
 
-ROOT = Path(os.environ.get('R8Q_PROJECT_ROOT', Path(__file__).resolve().parents[2]))
+ROOT = Path(os.environ.get('R8Q_PROJECT_ROOT', Path(__file__).resolve().parents[2])).resolve()
 BASE = ROOT / 'ci-r8q/regression/installer_mock_mksh.py'
-SOURCE = Path(os.environ.get('R8Q_TEST_SOURCE', ROOT / 'delivery/Ready-P0r7/installer-template-ready.sh'))
+SOURCE = Path(os.environ.get('R8Q_TEST_SOURCE', ROOT / 'delivery/Ready-P0r7/installer-template-ready.sh')).resolve()
 REPORT = Path(os.environ.get('R8Q_TEST_REPORT', ROOT / 'reports/audit-20261101/ready'))
 REPORT.mkdir(parents=True, exist_ok=True)
 SHELL = os.environ.get('MKSH_BINARY', 'mksh')
