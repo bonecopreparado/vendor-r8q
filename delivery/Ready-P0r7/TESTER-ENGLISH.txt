@@ -1,0 +1,23 @@
+HyperOS4 R8Q P0r7-ready1 - PHONE-ONLY INSTALLATION
+
+This ZIP is the READY recovery installer. No Windows, Python, CMD or installer
+creation is needed. Keep the 22 .gz files already copied for P0r5/P0r6.
+
+1. Download HyperOS4-R8Q-P0r7-READY.zip.
+2. Move this ZIP next to the existing payloads folder OR directly inside it.
+3. In OrangeFox Files, select HyperOS4-R8Q-P0r7-READY.zip and swipe to install.
+   Select the local file in that folder; ADB sideload cannot find adjacent data.
+4. Wait for all checks and writes to complete. If it succeeds, reboot back to
+   Recovery first and save/send recovery.log before attempting the system boot.
+5. If it fails, save/send recovery.log. If writing started, restore your working
+   ROM or backup before booting the system.
+
+The ZIP is small because the ROM images are in the 22 external .gz files.
+Leave those .gz files compressed and keep their original names. The installer
+checks every compressed SHA, gzip CRC and raw SHA before any partition write.
+This reuses the original P0r5/P0r6 gzip encoding from the shipped Windows kit.
+It includes the mksh arithmetic fixes already reviewed in P0r7.
+
+This is still an experimental installation test. The ROM images are unchanged;
+SELinux and VINTF work remains and boot has not been confirmed. This ZIP does
+not format userdata, write vbmeta, recovery, modem, bootloader or EFS.

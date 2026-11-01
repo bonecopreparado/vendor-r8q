@@ -1,0 +1,8 @@
+{
+  "source": "delivery/Ready-P0r7/installer-template-ready.sh",
+  "shell": "/workspace/hyperos-space/reports/audit-20261031/overnight/reader/mksh-src/mksh",
+  "baseline_cases": 37,
+  "layout_cases": 5,
+  "passed": 42,
+  "scope": "bounded mock partition files; no physical device and no boot test"
+}

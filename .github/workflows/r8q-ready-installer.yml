@@ -1,0 +1,45 @@
+name: Build ready R8Q phone installer
+on:
+  push:
+    branches: [r8q-ready-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ready:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Generate the actual recovery ZIP
+        run: python3 tools/package_ready_p0r7.py
+      - name: Install mksh for recovery-shell regression tests
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+      - name: Verify installer checks and phone folder layouts
+        env:
+          R8Q_TEST_SOURCE: delivery/Ready-P0r7/installer-template-ready.sh
+          R8Q_TEST_REPORT: reports/ready-ci
+          MKSH_BINARY: /bin/mksh
+        run: |
+          python3 ci-r8q/regression/ready_layout_tests.py
+      - name: Publish the ready ZIP to GoFile
+        env:
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+        run: python3 ci-r8q/tools/gofile_upload.py output/HyperOS4-R8Q-P0r7-READY.zip --summary "$GITHUB_STEP_SUMMARY" --result output/gofile.json
+      - name: Save the installer and validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: HyperOS4-R8Q-P0r7-READY
+          path: |
+            output/HyperOS4-R8Q-P0r7-READY.zip
+            output/HyperOS4-R8Q-P0r7-READY.zip.sha256
+            output/gofile.json
+            delivery/Ready-P0r7/TESTER-ENGLISH.txt
+            reports/ready-ci
+          if-no-files-found: error
+          retention-days: 30
