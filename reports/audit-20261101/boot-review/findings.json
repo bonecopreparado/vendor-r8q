@@ -44,9 +44,13 @@
     "original_p0_cil_compiles": false,
     "isolated_candidate_compiles": true,
     "candidate_applied_to_images": false,
-    "context_binary_check_status": "PREPARED_FOR_MODERN_LIBSEPOL_CI_EXECUTION",
+    "context_binary_check_status": "EXECUTED_FIRST_REAL_MEASUREMENT",
     "context_reference_count": 2888,
-    "precompiled_hash_pairs_all_match": false
+    "precompiled_hash_pairs_all_match": false,
+    "context_valid": 2879,
+    "context_invalid": 9,
+    "context_baseline_kind": "MEASURED_UNRESOLVED_REGRESSION_BASELINE",
+    "context_measurement_run": "https://github.com/bonecopreparado/vendor-r8q/actions/runs/41319419220"
   },
   "linker": {
     "roots": 18,

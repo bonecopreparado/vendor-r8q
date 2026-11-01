@@ -1,15 +1,220 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "policy_sha256": "70278111389ef8affecddf0eee346f4d3cba4b72fe7bc907e512f7c610d769ad",
-  "scope": "Isolated candidate policy, not applied to P0 ROM images. Known missing domain identified in source declaration audit; exact binary checks must independently confirm it.",
+  "scope": "First real binary context measurement, all nine findings retained visibly and unresolved. This is only an expected-regression baseline, not a policy fix, suppression, successful runtime test or release authorization. Original P0 CIL compilation still fails; the measured candidate has not been applied to images.",
+  "measurement": {
+    "workflow_run": "https://github.com/bonecopreparado/vendor-r8q/actions/runs/41319419220",
+    "source_commit": "07df5a9c05b0add173afb48272b4c5efdecdc566",
+    "artifact_id": 13089165029,
+    "input_bundle_sha256": "ad031132de92d9ee9ca7564d2b85a1d513844dc9d3ee02b23d0f399a94130b6e",
+    "result_sha256": "decaedb526c42c1f09aaf076be39837ca3a11da05b46a2038def6b19237138ea",
+    "checker_sha256": "d05f5928eaff5d8ea502852c11e49e5e1a2740076651dbba266c20d68954d7c5",
+    "contexts_checked": 2888,
+    "valid": 2879,
+    "invalid": 9,
+    "previous_baseline_status": "The previous one-context baseline was a static-source prediction, not an executed binary-context measurement. This measured baseline records the eight additional findings, without declaring them repaired."
+  },
   "known_invalid_contexts": {
+    "u:r:dsms_app:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 34,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:kfa_app:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 61,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
     "u:r:logdumpd:s0": {
-      "reason": "Samsung vendor init explicitly names a domain absent from the combined candidate CIL declarations.",
-      "partition": "vendor",
-      "path": "etc/init/hw/init.qcom.rc",
-      "line": 999,
-      "trigger": "Service is disabled; starts only when ro.logdumpd.enabled=1. Do not describe this finding alone as a default boot failure.",
-      "disposition": "Unresolved. Retained visibly as a known invalid context; baseline does not validate runtime permissions or permit ROM release."
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "etc/init/hw/init.qcom.rc",
+          "line": 999,
+          "kind": "init_explicit_context"
+        }
+      ],
+      "classification": "MISSING_DOMAIN",
+      "reason": "Literal Samsung init seclabel names logdumpd, which is absent from the exact candidate policy. The service is disabled and starts only when ro.logdumpd.enabled=1.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:oneseg_apk:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 14,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:radio_service:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "system_ext",
+          "path": "/etc/selinux/system_ext_seapp_contexts",
+          "line": 33,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "INVALID_SEAPP_PROCESS_DOMAIN",
+      "reason": "system_ext seapp rule for com.qualcomm.telephony requests radio_service as a process domain. The exact binary rejects u:r:radio_service:s0. Source policy declares radio_service as a service object type; binary role/domain traits are reported separately. MLS category selection cannot repair a missing role/type association.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:sec_untrusted_app:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 1,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 2,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 3,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 4,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 5,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 38,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 39,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 41,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:teed_app:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 19,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:teeregistryd_app:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 18,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
+    },
+    "u:r:trustonicpartner_app:s0": {
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 9,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 10,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 11,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 12,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 13,
+          "kind": "seapp_domain"
+        }
+      ],
+      "classification": "LEGACY_SEAPP_PROCESS_DOMAIN_INCOMPATIBILITY",
+      "reason": "Samsung vendor seapp rules request this legacy process type. The type exists in vendor_plat_pub_versioned.cil but the exact candidate binary rejects its u:r process context. Source lacks direct role-r authorization; binary role/domain traits are reported separately. This remains an unresolved conditional application-domain incompatibility, not a proven default boot failure.",
+      "disposition": "UNRESOLVED_MEASURED_FINDING_ROM_RELEASE_STILL_BLOCKED"
     }
   }
 }

@@ -31,6 +31,11 @@ that a compatibility check passed. Compiler binaries, proprietary inputs and
 phone capture logs are excluded from this report package.
 
 This workflow creates a **draft prerelease only** from `main`, for owner review.
+Before creating the draft it waits up to ten minutes for a successful
+`r8q-ci.yml` run on `main` at the exact same commit, and imports that run's
+policy, context and VINTF reports. Missing, expired or different-commit evidence
+stops the release; there is no previous-run fallback. The report TAR records
+the source run, discovered artifact IDs and downloaded artifact hashes.
 It does not publish the release, upload the candidate to GoFile, or distribute
 the installer through public Actions artifacts. Publishing requires review of
 the exact image composition and its compatibility/runtime evidence, a new

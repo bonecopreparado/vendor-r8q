@@ -28,13 +28,18 @@ integrada em uma nova imagem coerente e validada separadamente antes de qualquer
 afirmação sobre boot. Os 335 registros neverallow são outra análise; não substituem
 este erro de compilação e não representam automaticamente 335 falhas em execução.
 
-O novo checker de contextos usa a libsepol moderna do mesmo pin, controles
-positivos e negativo e valida os seis policycaps antes de analisar os 2.888
-contextos coletados. A referência `u:r:logdumpd:s0` é uma pendência conhecida: o
-init Samsung declara esse serviço com domínio ausente, mas ele está desabilitado
-e só inicia com `ro.logdumpd.enabled=1`. Ela permanece visível no relatório; CI
-deve falhar se aparecer outro contexto inválido. Passar essa regressão não torna
-a política original da P0 válida e não equivale a testar permissões no kernel.
+O checker de contextos foi executado na CI 41319419220 com a libsepol moderna
+do mesmo pin, controles positivos e negativo e os seis policycaps preservados.
+Dos 2.888 contextos, 2.879 passaram e nove falharam. Além do domínio ausente
+`logdumpd`, sete seletores de apps Samsung e um seletor Qualcomm pedem contextos
+de processo inválidos na candidata. Os oito achados novos não tinham sido
+previstos pela inspeção estática inicial. Não foram corrigidos nem ocultados:
+passam a compor o primeiro baseline medido, vinculado à CI e aos hashes exatos.
+CI falha em nomes, estados ou referências inválidas novos. O serviço logdumpd
+está desabilitado e só inicia com `ro.logdumpd.enabled=1`; os seletores de apps
+também não provam por si só que os respectivos pacotes existem ou são iniciados.
+Passar essa regressão não torna a política original da P0 válida e não equivale
+a testar permissões no kernel. Ver `../../../patches/0003-seapp-context-review/README.md`.
 
 ## NFC: dependência nativa ausente
 

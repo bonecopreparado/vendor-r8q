@@ -1,0 +1,20 @@
+libsepol.context_from_record: type r8q_nonexistent_context_control is not defined
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:dsms_app:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:kfa_app:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: type logdumpd is not defined
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:oneseg_apk:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:radio_service:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:sec_untrusted_app:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:teed_app:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:teeregistryd_app:s0"
+libsepol.context_from_record: could not create context structure
+libsepol.context_from_record: invalid security context: "u:r:trustonicpartner_app:s0"
+libsepol.context_from_record: could not create context structure

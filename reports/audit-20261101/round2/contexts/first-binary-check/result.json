@@ -1,0 +1,584 @@
+{
+  "status": "EXACT_POLICY_CONTEXT_CHECK_NOT_RUNTIME_TEST",
+  "policy_sha256": "70278111389ef8affecddf0eee346f4d3cba4b72fe7bc907e512f7c610d769ad",
+  "contexts": 2888,
+  "valid": 2879,
+  "invalid": [
+    {
+      "context": "u:r:dsms_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 34,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:kfa_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 61,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:logdumpd:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "etc/init/hw/init.qcom.rc",
+          "line": 999,
+          "kind": "init_explicit_context"
+        }
+      ]
+    },
+    {
+      "context": "u:r:oneseg_apk:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 14,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:radio_service:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "system_ext",
+          "path": "/etc/selinux/system_ext_seapp_contexts",
+          "line": 33,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:sec_untrusted_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 1,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 2,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 3,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 4,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 5,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 38,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 39,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 41,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:teed_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 19,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:teeregistryd_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 18,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:trustonicpartner_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 9,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 10,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 11,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 12,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 13,
+          "kind": "seapp_domain"
+        }
+      ]
+    }
+  ],
+  "candidate_applied_to_rom": false,
+  "rom_release_status": "BLOCKED_PENDING_IMAGE_INTEGRATION_AND_RUNTIME_VALIDATION",
+  "regression_status": "NEW_INVALID_CONTEXTS",
+  "new_invalid": [
+    {
+      "context": "u:r:dsms_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 34,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:kfa_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 61,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:oneseg_apk:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 14,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:radio_service:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "system_ext",
+          "path": "/etc/selinux/system_ext_seapp_contexts",
+          "line": 33,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:sec_untrusted_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 1,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 2,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 3,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 4,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 5,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 38,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 39,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 41,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:teed_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 19,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:teeregistryd_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 18,
+          "kind": "seapp_domain"
+        }
+      ]
+    },
+    {
+      "context": "u:r:trustonicpartner_app:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 9,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 10,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 11,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 12,
+          "kind": "seapp_domain"
+        },
+        {
+          "partition": "vendor",
+          "path": "/etc/selinux/vendor_seapp_contexts",
+          "line": 13,
+          "kind": "seapp_domain"
+        }
+      ]
+    }
+  ],
+  "known_invalid": [
+    {
+      "context": "u:r:logdumpd:s0",
+      "parse_status": 0,
+      "check_status": -1,
+      "references": [
+        {
+          "partition": "vendor",
+          "path": "etc/init/hw/init.qcom.rc",
+          "line": 999,
+          "kind": "init_explicit_context"
+        }
+      ]
+    }
+  ],
+  "resolved_baseline": [],
+  "known_invalid_explanations": {
+    "u:r:logdumpd:s0": {
+      "reason": "Samsung vendor init explicitly names a domain absent from the combined candidate CIL declarations.",
+      "partition": "vendor",
+      "path": "etc/init/hw/init.qcom.rc",
+      "line": 999,
+      "trigger": "Service is disabled; starts only when ro.logdumpd.enabled=1. Do not describe this finding alone as a default boot failure.",
+      "disposition": "Unresolved. Retained visibly as a known invalid context; baseline does not validate runtime permissions or permit ROM release."
+    }
+  },
+  "baseline_sha256": "ebfb7c2d6bd68a35934f547f325121058b7e734194722dcc740362e10c5a181e",
+  "checker_sha256": "d05f5928eaff5d8ea502852c11e49e5e1a2740076651dbba266c20d68954d7c5",
+  "source_files": [
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_file_contexts",
+      "bytes": 50498,
+      "sha256": "608895445f9cd8bd7c83c2611cae1a5ed27c15cecf3e2ad8560edecbf5768fc6",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_hwservice_contexts",
+      "bytes": 8865,
+      "sha256": "e9f9f83ce1dfec4b036e09baa3b5cedeb27e8855b59164d42979ef5903f10668",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_keystore2_key_contexts",
+      "bytes": 1544,
+      "sha256": "5255d73632178621b13f5dc9698a31a55a59b614761a1713ea82cecfa709eef2",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_property_contexts",
+      "bytes": 129091,
+      "sha256": "41be5c817db561e0cdf8f49a02b7200cbeffc7970b8fbb7ad5c1ff72a31a8b75",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_seapp_contexts",
+      "bytes": 4938,
+      "sha256": "37211f7e67111828257e67ab9fb9457c75162abcc3c4d503847f777d3097c64d",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_service_contexts",
+      "bytes": 47192,
+      "sha256": "27111193bb8883bbc10babac98b8f5d323b72f731f1d20d776348dc9bf3b26a8",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system",
+      "internal": "/system/etc/selinux/plat_tee_service_contexts",
+      "bytes": 832,
+      "sha256": "8277a4d8afee32d53ed9b1527f01fc1c7c215e905e5f5a08b3b800ae88d7124d",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_file_contexts",
+      "bytes": 17386,
+      "sha256": "dd9349d905e8fc10a857e905ec1e739155ee9891b2013578da0bfd570e821e6c",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_hwservice_contexts",
+      "bytes": 433,
+      "sha256": "05151cf8e83257565e5c434aea1bdf369109455f11e1fe346bfb613999f4dad9",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_keystore2_key_contexts",
+      "bytes": 177,
+      "sha256": "b61a4c12ffdd0ebdb20f9f22c3832d4253866b365dd3795aa67557ec2b158249",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_property_contexts",
+      "bytes": 33417,
+      "sha256": "705d9075c57ef29631f7f6396974ad3dfb61a96d432f25a11901120680e0ac54",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_seapp_contexts",
+      "bytes": 6789,
+      "sha256": "0740721ec93810e4c3efd5549a4362a754ad9778d4ba3e8f97e7579b49972a64",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_service_contexts",
+      "bytes": 12558,
+      "sha256": "5b6d066375fd5f71dae9c0cf80c0b5a8a3e0a4d80402406cfcca626edfa66777",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "system_ext",
+      "internal": "/etc/selinux/system_ext_tee_service_contexts",
+      "bytes": 175,
+      "sha256": "0fac54c6839a62588a7d34b20fb8ed36c45ded2a21920dfb8dbb45e864c9a7bb",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "product",
+      "internal": "/etc/selinux/product_file_contexts",
+      "bytes": 887,
+      "sha256": "bcea6da8d3e09943b73d05c1603d0f7544b9f28247476c59b4c8f17a5a0615cd",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "product",
+      "internal": "/etc/selinux/product_keystore2_key_contexts",
+      "bytes": 178,
+      "sha256": "a360f040b69dd5183696805ecaa625bfb7abe12987d8e345b79c44f9c4518b88",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "product",
+      "internal": "/etc/selinux/product_property_contexts",
+      "bytes": 2093,
+      "sha256": "516910d1dca53cfe2edec61d22d84a931283ca7759ce079bfda3f1bdc3264637",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "product",
+      "internal": "/etc/selinux/product_seapp_contexts",
+      "bytes": 702,
+      "sha256": "2fd04f9d730e073a00621765150741958e02e9ba6a4aa4079d3ac68908aadbf0",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "product",
+      "internal": "/etc/selinux/product_service_contexts",
+      "bytes": 103,
+      "sha256": "26dbd3f533249aa2c3bb2c72f516d271a0950ee4a4e262498b394fa3d14e2076",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "product",
+      "internal": "/etc/selinux/product_tee_service_contexts",
+      "bytes": 176,
+      "sha256": "832e9b8802ea7413586d1cfeb0be63e6942583003d6b0ebe292bdf88e3cc0ded",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "vendor",
+      "internal": "/etc/selinux/vendor_file_contexts",
+      "bytes": 160691,
+      "sha256": "440d7777858ebf8b253cd2ce7e042ad72bb35253db68fbae832a6900992692cf",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "vendor",
+      "internal": "/etc/selinux/vendor_hwservice_contexts",
+      "bytes": 18806,
+      "sha256": "cfb944f45e60c94cf78309aad07de1f8daa70c76b69585a4d3ee8c0ae45ab5e6",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "vendor",
+      "internal": "/etc/selinux/vendor_property_contexts",
+      "bytes": 24753,
+      "sha256": "10122fb2715f716aa3b74ea1442effef0e414cf11411df28d086c6e1881ac7b3",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "vendor",
+      "internal": "/etc/selinux/vendor_seapp_contexts",
+      "bytes": 7955,
+      "sha256": "277a1b6bd188077be9e398f6cdf8cdd8aabbddfa8cb6678aab68c8ddf47e2848",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "vendor",
+      "internal": "/etc/selinux/vendor_service_contexts",
+      "bytes": 5652,
+      "sha256": "2d5d2f73207d5e7cb9094a746afc6d514c6b2b872b9b20a9631a5405aa2aff87",
+      "status": "TEXT_EXPORTED"
+    },
+    {
+      "partition": "vendor",
+      "internal": "/etc/selinux/vndservice_contexts",
+      "bytes": 1017,
+      "sha256": "cf6fcc383aeed6609fbab83b666f13d29e03f35acb306ee717ad19efa58848e8",
+      "status": "TEXT_EXPORTED"
+    }
+  ],
+  "limits": [
+    "No inode xattr audit",
+    "No regex precedence or property type/access validation",
+    "seapp domain/type expanded to base context only; dynamic MLS/user selection not checked",
+    "No hardware/boot execution; existence of a label does not validate permissions"
+  ]
+}

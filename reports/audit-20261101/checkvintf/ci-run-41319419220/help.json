@@ -1,0 +1,10 @@
+{
+  "name": "help",
+  "argv": [
+    "/home/runner/work/vendor-r8q/vendor-r8q/vintf-results/otatools/bin/checkvintf",
+    "--help"
+  ],
+  "exit": 64,
+  "stdout": "",
+  "stderr": "\u001b[31m/home/runner/work/vendor-r8q/vendor-r8q/vintf-results/otatools/bin/checkvintf: check VINTF metadata.\n    Modes:\n        --dump-file-list: Dump a list of directories / files on device\n                that is required to be used by --check-compat.\n        -c, --check-compat: check compatibility for files under the root\n                directory specified by --root-dir.\n        --check-one: check consistency of VINTF metadata for a single partition.\n\n    Options:\n        --rootdir=<dir>: specify root directory for all metadata. Same as \n                --dirmap /:<dir>\n        -D, --property <key>=<value>: specify sysprops.\n        --dirmap </system:/dir/to/system> [--dirmap </vendor:/dir/to/vendor>[...]]\n                Map partitions to directories. Cannot be specified with --rootdir.        --kernel <version:path/to/config>\n                Use the given kernel version and config to check. If\n                unspecified, kernel requirements are skipped.\n                The first half, version, can be just x.y.z, or a file \n                containing the full kernel release string x.y.z-something.\n        --help: show this message.\n\n    Example:\n        # Get the list of required files.\n        /home/runner/work/vendor-r8q/vendor-r8q/vintf-results/otatools/bin/checkvintf --dump-file-list > /tmp/files.txt\n        # Pull from ADB, or use your own command to extract files from images\n        ROOTDIR=/tmp/device/\n        cat /tmp/files.txt | xargs -I{} bash -c \"mkdir -p $ROOTDIR`dirname {}` && adb pull {} $ROOTDIR{}\"\n        # Check compatibility.\n        /home/runner/work/vendor-r8q/vendor-r8q/vintf-results/otatools/bin/checkvintf --check-compat --rootdir=$ROOTDIR \\\n            --property ro.product.first_api_level=`adb shell getprop ro.product.first_api_level` \\\n            --property ro.boot.product.hardware.sku=`adb shell getprop ro.boot.product.hardware.sku`\u001b[0m\n"
+}

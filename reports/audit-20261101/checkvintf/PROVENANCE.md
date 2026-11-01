@@ -54,7 +54,7 @@ standalone deprecation flag. Targeted pair checks do not compose fragments and
 are not substitutes for the full command. Raw commands, outputs and exit codes
 are retained separately.
 
-Eight offline runner tests passed, including tool version selection, mismatched
+Sixteen offline runner tests passed, including tool version selection, mismatched
 SDK handling, foreign redirects, altered locked tools, exact input/kernel
 identities, @ filenames, and Android 17 APEX partition selection. The real host
 check must be read from the CI-produced gate.json/results.json. A successful

@@ -41,6 +41,14 @@ versions, must be assessed using the actual partition composition and kernel.
 Changing declared versions or deleting requirements to obtain a green check
 does not establish support. Device testing follows review of those results.
 
+The official Android 17/API37 host `checkvintf` has now executed against the
+actual P0 metadata and its embedded 4.19.325 kernel configuration. The full
+checks returned **INCOMPATIBLE** with and without the kernel. See the
+[recorded result](reports/audit-20261101/checkvintf/RESULTADO.md) and
+[reviewed tool lock](ci-r8q/pins/official-otatools.json). The exact policy
+context checker also rejected nine references. These findings remain open;
+recording their baseline does not repair the ROM or authorize device testing.
+
 ## Repository layout
 
 | Path | Contents |

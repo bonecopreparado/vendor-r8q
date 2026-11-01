@@ -1,0 +1,69 @@
+{
+  "status": "BLOCKED_VINTF_INCOMPATIBLE",
+  "release_ready": false,
+  "boot_confirmed": false,
+  "tool_android17_api37": true,
+  "input_bundle_sha256": "f17ddd9728493043147ab5506a4123e1c613e0570943962904e789ce08030432",
+  "full_check_exit": 65,
+  "tool_lock": {
+    "branch": "aosp-android-latest-release",
+    "build_id": "16644040",
+    "target": "aosp_cf_x86_64_only_phone-userdebug",
+    "build_prop_url": "https://ci.android.com/builds/submitted/16644040/aosp_cf_x86_64_only_phone-userdebug/latest/raw/build.prop",
+    "build_prop_sha256": "5931943823128231144f5b83a167d1e786af3f81978ae63a764cc2a105a89492",
+    "release": "17",
+    "sdk": "37",
+    "build_fingerprint": "Android/generic_system/generic:17/CP2A.260605.016/16644040:userdebug/test-keys",
+    "url": "https://ci.android.com/builds/submitted/16644040/aosp_cf_x86_64_only_phone-userdebug/latest/raw/otatools.zip",
+    "bytes": 531408471,
+    "sha256": "bc85557aa0c59a7d0b48b8175250948d67b2d0f293bd74eb8d5753ba4ad7781f",
+    "source": "official ci.android.com artifact via HTTPS",
+    "pin_scope": "discovered once and locked for this execution; do not call this a pre-reviewed version pin",
+    "checkvintf_sha256": "6f7601b9409ac5db70d8b05bc98d117fe68456464e710eb2e2964c7edf1325db"
+  },
+  "input_limits": [
+    "All preinstalled APEX modeled active; actual activation/signatures/rollback/data updates not executed",
+    "No on-device OEM libvintf execution or phone boot",
+    "Vendor SKU not collected; host empty assumption"
+  ],
+  "runs": [
+    {
+      "name": "help",
+      "exit": 64
+    },
+    {
+      "name": "required-paths",
+      "exit": 0
+    },
+    {
+      "name": "framework-consistency",
+      "exit": 0
+    },
+    {
+      "name": "device-consistency",
+      "exit": 0
+    },
+    {
+      "name": "full-metadata-no-kernel",
+      "exit": 65
+    },
+    {
+      "name": "full-metadata-with-candidate-kernel",
+      "exit": 65
+    },
+    {
+      "name": "framework-manifest-vendor-matrix",
+      "exit": 1
+    },
+    {
+      "name": "vendor-manifest-framework-base-matrix",
+      "exit": 1
+    }
+  ],
+  "interpretation": [
+    "Full --check-compat combines checkCompatibility, checkDeprecation and additional HAL checks; there is no standalone deprecation CLI flag.",
+    "Legacy manifest/matrix pair runs check only those literal documents, without combining fragments; they are targeted diagnostics.",
+    "The no-kernel run skips runtime kernel checks; the kernel run uses actual P0 embedded version/config, never CI host uname.",
+    "Host metadata success does not establish Android OEM libvintf behavior, service ABI, SELinux load or boot."
+  ]
+}

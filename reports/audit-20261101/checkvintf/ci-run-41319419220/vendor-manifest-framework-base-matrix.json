@@ -1,0 +1,11 @@
+{
+  "name": "vendor-manifest-framework-base-matrix",
+  "argv": [
+    "/home/runner/work/vendor-r8q/vendor-r8q/vintf-results/otatools/bin/checkvintf",
+    "/home/runner/work/vendor-r8q/vendor-r8q/vintf-results/input/checkvintf-inputs/root/vendor/etc/vintf/manifest.xml",
+    "/home/runner/work/vendor-r8q/vendor-r8q/vintf-results/input/checkvintf-inputs/root/system/etc/vintf/compatibility_matrix.device.xml"
+  ],
+  "exit": 1,
+  "stdout": "false\n",
+  "stderr": "\u001b[31mERROR: Incompatible: Sepolicy version 30.0 doesn't satisify the requirements.\u001b[0m\n"
+}

@@ -60,6 +60,7 @@ jobs:
       - name: Validate contexts with the same modern policy library
         run: |
           cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_contexts.c .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_context_traits.c .deps/selinux/libsepol/src/libsepol.a -o build/check-context-traits
           python3 ci-r8q/tools/run_context_audit.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -115,7 +116,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           python3 - <<'PY'
-          import hashlib,io,json,os,re,subprocess,zipfile
+          import json,os,subprocess
           def api(path,payload=None):
               argv=['gh','api','repos/'+os.environ['GH_REPO']+'/'+path]
               if payload is not None:argv+=['--input','-']
@@ -125,18 +126,7 @@ jobs:
           head=api('git/ref/heads/main')['object']['sha']
           if head != initial:raise SystemExit('main changed during review; refusing to overwrite concurrent work')
           source=api('git/commits/'+os.environ['SOURCE_COMMIT'])
-          artifacts=api('actions/runs/'+os.environ['RUN_ID']+'/artifacts')['artifacts']
-          artifact=next(a for a in artifacts if a['name']=='R8Q-VINTF-EVIDENCE')
-          blob=subprocess.check_output(['gh','api','repos/'+os.environ['GH_REPO']+'/actions/artifacts/'+str(artifact['id'])+'/zip'])
           tree_sha=source['tree']['sha']
-          with zipfile.ZipFile(io.BytesIO(blob)) as z:
-              name=next(n for n in z.namelist() if n.endswith('tool-lock.json'))
-              lock=json.loads(z.read(name))
-          if lock.get('release')=='17' and lock.get('sdk')=='37':
-              if not re.fullmatch('[0-9a-f]{64}',lock.get('sha256','')):raise SystemExit('Invalid observed tool hash')
-              if not lock['url'].startswith('https://ci.android.com/builds/submitted/'):raise SystemExit('Unexpected tool source')
-              tree_sha=api('git/trees',dict(base_tree=tree_sha,tree=[dict(path='ci-r8q/pins/official-otatools.json',mode='100644',type='blob',content=json.dumps(lock,indent=2)+'\n')]))['sha']
-          else:print('Official tool API mismatch remains blocked; not pinning it as Android 17.')
           identity=dict(name='bonecopreparado',email='230063722+bonecopreparado@users.noreply.github.com')
           commit=api('git/commits',dict(message='Consolidate R8Q research, battery guards and reproducible compatibility audits',tree=tree_sha,parents=[parent],author=identity,committer=identity))
           print('Prepared noreply integration commit:',commit['sha'],flush=True)
@@ -151,3 +141,27 @@ jobs:
         run: |
           gh api --method POST "repos/$GH_REPO/actions/workflows/r8q-ci.yml/dispatches" -f ref=main
           gh api --method POST "repos/$GH_REPO/actions/workflows/r8q-release.yml/dispatches" -f ref=main
+      - name: Remove only historical branches fully preserved in main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess
+          prefix='repos/'+os.environ['GH_REPO']+'/'
+          def get(path):return json.loads(subprocess.check_output(['gh','api',prefix+path]))
+          subprocess.run(['gh','auth','setup-git'],check=True)
+          subprocess.run(['git','init','--quiet','/tmp/r8q-merged-refs'],check=True)
+          main=get('git/ref/heads/main')['object']['sha']
+          names=['r8q-audit-20261031','r8q-delivery-20261101','r8q-ready-20261101','r8q-review-20261101','r8q-vendor-audit-20261031']
+          for name in names:
+              tip=get('git/ref/heads/'+name)['object']['sha']
+              comparison=get('compare/'+tip+'...'+main)
+              if comparison['behind_by']!=0:
+                  print('Preserving concurrently changed branch:',name);continue
+              subprocess.run(['git','-C','/tmp/r8q-merged-refs','push',
+                              '--force-with-lease=refs/heads/'+name+':'+tip,
+                              'https://github.com/'+os.environ['GH_REPO']+'.git',
+                              ':refs/heads/'+name],check=True)
+              print('Removed merged branch:',name,'preserved commit:',tip)
+          PY
