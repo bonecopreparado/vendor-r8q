@@ -33,12 +33,100 @@ jobs:
           LD_LIBRARY_PATH="$PWD/host-tools-output/p1-host/aosp/lib64" ldd host-tools-output/p1-host/aosp/bin/checkvintf > host-tools-output/checkvintf-ldd.txt
           cat host-tools-output/checkvintf-ldd.txt
           if grep -q 'not found' host-tools-output/checkvintf-ldd.txt; then exit 1; fi
+      - name: Split host archive into bounded transport parts
+        run: |
+          python3 - <<'PYINNER'
+          from pathlib import Path
+          import hashlib,json
+          source=Path('host-tools-output/R8Q-P1-HOST-TOOLS-NOT-FLASHABLE.tar.gz')
+          out=Path('host-tools-parts');out.mkdir()
+          rows=[]
+          with source.open('rb') as stream:
+              for i in range(8):
+                  data=stream.read(24*1024**2)
+                  if not data:break
+                  p=out/('part-%02d'%i);p.write_bytes(data)
+                  rows.append(dict(name=p.name,bytes=len(data),sha256=hashlib.sha256(data).hexdigest()))
+              if stream.read(1):raise SystemExit('Too many host transport parts')
+          (out/'parts.json').write_text(json.dumps(dict(sha256=hashlib.sha256(source.read_bytes()).hexdigest(),parts=rows),indent=2))
+          PYINNER
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-00') != ''
         with:
-          name: R8Q-P1-HOST-TOOLS-NOT-FLASHABLE
+          name: R8Q-P1-HOST-TOOLS-PART-00
           path: |
-            host-tools-output/R8Q-P1-HOST-TOOLS-NOT-FLASHABLE.tar.gz
-            host-tools-output/R8Q-P1-HOST-TOOLS-NOT-FLASHABLE.tar.gz.sha256
-            host-tools-output/checkvintf-ldd.txt
+            host-tools-parts/part-00
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-01') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-01
+          path: |
+            host-tools-parts/part-01
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-02') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-02
+          path: |
+            host-tools-parts/part-02
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-03') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-03
+          path: |
+            host-tools-parts/part-03
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-04') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-04
+          path: |
+            host-tools-parts/part-04
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-05') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-05
+          path: |
+            host-tools-parts/part-05
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-06') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-06
+          path: |
+            host-tools-parts/part-06
+            host-tools-parts/parts.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: hashFiles('host-tools-parts/part-07') != ''
+        with:
+          name: R8Q-P1-HOST-TOOLS-PART-07
+          path: |
+            host-tools-parts/part-07
+            host-tools-parts/parts.json
+          compression-level: 0
           if-no-files-found: error
           retention-days: 14
