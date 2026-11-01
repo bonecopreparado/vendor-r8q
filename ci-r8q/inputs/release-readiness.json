@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "status": "HOLD_COMPATIBILITY_AND_RUNTIME_UNRESOLVED",
+  "boot_ready": false,
+  "device_test_recommended": false,
+  "rom_images_changed": false,
+  "selinux_candidate_applied_to_images": false,
+  "phone_boot_confirmed": false,
+  "open_work": [
+    "Original P0 policy inputs still have duplicate type declarations; the isolated CIL candidate has not been integrated into images.",
+    "The isolated candidate retains known ordinary and extended neverallow findings; regression baselines do not clear these findings.",
+    "Official host VINTF and actual kernel compatibility results must be reviewed for the exact composition.",
+    "HAL linking, Android startup and hardware behavior remain unconfirmed on a phone."
+  ],
+  "backup_limit": "The user confirmed backups and a working restoration ROM. The installer cannot prove that an external backup is restorable.",
+  "release_policy": "Generated installer candidates remain draft prereleases until a reviewed image composition and runtime evidence support device testing."
+}

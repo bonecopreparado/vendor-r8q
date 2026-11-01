@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "policy_sha256": "70278111389ef8affecddf0eee346f4d3cba4b72fe7bc907e512f7c610d769ad",
+  "scope": "Isolated candidate policy, not applied to P0 ROM images. Known missing domain identified in source declaration audit; exact binary checks must independently confirm it.",
+  "known_invalid_contexts": {
+    "u:r:logdumpd:s0": {
+      "reason": "Samsung vendor init explicitly names a domain absent from the combined candidate CIL declarations.",
+      "partition": "vendor",
+      "path": "etc/init/hw/init.qcom.rc",
+      "line": 999,
+      "trigger": "Service is disabled; starts only when ro.logdumpd.enabled=1. Do not describe this finding alone as a default boot failure.",
+      "disposition": "Unresolved. Retained visibly as a known invalid context; baseline does not validate runtime permissions or permit ROM release."
+    }
+  }
+}

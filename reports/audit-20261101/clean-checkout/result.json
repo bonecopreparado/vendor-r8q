@@ -1,0 +1,14 @@
+{
+  "before_tests": 29,
+  "before_errors": 14,
+  "after_tests": 29,
+  "after_errors": 0,
+  "generated_files_before_test": false,
+  "required_committed_assets": [
+    "delivery/Revisao-P0r7-Windows/p0r7-assets/chunks.json",
+    "delivery/Revisao-P0r7-Windows/p0r7-assets/installer-p0r5.sh",
+    "delivery/Revisao-P0r7-Windows/p0r7-assets/installer-p0r6.sh",
+    "delivery/Revisao-P0r7-Windows/p0r7-assets/LEIA-ME.txt",
+    "delivery/Revisao-P0r7-Windows/p0r7-assets/pins.json"
+  ]
+}

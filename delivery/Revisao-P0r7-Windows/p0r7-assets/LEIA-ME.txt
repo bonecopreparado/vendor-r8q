@@ -1,0 +1,15 @@
+HyperOS4 -> R8Q P0r7 EXPERIMENTAL
+
+Reaproveita os mesmos 22 gzip da P0r5/P0r6. Instalar INSTALAR-P0r7.zip com
+payloads ao lado. Nao precisa recomprimir ou baixar as imagens novamente.
+Corrige aritmetica/testes de 32 bits do mksh: em P0r5 a conta do offset de
+2 GiB virava negativa; em P0r6 a comparacao numerica tratava 4 GiB como zero,
+descartando indevidamente 4096 bytes. Reproduzido num mksh real no Linux.
+P0r7 usa comparacao textual para zero e contador em blocos de 4096 bytes.
+AWK confere a tabela inteira antes da escrita. Os hashes permanecem obrigatorios.
+
+Nao ha troca de vendor, kernel, DTBO ou conteudo dos filesystems nesta revisao.
+As imagens continuam da P0; SELinux e VINTF tem pendencias documentadas.
+Somente super, dtbo e boot sao gravados. Nao formata userdata. Sem boot confirmado.
+Se falhar apos comecar a gravar, mantenha no recovery e restaure a base antes de
+outro boot. Se concluir, reinicie primeiro para RECOVERY para atualizar mappings.

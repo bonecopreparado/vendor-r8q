@@ -1,0 +1,9 @@
+{
+  "source": "delivery/Ready-P0r8/installer-template-ready.sh",
+  "shell": "/workspace/hyperos-space/reports/audit-20261031/overnight/reader/mksh-src/mksh",
+  "baseline_cases": 37,
+  "battery_cases": 29,
+  "layout_cases": 5,
+  "passed": 71,
+  "scope": "bounded mock files only; no physical battery/device or boot test"
+}
