@@ -1,0 +1,72 @@
+{
+  "original_p0_cil_compiles": false,
+  "isolated_candidate_compiles": true,
+  "rom_images_changed": false,
+  "records": [
+    {
+      "variant": "original",
+      "mode": "Android-init-compatible-host-compile",
+      "returncode": 255,
+      "command": [
+        "tools/selinux-modern/secilc-host",
+        "-m",
+        "-M",
+        "true",
+        "-G",
+        "-c",
+        "30",
+        "-N",
+        "-o",
+        "reports/audit-20261101/round2/contexts/fresh-compile/original.policy",
+        "-f",
+        "reports/audit-20261101/round2/contexts/fresh-compile/original.file_contexts",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_plat_sepolicy.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_mapping_30.0.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_mapping_30.0.compat.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_ext_system_ext_sepolicy.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_ext_mapping_30.0.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_ext_mapping_30.0.compat.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/product_product_sepolicy.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/product_mapping_30.0.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/vendor_plat_pub_versioned.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/vendor_vendor_sepolicy.cil"
+      ],
+      "log_sha256": "700092666ec9b16bba829c25be0778b7ec3b2ad8dfda45755228bc12a702f2ae",
+      "applied_to_rom": false
+    },
+    {
+      "variant": "candidate",
+      "mode": "Android-init-compatible-host-compile",
+      "returncode": 0,
+      "command": [
+        "tools/selinux-modern/secilc-host",
+        "-m",
+        "-M",
+        "true",
+        "-G",
+        "-c",
+        "30",
+        "-N",
+        "-o",
+        "reports/audit-20261101/round2/contexts/fresh-compile/candidate.policy",
+        "-f",
+        "reports/audit-20261101/round2/contexts/fresh-compile/candidate.file_contexts",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_plat_sepolicy.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_mapping_30.0.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_mapping_30.0.compat.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/candidate/system_ext_system_ext_sepolicy.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/candidate/system_ext_mapping_30.0.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/system_ext_mapping_30.0.compat.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/product_product_sepolicy.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/product_mapping_30.0.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/vendor_plat_pub_versioned.cil",
+        "reports/audit-20261031/overnight/selinux/policy-bundle/original/vendor_vendor_sepolicy.cil"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "applied_to_rom": false,
+      "policy_sha256": "70278111389ef8affecddf0eee346f4d3cba4b72fe7bc907e512f7c610d769ad",
+      "bytes": 1975722,
+      "caps_check_returncode": 0
+    }
+  ]
+}

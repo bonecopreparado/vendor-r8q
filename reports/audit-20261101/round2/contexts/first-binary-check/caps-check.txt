@@ -1,0 +1,7 @@
+policy_version=30
+policycap network_peer_controls index=0 enabled=1
+policycap open_perms index=1 enabled=1
+policycap extended_socket_class index=2 enabled=1
+policycap nnp_nosuid_transition index=5 enabled=1
+policycap netlink_xperm index=9 enabled=1
+policycap functionfs_seclabel index=12 enabled=1

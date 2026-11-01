@@ -1,0 +1,32 @@
+P0r8 INSTALLER CANDIDATE - HOLD / BOOT NOT VALIDATED
+
+Do not start a device test with this candidate yet. The installer has battery
+guards and regression coverage, but the P0 ROM images still have unresolved
+compatibility work. A successful CI job does not authorize a flash test.
+
+When a reviewed build is explicitly cleared for a device test:
+1. Download its recovery ZIP, matching .sha256 file and attestation from the
+   same GitHub Release. Do not select an audit/tools archive in OrangeFox.
+2. On Android, use a file manager/hash utility that supports SHA256; calculate
+   the ZIP hash and compare ALL 64 hexadecimal characters with the release's
+   .sha256 file. If they differ, stop. Do not extract the recovery ZIP.
+3. Keep backups and a working restoration ROM outside the partitions written.
+   An installer cannot establish that an external backup is actually restorable.
+4. Put the installer ZIP inside the existing payloads directory alongside all
+   22 unchanged .gz files. No PC, Python or installer creation is required.
+5. Charge to at least 50%. The guard permits 20..49% only while battery/status
+   reports Charging or Full; below 20%, unknown capacity, or unplugging during
+   preflight stops before image writes. It rechecks before the first write.
+6. In OrangeFox Files select the exact recovery ZIP, then swipe to install.
+   Do not use ADB sideload for an installer with adjacent external payloads.
+7. On success reboot to Recovery first and save/send recovery.log. On failure
+   stop and send the log; if image writing started restore the working ROM
+   before booting System. Do not bypass a failed guard or hash check.
+
+The small ZIP contains the complete installer, not the multi-gigabyte ROM.
+Compressed SHA256, gzip integrity, raw SHA256 and partition readback checks
+remain mandatory. This does not format userdata or write vbmeta, recovery,
+modem, bootloader or EFS. Existing P0 images remain unchanged.
+
+For provenance verification with a computer, GitHub CLI supports:
+gh attestation verify HyperOS4-R8Q-P0r8-CANDIDATE.zip --repo bonecopreparado/vendor-r8q

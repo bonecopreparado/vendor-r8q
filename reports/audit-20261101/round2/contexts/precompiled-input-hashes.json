@@ -1,0 +1,35 @@
+{
+  "scope": "Exact stored precompiled-policy input hash comparison. AOSP init requires matching hashes before using the ODM precompiled policy.",
+  "pairs": [
+    {
+      "framework_partition": "system",
+      "framework_path": "/system/etc/selinux/plat_sepolicy_and_mapping.sha256",
+      "framework_value": "61a4556e6aa41df694a911ca1673bc13f5e411b65c91b73ea9cc0f644fc2f682",
+      "odm_path": "/etc/selinux/precompiled_sepolicy.plat_sepolicy_and_mapping.sha256",
+      "odm_value": "5325b17f702bd353757776f103c66027ab9e6c1b223f2cfe39ec05206b61383f",
+      "matches": false
+    },
+    {
+      "framework_partition": "system_ext",
+      "framework_path": "/etc/selinux/system_ext_sepolicy_and_mapping.sha256",
+      "framework_value": "384e24489b15481f869ecb81e0730673d92da1a665a78f368312be2300f3a811",
+      "odm_path": "/etc/selinux/precompiled_sepolicy.system_ext_sepolicy_and_mapping.sha256",
+      "odm_value": "2cf0ad0c13cc8515dc83ee7a3da4bdf17582fe37105158befb8b2c3b5719ebe3",
+      "matches": false
+    },
+    {
+      "framework_partition": "product",
+      "framework_path": "/etc/selinux/product_sepolicy_and_mapping.sha256",
+      "framework_value": "d84d0e180e5f61a851fa917d4bbee4629aeac51d8fd1b4b3d0e1d196656edf6b",
+      "odm_path": "/etc/selinux/precompiled_sepolicy.product_sepolicy_and_mapping.sha256",
+      "odm_value": "c7f7239b0e1deb9c64ac87f9316642392c13319d70c1bb17acaf047a830f3982",
+      "matches": false
+    }
+  ],
+  "all_match": false,
+  "conclusion": "AOSP_INIT_WOULD_REJECT_PRECOMPILED_POLICY_AND_COMPILE_CIL",
+  "limits": [
+    "OEM init behavior not executed or proven identical to upstream.",
+    "These are stored hash file values, not a claim that the OEM hash-generation algorithm was recomputed."
+  ]
+}

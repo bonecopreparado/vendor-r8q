@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "chunk_bytes": 536870912,
+  "images": [
+    {
+      "partition": "super",
+      "file": "images/super.img",
+      "bytes": 10292822016,
+      "sha256": "001617abf9c04d36a20f23d68a0e3ecbcea475364df06df82399feb97ea7607b"
+    },
+    {
+      "partition": "boot",
+      "file": "images/boot.img",
+      "bytes": 67108864,
+      "sha256": "4283ccbecbf3087bbd520dce1e50e5e449b1f70c4d959e8ee7f24b3ebfde9301"
+    },
+    {
+      "partition": "dtbo",
+      "file": "images/dtbo.img",
+      "bytes": 10485760,
+      "sha256": "3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468"
+    }
+  ],
+  "chunks": [
+    {
+      "part": "super",
+      "name": "super-000.gz",
+      "bytes": 536870912,
+      "sha256": "d57fc3193cbd433577f94d68643ca94c2c24745673acc9a86a5cc7ae427a65e4",
+      "offset": 0,
+      "readback_sha256": "e8c79868a47a36703d49154d7b272494170c007cd5e419d4fc9686934beadd59"
+    },
+    {
+      "part": "super",
+      "name": "super-001.gz",
+      "bytes": 536870912,
+      "sha256": "703e3ebf09f3672236bd17dda37fe697a1bdb92cf184ae1746c42c3331bc839a",
+      "offset": 536870912,
+      "readback_sha256": "703e3ebf09f3672236bd17dda37fe697a1bdb92cf184ae1746c42c3331bc839a"
+    },
+    {
+      "part": "super",
+      "name": "super-002.gz",
+      "bytes": 536870912,
+      "sha256": "259c86be9471377adf0e38b861080396523e2db14ae35a5c68196901e32d5db8",
+      "offset": 1073741824,
+      "readback_sha256": "259c86be9471377adf0e38b861080396523e2db14ae35a5c68196901e32d5db8"
+    },
+    {
+      "part": "super",
+      "name": "super-003.gz",
+      "bytes": 536870912,
+      "sha256": "04f50b56a66e2c86e0e2193e09543fbf494e51064ae299809bd2b0fb9295baf8",
+      "offset": 1610612736,
+      "readback_sha256": "04f50b56a66e2c86e0e2193e09543fbf494e51064ae299809bd2b0fb9295baf8"
+    },
+    {
+      "part": "super",
+      "name": "super-004.gz",
+      "bytes": 536870912,
+      "sha256": "b5ebaefb025333fe9bc6641b8aa880a443676546be3a206454b303203b066cbc",
+      "offset": 2147483648,
+      "readback_sha256": "b5ebaefb025333fe9bc6641b8aa880a443676546be3a206454b303203b066cbc"
+    },
+    {
+      "part": "super",
+      "name": "super-005.gz",
+      "bytes": 536870912,
+      "sha256": "1bd76e8ba460f925b225683bf31379e350de8b140ae331c6ac7593a9e56a84fb",
+      "offset": 2684354560,
+      "readback_sha256": "1bd76e8ba460f925b225683bf31379e350de8b140ae331c6ac7593a9e56a84fb"
+    },
+    {
+      "part": "super",
+      "name": "super-006.gz",
+      "bytes": 536870912,
+      "sha256": "a29b129abe4c0b7aa2754194c4a827da274ca997cf726a70cc5c938a1128833d",
+      "offset": 3221225472,
+      "readback_sha256": "a29b129abe4c0b7aa2754194c4a827da274ca997cf726a70cc5c938a1128833d"
+    },
+    {
+      "part": "super",
+      "name": "super-007.gz",
+      "bytes": 536870912,
+      "sha256": "67e8f75db260b9101a785903a6ee87316c62ad2837416dd8220b0c566251fe25",
+      "offset": 3758096384,
+      "readback_sha256": "67e8f75db260b9101a785903a6ee87316c62ad2837416dd8220b0c566251fe25"
+    },
+    {
+      "part": "super",
+      "name": "super-008.gz",
+      "bytes": 536870912,
+      "sha256": "813f5b0e3e8d36d64026156b38ba5f2ad7eebfee10824929a2c5a569de789a36",
+      "offset": 4294967296,
+      "readback_sha256": "813f5b0e3e8d36d64026156b38ba5f2ad7eebfee10824929a2c5a569de789a36"
+    },
+    {
+      "part": "super",
+      "name": "super-009.gz",
+      "bytes": 536870912,
+      "sha256": "c20fb6db069bcc66f898906bc4c44556bf3fddec2b79c89aa18719d9021adc86",
+      "offset": 4831838208,
+      "readback_sha256": "c20fb6db069bcc66f898906bc4c44556bf3fddec2b79c89aa18719d9021adc86"
+    },
+    {
+      "part": "super",
+      "name": "super-010.gz",
+      "bytes": 536870912,
+      "sha256": "eec33921cf791e8fdbeeeb9a285c1e957705398a8964d18e7f0af375ccc19a50",
+      "offset": 5368709120,
+      "readback_sha256": "eec33921cf791e8fdbeeeb9a285c1e957705398a8964d18e7f0af375ccc19a50"
+    },
+    {
+      "part": "super",
+      "name": "super-011.gz",
+      "bytes": 536870912,
+      "sha256": "457594ddacbb53b91d4a21187f72f341d95ed14c9490f533c3484d4b58f387dc",
+      "offset": 5905580032,
+      "readback_sha256": "457594ddacbb53b91d4a21187f72f341d95ed14c9490f533c3484d4b58f387dc"
+    },
+    {
+      "part": "super",
+      "name": "super-012.gz",
+      "bytes": 536870912,
+      "sha256": "dccf800a2162478588f491ec75a15e63c4d364114cf47f2629b5cd00f7be1c3a",
+      "offset": 6442450944,
+      "readback_sha256": "dccf800a2162478588f491ec75a15e63c4d364114cf47f2629b5cd00f7be1c3a"
+    },
+    {
+      "part": "super",
+      "name": "super-013.gz",
+      "bytes": 536870912,
+      "sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767",
+      "offset": 6979321856,
+      "readback_sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767"
+    },
+    {
+      "part": "super",
+      "name": "super-014.gz",
+      "bytes": 536870912,
+      "sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767",
+      "offset": 7516192768,
+      "readback_sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767"
+    },
+    {
+      "part": "super",
+      "name": "super-015.gz",
+      "bytes": 536870912,
+      "sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767",
+      "offset": 8053063680,
+      "readback_sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767"
+    },
+    {
+      "part": "super",
+      "name": "super-016.gz",
+      "bytes": 536870912,
+      "sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767",
+      "offset": 8589934592,
+      "readback_sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767"
+    },
+    {
+      "part": "super",
+      "name": "super-017.gz",
+      "bytes": 536870912,
+      "sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767",
+      "offset": 9126805504,
+      "readback_sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767"
+    },
+    {
+      "part": "super",
+      "name": "super-018.gz",
+      "bytes": 536870912,
+      "sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767",
+      "offset": 9663676416,
+      "readback_sha256": "9acca8e8c22201155389f65abbf6bc9723edc7384ead80503839f49dcc56d767"
+    },
+    {
+      "part": "super",
+      "name": "super-019.gz",
+      "bytes": 92274688,
+      "sha256": "cf4147940f360e3103c6a005ebac513f01994ba0ada9635ba74aa91829c30c08",
+      "offset": 10200547328,
+      "readback_sha256": "cf4147940f360e3103c6a005ebac513f01994ba0ada9635ba74aa91829c30c08"
+    },
+    {
+      "part": "boot",
+      "name": "boot-000.gz",
+      "bytes": 67108864,
+      "sha256": "4283ccbecbf3087bbd520dce1e50e5e449b1f70c4d959e8ee7f24b3ebfde9301",
+      "offset": 0,
+      "readback_sha256": "4283ccbecbf3087bbd520dce1e50e5e449b1f70c4d959e8ee7f24b3ebfde9301"
+    },
+    {
+      "part": "dtbo",
+      "name": "dtbo-000.gz",
+      "bytes": 10485760,
+      "sha256": "3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468",
+      "offset": 0,
+      "readback_sha256": "3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468"
+    }
+  ]
+}

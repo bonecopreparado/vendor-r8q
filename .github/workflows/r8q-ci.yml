@@ -1,0 +1,167 @@
+name: R8Q regression and compatibility evidence
+on:
+  push:
+    branches: [main, r8q-hardening-20261101]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh python3-brotli
+          mkdir -p ci-results
+      - name: Unit tests before generating any source assets
+        run: |
+          set -o pipefail
+          python3 -m unittest discover -s ci-r8q/tests -v 2>&1 | tee ci-results/unit-tests.txt
+          /usr/bin/python3 ci-r8q/vendor_audit/test_audit.py 2>&1 | tee ci-results/vendor-reader-tests.txt
+      - name: Build and test battery-protected installer candidate
+        run: |
+          set -o pipefail
+          python3 tools/package_ready_p0r8.py
+          python3 ci-r8q/regression/battery_installer_tests.py 2>&1 | tee ci-results/battery-tests.txt
+          python3 ci-r8q/regression/shell32_regression.py --report-dir ci-results 2>&1 | tee ci-results/shell32-tests.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: R8Q-INSTALLER-REGRESSION-EVIDENCE
+          path: |
+            ci-results
+            reports/audit-20261101/battery
+          if-no-files-found: error
+          retention-days: 30
+  policy-context:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex
+          bash ci-r8q/tools/build_secilc.sh
+      - name: Compare all ordinary and extended assertion diagnostics
+        run: python3 tools/run_policy_audit.py --secilc build/secilc-host --cap-checker build/check-policy-caps --inputs-dir .deps/policy-bundle --output-dir ci-results/policy --baseline ci-r8q/baselines/neverallows-v1.json
+      - name: Validate contexts with the same modern policy library
+        run: |
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_contexts.c .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_context_traits.c .deps/selinux/libsepol/src/libsepol.a -o build/check-context-traits
+          python3 ci-r8q/tools/run_context_audit.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: R8Q-POLICY-CONTEXT-EVIDENCE
+          path: |
+            ci-results/policy/*.json
+            ci-results/policy/*.log
+            context-results/*.json
+            context-results/*.txt
+          if-no-files-found: warn
+          retention-days: 30
+  vintf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Execute official host checkvintf on actual P0 metadata and kernel
+        run: |
+          python3 ci-r8q/tools/run_checkvintf.py --output vintf-results
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          gate=json.loads(Path('vintf-results/gate.json').read_text())
+          if type(gate.get('full_check_exit')) is not int or gate['full_check_exit'] < 0 or gate.get('status') == 'BLOCKED_TOOL_EXECUTION_FAILURE':
+              raise SystemExit('VINTF execution failed; see gate.json. No compatibility result was obtained.')
+          print('Host tool actually executed. ROM status:',gate['status'])
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: R8Q-VINTF-EVIDENCE
+          path: |
+            vintf-results/*.json
+            vintf-results/official-build.prop
+          if-no-files-found: error
+          retention-days: 30
+  integrate-main:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/r8q-hardening-20261101'
+    needs: [regression, policy-context, vintf]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - name: Integrate the tested tree with a noreply author and preserved history
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ github.sha }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess
+          def api(path,payload=None):
+              argv=['gh','api','repos/'+os.environ['GH_REPO']+'/'+path]
+              if payload is not None:argv+=['--input','-']
+              return json.loads(subprocess.check_output(argv,input=json.dumps(payload).encode() if payload is not None else None))
+          initial='28b14910c8eb9ef557e1589ff55122aa55b7802c'
+          parent='4e7adcaaee33c6c96378e7080f39e53da06205a8'
+          head=api('git/ref/heads/main')['object']['sha']
+          if head != initial:raise SystemExit('main changed during review; refusing to overwrite concurrent work')
+          source=api('git/commits/'+os.environ['SOURCE_COMMIT'])
+          tree_sha=source['tree']['sha']
+          identity=dict(name='bonecopreparado',email='230063722+bonecopreparado@users.noreply.github.com')
+          commit=api('git/commits',dict(message='Consolidate R8Q research, battery guards and reproducible compatibility audits',tree=tree_sha,parents=[parent],author=identity,committer=identity))
+          print('Prepared noreply integration commit:',commit['sha'],flush=True)
+          payload=json.dumps(dict(sha=commit['sha'],force=False)).encode()
+          subprocess.run(['gh','api','--method','PATCH','repos/'+os.environ['GH_REPO']+'/git/refs/heads/main','--input','-'],input=payload,check=True)
+          print('Integrated main:',commit['sha'])
+          PY
+      - name: Start default-branch validation and draft release preparation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh api --method POST "repos/$GH_REPO/actions/workflows/r8q-ci.yml/dispatches" -f ref=main
+          gh api --method POST "repos/$GH_REPO/actions/workflows/r8q-release.yml/dispatches" -f ref=main
+      - name: Remove only historical branches fully preserved in main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess
+          prefix='repos/'+os.environ['GH_REPO']+'/'
+          def get(path):return json.loads(subprocess.check_output(['gh','api',prefix+path]))
+          subprocess.run(['gh','auth','setup-git'],check=True)
+          subprocess.run(['git','init','--quiet','/tmp/r8q-merged-refs'],check=True)
+          main=get('git/ref/heads/main')['object']['sha']
+          names=['r8q-audit-20261031','r8q-delivery-20261101','r8q-ready-20261101','r8q-review-20261101','r8q-vendor-audit-20261031']
+          for name in names:
+              tip=get('git/ref/heads/'+name)['object']['sha']
+              comparison=get('compare/'+tip+'...'+main)
+              if comparison['behind_by']!=0:
+                  print('Preserving concurrently changed branch:',name);continue
+              subprocess.run(['git','-C','/tmp/r8q-merged-refs','push',
+                              '--force-with-lease=refs/heads/'+name+':'+tip,
+                              'https://github.com/'+os.environ['GH_REPO']+'.git',
+                              ':refs/heads/'+name],check=True)
+              print('Removed merged branch:',name,'preserved commit:',tip)
+          PY

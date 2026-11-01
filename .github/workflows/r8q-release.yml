@@ -1,0 +1,75 @@
+name: Prepare reviewed R8Q candidate draft
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+  id-token: write
+  attestations: write
+concurrency:
+  group: r8q-candidate-release
+  cancel-in-progress: false
+jobs:
+  candidate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      R8Q_PROJECT_ROOT: ${{ github.workspace }}
+      MKSH_BINARY: /bin/mksh
+      R8Q_TEST_REPORT: ${{ github.workspace }}/ci-results/battery
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install recovery shell for regression tests
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+          mkdir -p ci-results
+      - name: Verify unit tests before generating installer assets
+        run: |
+          set -o pipefail
+          python3 -m unittest discover -s ci-r8q/tests -v 2>&1 | tee ci-results/unit-tests.txt
+      - name: Build the candidate with current readiness status
+        run: python3 tools/package_ready_p0r8.py
+      - name: Verify battery guards and inherited installer checks
+        run: |
+          set -o pipefail
+          python3 ci-r8q/regression/battery_installer_tests.py 2>&1 | tee ci-results/battery-tests.txt
+      - name: Package current reports separately from the installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 ci-r8q/tools/import_current_ci_evidence.py --wait-seconds 600
+          python3 ci-r8q/tools/make_delivery_bundle.py
+      - name: Attest the actual recovery ZIP
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: output/HyperOS4-R8Q-P0r8-CANDIDATE.zip
+      - name: Keep the attestation beside the candidate
+        env:
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: |
+          test -s "$ATTESTATION_BUNDLE"
+          cp "$ATTESTATION_BUNDLE" output/HyperOS4-R8Q-P0r8-CANDIDATE.intoto.jsonl
+      - name: Create owner-reviewable draft prerelease only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_TAG: p0r8-candidate-${{ github.run_number }}
+        run: |
+          gh release create "$CANDIDATE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --draft --prerelease \
+            --title 'P0r8 installer candidate — HOLD: boot unconfirmed' \
+            --notes-file docs/RELEASE-CANDIDATE.md \
+            output/HyperOS4-R8Q-P0r8-CANDIDATE.zip \
+            output/HyperOS4-R8Q-P0r8-CANDIDATE.zip.sha256 \
+            output/HyperOS4-R8Q-P0r8-CANDIDATE.intoto.jsonl \
+            output/TESTER-ENGLISH.txt \
+            output/release-readiness.json \
+            output/R8Q-AUDIT-REPORTS-NOT-FLASHABLE.tar.gz \
+            output/R8Q-AUDIT-REPORTS-NOT-FLASHABLE.tar.gz.sha256
+          echo 'Candidate saved as a draft prerelease for owner review. It was not published or uploaded to GoFile.' >> "$GITHUB_STEP_SUMMARY"

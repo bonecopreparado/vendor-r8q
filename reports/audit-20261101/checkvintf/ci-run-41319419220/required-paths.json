@@ -1,0 +1,16 @@
+{
+  "name": "required-paths",
+  "argv": [
+    "/home/runner/work/vendor-r8q/vendor-r8q/vintf-results/otatools/bin/checkvintf",
+    "--dump-file-list",
+    "--property",
+    "ro.product.first_api_level=29",
+    "--property",
+    "ro.boot.product.hardware.sku=",
+    "--property",
+    "ro.boot.product.vendor.sku="
+  ],
+  "exit": 0,
+  "stdout": "/system/etc/vintf/\n/vendor/etc/vintf/\n/odm/etc/vintf/\n/product/etc/vintf/\n/system_ext/etc/vintf/\n/odm/etc/manifest.xml\n/vendor/manifest.xml\n/vendor/compatibility_matrix.xml\n/system/manifest.xml\n/system/compatibility_matrix.xml\n",
+  "stderr": ""
+}
