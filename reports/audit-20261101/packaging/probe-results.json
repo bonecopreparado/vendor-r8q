@@ -1,0 +1,42 @@
+[
+  {
+    "case": "noncanonical_offset_float",
+    "generator_publishes": true,
+    "installer_table_rejects_before_writes": true,
+    "exit": 1,
+    "diagnostic": "inteiro nao canonico"
+  },
+  {
+    "case": "noncanonical_offset_bool",
+    "generator_publishes": true,
+    "installer_table_rejects_before_writes": true,
+    "exit": 1,
+    "diagnostic": "inteiro nao canonico"
+  },
+  {
+    "case": "output_symlink_existing",
+    "rejects": true,
+    "target_preserved": true
+  },
+  {
+    "case": "output_symlink_dangling",
+    "rejects": true,
+    "target_preserved": true
+  },
+  {
+    "case": "output_appears_after_validation",
+    "rejects": true,
+    "prior_result_preserved": true
+  },
+  {
+    "case": "standalone_baseline_self_declared_identity",
+    "standalone_accepts": true,
+    "protected_in_published_workflow_by_pinned_archive_sha": true
+  },
+  {
+    "case": "metadata_only_config_change",
+    "reported_in_metadata_changed": true,
+    "included_in_content_categories": false,
+    "interpretation": "Consumers must inspect metadata_changed as well"
+  }
+]

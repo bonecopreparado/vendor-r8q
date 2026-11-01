@@ -1,0 +1,447 @@
+[
+  {
+    "case": "sar_root",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.2188e-05 s, 590 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0223489 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 3.6815e-05 s, 334 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.8137e-05 s, 430 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0225088 s, 182 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 9.2237e-05 s, 44.4 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0304286 s, 269 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 2.4746e-05 s, 331 MB/s\n",
+    "review": {
+      "umount_calls": [
+        "/system_root"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "sar_nested",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.384e-05 s, 561 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0214811 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 7.8966e-05 s, 156 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.6904e-05 s, 444 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0214495 s, 191 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 3.2257e-05 s, 127 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0220715 s, 371 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 1.7896e-05 s, 458 MB/s\n",
+    "review": {
+      "umount_calls": [
+        "/system_root/system",
+        "/system_root"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "ui_fd3",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.4501e-05 s, 551 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0224718 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 0.00016255 s, 75.6 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 6.6799e-05 s, 245 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0224929 s, 182 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 6.748e-05 s, 60.7 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0239554 s, 342 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 5.7945e-05 s, 141 MB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "ui_fd8",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 7.3328e-05 s, 259 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.022606 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 3.2908e-05 s, 373 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.0295e-05 s, 541 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0228888 s, 179 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 2.5207e-05 s, 162 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0223763 s, 366 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 2.9664e-05 s, 276 MB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "ui_fd9",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.2568e-05 s, 583 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0226952 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 9.7294e-05 s, 126 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 2.9604e-05 s, 553 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0217025 s, 189 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 2.5247e-05 s, 162 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0219968 s, 372 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 3.1877e-05 s, 257 MB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "escaped_space",
+    "exit": 1,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print ERRO: Nao foi possivel desmontar /vendor/cache\\040files; nenhuma imagem foi escrita.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 7.1596e-05 s, 265 kB/s\numount: no exact mount target '/vendor/cache\\\\040files'\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\\040files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "escaped_space",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 8.2141e-05 s, 231 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0223883 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 4.5707e-05 s, 269 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.8597e-05 s, 424 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0243119 s, 168 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 3.2608e-05 s, 126 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0225251 s, 364 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 8.9973e-05 s, 91.0 MB/s\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "non_shipping_candidate"
+  },
+  {
+    "case": "escaped_tab",
+    "exit": 1,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print ERRO: Nao foi possivel desmontar /vendor/cache\\011files; nenhuma imagem foi escrita.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.4351e-05 s, 553 kB/s\numount: no exact mount target '/vendor/cache\\\\011files'\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\\011files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "escaped_tab",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.5743e-05 s, 532 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0220433 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 3.5362e-05 s, 347 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.0866e-05 s, 531 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0221114 s, 185 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 2.5468e-05 s, 161 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0223493 s, 367 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 3.1597e-05 s, 259 MB/s\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\tfiles"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "non_shipping_candidate"
+  },
+  {
+    "case": "escaped_backslash",
+    "exit": 1,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print ERRO: Nao foi possivel desmontar /vendor/cache\\134files; nenhuma imagem foi escrita.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.6774e-05 s, 517 kB/s\numount: no exact mount target '/vendor/cache\\\\134files'\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\\134files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "escaped_backslash",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 7.0815e-05 s, 268 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0223438 s, 1.3 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 3.2258e-05 s, 381 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.5933e-05 s, 456 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0229762 s, 178 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 2.6088e-05 s, 157 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0224086 s, 366 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 3.5182e-05 s, 233 MB/s\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\\files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "non_shipping_candidate"
+  },
+  {
+    "case": "escaped_literal_octal",
+    "exit": 1,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print ERRO: Nao foi possivel desmontar /vendor/cache\\134040files; nenhuma imagem foi escrita.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 0.000113879 s, 167 kB/s\numount: no exact mount target '/vendor/cache\\\\134040files'\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\\134040files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "escaped_literal_octal",
+    "exit": 0,
+    "changed": [
+      "super",
+      "boot",
+      "dtbo"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 2,
+      "boot-000.gz": 2,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print Conferindo leitura sequencial: super-001.gz...\nui_print\nui_print Gravando dtbo. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: dtbo-000.gz...\nui_print\nui_print Gravando boot. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: boot-000.gz...\nui_print\nui_print P0 gravada e hashes de retorno conferidos.\nui_print\nui_print Reinicie primeiro para RECOVERY para atualizar os mapeamentos de super.\nui_print\nui_print Sem garantia de boot ou recursos. O primeiro teste precisa de dados limpos e plano de restauracao.\nui_print\nui_print Nao foram gravados modem, bootloader, vbmeta, recovery, EFS ou userdata.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 7.5361e-05 s, 252 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0230928 s, 1.2 MB/s\n3+0 records in\n3+0 records out\n12288 bytes (12 kB, 12 KiB) copied, 2.8312e-05 s, 434 MB/s\n4+0 records in\n4+0 records out\n16384 bytes (16 kB, 16 KiB) copied, 3.0746e-05 s, 533 MB/s\n0+1 records in\n0+1 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 0.0228221 s, 179 kB/s\n1+0 records in\n1+0 records out\n4096 bytes (4.1 kB, 4.0 KiB) copied, 2.8282e-05 s, 145 MB/s\n0+1 records in\n0+1 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0216645 s, 378 kB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 3.2698e-05 s, 251 MB/s\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache\\040files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "non_shipping_candidate"
+  },
+  {
+    "case": "escaped_newline_refused",
+    "exit": 1,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print ERRO: Escape nao suportado no ponto de montagem /vendor/cache\\012files; nenhuma imagem foi escrita.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.6274e-05 s, 524 kB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "non_shipping_candidate"
+  },
+  {
+    "case": "escaped_umount_failure",
+    "exit": 1,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print ERRO: Nao foi possivel desmontar /vendor/cache files; nenhuma imagem foi escrita.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 6.2652e-05 s, 303 kB/s\numount: no exact mount target '/vendor/cache files'\n",
+    "review": {
+      "umount_calls": [
+        "/vendor/cache files"
+      ],
+      "temporary_directory_removed": true
+    },
+    "source": "non_shipping_candidate"
+  },
+  {
+    "case": "sort_failure",
+    "exit": 77,
+    "changed": [],
+    "prefix_preserved": true,
+    "super_body_matches": false,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 1,
+      "super-000.gz": 1
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.7536e-05 s, 506 kB/s\nsort-fixture-failure\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "target_fsync_failure",
+    "exit": 1,
+    "changed": [
+      "super"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print ERRO: Falha ao gravar super; restaure a base pelo recovery.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 7.6282e-05 s, 249 kB/s\n0+1 records in\n0+1 records out\n28672 bytes (29 kB, 28 KiB) copied, 8.5627e-05 s, 335 MB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "target_sync_failure",
+    "exit": 1,
+    "changed": [
+      "super"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=0).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print ERRO: Falha ao gravar super; restaure a base pelo recovery.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 7.1846e-05 s, 264 kB/s\n0+2 records in\n0+2 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.0237443 s, 1.2 MB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  },
+  {
+    "case": "readback_short_dd",
+    "exit": 1,
+    "changed": [
+      "super"
+    ],
+    "prefix_preserved": true,
+    "super_body_matches": true,
+    "counts": {
+      "dtbo-000.gz": 1,
+      "boot-000.gz": 1,
+      "super-001.gz": 2,
+      "super-000.gz": 2
+    },
+    "stdout": "ui_print HyperOS4 -> R8Q P0r7 EXPERIMENTAL / sem teste de boot\nui_print\nui_print Aritmetica do shell (diagnostico): 2147483647+1=-2147483648\nui_print\nui_print Altera somente super, boot e dtbo. Nao formata userdata.\nui_print\nui_print Conferindo o vbmeta atual antes de qualquer escrita...\nui_print\nui_print vbmeta SHA256 (diagnostico): 307e681556597b2dcbf0d33f79dbfe209875692f2e66a3aaeb15ac5aafcf4644\nui_print\nui_print AVB0 version=1.0 flags=3 algorithm=2 auth=576 aux=8064\nui_print\nui_print Teste de gravacao portavel aprovado (fsync=1).\nui_print\nui_print Teste de leitura sequencial aprovado; sem saltos grandes de dd.\nui_print\nui_print Tabela de offsets/tamanhos aprovada por AWK.\nui_print\nui_print Conferindo 22 partes pequenas antes de qualquer escrita em particao...\nui_print\nui_print Conferindo super-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo super-001.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo boot-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Conferindo dtbo-000.gz: arquivo comprimido e conteudo...\nui_print\nui_print Todos os arquivos conferidos. Desmontando somente particoes do sistema...\nui_print\nui_print Gravando super por partes; preservando os primeiros 4 KiB. Nao interrompa.\nui_print\nui_print Conferindo leitura sequencial: super-000.gz...\nui_print\nui_print ERRO: Hash gravado incorreto em super-000.gz; restaure a base pelo recovery.\nui_print\n",
+    "stderr": "0+1 records in\n0+1 records out\n19 bytes copied, 3.9899e-05 s, 476 kB/s\n0+1 records in\n0+1 records out\n28672 bytes (29 kB, 28 KiB) copied, 0.000138485 s, 207 MB/s\n2+0 records in\n2+0 records out\n8192 bytes (8.2 kB, 8.0 KiB) copied, 4.6439e-05 s, 176 MB/s\n",
+    "review": {
+      "umount_calls": [],
+      "temporary_directory_removed": true
+    },
+    "source": "published_p0r7"
+  }
+]

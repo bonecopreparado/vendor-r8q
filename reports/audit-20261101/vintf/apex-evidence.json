@@ -1,0 +1,33 @@
+{
+  "source_android17_commit": "df89ad736e14ac375f61d50fa543ae7cd746a140",
+  "donor_libvintf": {
+    "bytes": 672072,
+    "sha256": "71afa4dcd40cc83e4f78be293e80418a449a593c16496ac1a400e6dd7b2ce5da",
+    "android_api": 37,
+    "build_id": "91f3884c4d94fd4dd558c67a3e8fd865",
+    "limits": "ELF/string/prologue inspection is not runtime or absence-of-patches proof"
+  },
+  "vndk30_apex": {
+    "bytes": 114466816,
+    "sha256": "8217800fbfc8a7b4a002fe13e5eb40e0f5d9eecf61afcf0f9d34c7da8bfe716a",
+    "payload_bytes": 114380800,
+    "etc_vintf_present": false,
+    "etc_contents": [
+      "llndk.libraries.30.txt",
+      "vndkcore.libraries.30.txt",
+      "vndkprivate.libraries.30.txt",
+      "vndkproduct.libraries.30.txt",
+      "vndksp.libraries.30.txt"
+    ],
+    "payload_sha256": "aec3539cbd1a27b7ae39a6248a999a2e42bc608d0457f0fca4436002fc32752c"
+  },
+  "scheduling_capex": {
+    "bytes": 148013,
+    "sha256": "edef94cb727bd30ed644062eaaf86cdae2991dc17b1701fb787ab920cd98c507",
+    "payload_bytes": 274432,
+    "payload_sha256": "acc2d7b6af919dbc195191a4e1f707e41f611ae23efbca84a3c7f8802fe04f01",
+    "etc_vintf_present": false,
+    "etc_init_present": false
+  },
+  "inspection": "Read-only debugfs; no Apex activation or Android binary execution"
+}

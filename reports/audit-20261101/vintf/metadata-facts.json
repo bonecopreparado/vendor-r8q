@@ -1,0 +1,1917 @@
+{
+  "summary": {
+    "status": "SOURCE_GUIDED_METADATA_AUDIT_NOT_CHECKVINTF_OR_BOOT_TEST",
+    "source_commit": "df89ad736e14ac375f61d50fa543ae7cd746a140",
+    "framework_matrix_levels": [
+      "202404",
+      "202504",
+      "202604",
+      "7",
+      "8"
+    ],
+    "unlevelled_framework_matrices": [
+      "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.device.xml",
+      "reports/fs-configs/hyperos_product/etc/vintf/compatibility_matrix.xml",
+      "reports/fs-configs/hyperos_product/etc/vintf/touch_framework_compatibility_matrix.xml"
+    ],
+    "framework_vendor_ndk": [
+      "34"
+    ],
+    "framework_base_matrix_sepolicy": [
+      "202404",
+      "202504",
+      "202604",
+      "31.0",
+      "32.0",
+      "33.0",
+      "34.0"
+    ],
+    "framework_system_sdk": [
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "CinnamonBun"
+    ],
+    "device_declarations": [
+      {
+        "file": "reports/fs-configs/r8q_vendor/etc/vintf/compatibility_matrix.xml",
+        "attrs": {
+          "version": "2.0",
+          "type": "device"
+        },
+        "vendor_ndk": [
+          "30"
+        ],
+        "sepolicy": [],
+        "system_sdk": [
+          "29"
+        ]
+      },
+      {
+        "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest.xml",
+        "attrs": {
+          "version": "2.0",
+          "type": "device",
+          "target-level": "4"
+        },
+        "vendor_ndk": [],
+        "sepolicy": [
+          "30.0"
+        ],
+        "system_sdk": []
+      },
+      {
+        "file": "reports/fs-configs/hyperos_vendor/etc/vintf/compatibility_matrix.xml",
+        "attrs": {
+          "version": "2.0",
+          "type": "device"
+        },
+        "vendor_ndk": [
+          "30"
+        ],
+        "sepolicy": [],
+        "system_sdk": [
+          "29"
+        ]
+      },
+      {
+        "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest.xml",
+        "attrs": {
+          "version": "2.0",
+          "type": "device",
+          "target-level": "4"
+        },
+        "vendor_ndk": [],
+        "sepolicy": [
+          "30.0"
+        ],
+        "system_sdk": []
+      }
+    ],
+    "limitations": [
+      "APEX VINTF collection is incomplete except selected VNDK30/scheduling payload checks",
+      "No kernel runtime or donor libvintf execution",
+      "No assertions that an XML edit would fix compatibility"
+    ]
+  },
+  "documents": [
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.202404.xml",
+      "partition": "hyperos_system",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework",
+        "level": "202404"
+      },
+      "sha256": "9373d231207920dec970ecaac611817af723313e94c32bbf54cf0c5715645b2a",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.202504.xml",
+      "partition": "hyperos_system",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework",
+        "level": "202504"
+      },
+      "sha256": "a21eba5d7ccf35458f3ca2e8205ea0be5105c4206537b4c95eb32ec4ca10d3c8",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.202604.xml",
+      "partition": "hyperos_system",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework",
+        "level": "202604"
+      },
+      "sha256": "2ce785af96e3a04b7b06f74c5a8461618a01dae15588d84db47119fccd67fb13",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.7.xml",
+      "partition": "hyperos_system",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework",
+        "level": "7"
+      },
+      "sha256": "e268a08dd96b5d1198a4c4948d7f3a9c96727cc4395a8bb3a1da4707530826ff",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.8.xml",
+      "partition": "hyperos_system",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework",
+        "level": "8"
+      },
+      "sha256": "d33b5d56e3d630bc9416427f3296db1cdbf457e840e939f63fb7bde85e692259",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.device.xml",
+      "partition": "hyperos_system",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "cee761dcc1ecbbb5c8169cace340bd201cd8734c19e17d34ec3a1580e8e23076",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [
+        "31.0",
+        "32.0",
+        "33.0",
+        "34.0",
+        "202404",
+        "202504",
+        "202604"
+      ],
+      "kernel_policy": [
+        "30"
+      ]
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/android.frameworks.stats-service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "0a8c3597585cf9af2c7bdbb63307fe8b166eb353a1f61e29441d4a44c83ebacc",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/android.system.keystore2-service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "297270541e7c2d576df080fca26b0208fcc5be095a971cda7a2c15ccc52b3430",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/android.system.mieed-service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "3f150bbd7c50a00ad59e21febcaaf4754ddefd9811b7900b068cebaea2e204e7",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/android.system.net.netd-service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "341b514fec4eba4685925ac4e6734bae6061f2a4f9d0254b88ae39ee004f218f",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/android.system.suspend-service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "7eff4e114e33d1275dd99b0c1a5c91a04ef6f2ba84a7d1af32ad3635735371cb",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/android.system.vold-service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "a211b21a679093c11afde045b54113268af6135edfa0d70ecb806a93e5fddd93",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/app_launcher_service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "188994fa0b1cfb8265d04c097da26b2fd5853300bf2827ec7e6f5456915c0d02",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/manifest_android.frameworks.cameraservice.service.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "997a729b5836499a0d4e6387a6019916070264fcf85645035e3b426b7a344d56",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/manifest_media_c2_software.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "efef93595686a610c379538578a5f42b70e27717d8d2ae3a9a4c47fb408a6cec",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/manifest_services_android.frameworks.devicestate.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "cc09de50d211dfc2e707ffc9148c85bb854f350c212b94ab8fb0972d254ad898",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/manifest_services_android.frameworks.location.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "fd47c69a3f5298243fcfc21ff33dbf6cc24a68cd28eb219ddf75c3123323ece9",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest/manifest_services_android.frameworks.vibrator.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "7cb3d23f37270e284f3979bb8c39316e4b3d58518cfd337d3fe5dd4718fdae85",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system/system/etc/vintf/manifest.xml",
+      "partition": "hyperos_system",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "b9a2ee3ab7e2edcf3dc20737336cb838e7aa2a401f842e36d3a6402fecd0e433",
+      "vendor_ndk": [],
+      "system_sdk": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "CinnamonBun"
+      ],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/android.hidl.allocator@1.0-service.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "b0444198fcfedc428719034c6fcb926a66fa00e866ce5b857c1e2a0de47751f4",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/com.xiaomi.pms.deferredcameraservice-service.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "2cde4ff26c99de24f04001760ba42697ff97680f866e949771f18d6193e192a7",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/com.xiaomi.pms.videoplayprocservice-service.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "31bb5190ccc2c140d574825b98e246265d865f8e2b946629ea9249b7f509fa90",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/manifest_hypsys_system.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "0a340d63e498f47acd83187c367e8491a5d7bc84d4adec42d197b31eb8bb98fc",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/vendor.qti.hardware.sigma_miracast.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "77cfd4787e87a394fa178cb343b47954b42289a23bc7aa2bf5591cc94f64260d",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/vendor.qti.hardware.sigma_miracast_aidl.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "2753999b5d500f0362544ee07021cb7ac2b44901a9528cf71507dd9bbfe07873",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/vendor.qti.hardware.systemhelperaidl.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "d33cb0b6c0f208eb30f633dd61691e24f1bbda26dcd874bf8bdf5f1e0c2a31ae",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/vendor.qti.qccsyshal_aidl-service.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "05251536915bb7727df26541eda2a75b6a5c3e147c373afad622e1b3024a81de",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest/vendor.qti.qesdsys.service.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "f85d88ae972197fae6796a899baaf2572bc899e179d628d6ffac9cb5675e6127",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_system_ext/etc/vintf/manifest.xml",
+      "partition": "hyperos_system_ext",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "14bf5e9ace4504695d6fe0067547d8ea7f51be335cdda37316641ff7083def9b",
+      "vendor_ndk": [
+        "34"
+      ],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_product/etc/vintf/compatibility_matrix.xml",
+      "partition": "hyperos_product",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "35a7e8983400324e41ec9408e16dc70c0dd6f5401d81d678854b43a9c5256acb",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_product/etc/vintf/manifest/vendor.qti.qvirt-service.xml",
+      "partition": "hyperos_product",
+      "kind": "manifest",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "c6c3a1e1c491453e5b86d63b9d51a99aee85ef6270a6076031a034a6d97f30fa",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_product/etc/vintf/touch_framework_compatibility_matrix.xml",
+      "partition": "hyperos_product",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "9.0",
+        "type": "framework"
+      },
+      "sha256": "6f0ce5932bb6db336bd25735f1b657455f498165098a098d1c48f9f41c6fc9cc",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/compatibility_matrix.xml",
+      "partition": "r8q_vendor",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "2.0",
+        "type": "device"
+      },
+      "sha256": "58068c6fd161efdb2d51c6122fb8aa2d9dfb79b12e9d49ca91f5af3f056c5752",
+      "vendor_ndk": [
+        "30"
+      ],
+      "system_sdk": [
+        "29"
+      ],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.atrace@1.0-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "49e4a804e77b653064e7cb8fc5dc6c6b4aeea2ae4a2a62dab0ff52e0c463ee01",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.cas@1.2-service-lazy.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "9357fb5a7b17fe81638ec82f79d06007bb35c19016e676104fa55449b5f0f0d2",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.dumpstate@1.1-service-lazy.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "388b9e7b24adf678fccf59dacc79b948093688bc34c40124c2563c2c3809747d",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.gnss@2.1-service-qti.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "b12c00daff67f15983eaf9952d0ded199b2868ad1b9fb512fcab5f6bf813773d",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.graphics.mapper-impl-qti-display.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "00105bbff83fa177fff8c10776678fddcf99179464d866bd688a1bf61ee563b4",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.health@2.1-samsung.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "2ad8126c3afd2d52ac9d7e022e3d7716d17e03178bc11d1f7ad7a0aa585b5c28",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.neuralnetworks@1.3-service-qti-hta.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "7f64773bee106cd0fd1e7328490376951f3d95eb35bb2876a1da4eca598f8695",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.neuralnetworks@1.3-service-qti.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "1fe231b6b3fd8ec56d0d4063ec9e547be4248da930b9c471212ff9cc9f4afc99",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.sensors@2.0-multihal.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "5915f6e142726b3b608379a2e03c2b23478c393b310b024ac7687f73458a630e",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.usb@1.3-service.coral.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "d4bcbe0ab5e91f002fc1285309db0450c4e93470de91bd72f65e92cc67330c53",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.wifi.hostapd.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "d42266c7638aacf0918164dff0ed50df0a8d50d3085a6d03dc2127718fc86f17",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/android.hardware.wifi@1.0-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "5b785b5e6f63baab071ca757ec3e5bf0ee7a877186c17e2b36ce5bc63112756e",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/deviceManifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "25e3002a0830b7506321f4771d5c0c95b6a999965a5a92591b35197ef31ca9c8",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/engmode_manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "29fd4d47a7e04224b708d95eb046118001e407aaa700978add8eb460d897b3e5",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/hyper-default-sec.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "bc7ab5cdae05b9a81b1d6e5466ec216e388cefe86822e4deec83e2d0de53ccb3",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/lights-default-sec.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "570ac710477a2e70c8c983e4eea18ddd398907af0502ac95557f4293e9f85cc9",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "e39163b460c1cc9eb4a245cf1083d62ecc777d8ae58daaff51ddaaea5c211a7e",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.clearkey.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "4b9a9214df27df7f546dcd7b27efac3803f8d172548671c8d94903ef1d804aef",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.widevine.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "61cee1f6a061cf5348ca82f5326bd09cedda6bf2eea016c9ad3374f2cd03df7a",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/manifest_vendor.samsung.hardware.security.widevine.keyprov@1.0-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "b5b7830f004444ded3cc27852f1c4f384764476832e812b2812299b9a25f7a1c",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/mppserver.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "978e900049c6e65adea0a9f7ca519785d79ad229cff9d35a1bf0656bacdf7d12",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/nxp.android.hardware.nfc@1.2-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "54e9bb3e89ecdfdd2c73c13dc5dd6743fb3f1327c1cdb397524940d1bd24c420",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/power-samsung.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "faef8be2fdef7c56908853ee8256e5052d8e2f617351f0c306a5bfc365ab5892",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/sec_c2_manifest_default.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "81fc4e0018250141678c6f9c4ffd159c16cd80873f2bf066bc734bc1515a3b1b",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vaultkeeper_manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "a1afd66714d0dc4c5083a2a4f33d2ae7f1dde9d56adbd4c4c8b563143f709a52",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.qti.hardware.display.allocator-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "7a916b6ca645ff92e2f1df462ae44e8e7316ffe339d384cbfc352a8e395ae3f5",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.qti.hardware.display.composer-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "944b74f6eba32f03cf63d5e3b956dc3f270bce4244b6babf441816c7e3b286b9",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.qti.hardware.servicetracker@1.2-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "f57b12f5747dc5ba00186e1254dabebd071561c72ce3ae866cf8f9ce0ef901e0",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.authfw@1.0-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "9299155d677d0355f5f309328f715bac74631a64d9cc5c849cd7c04c42bc065d",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.hqm@1.0-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "963dd41e15b0c5b3ec8cac45abe2a9c845dff83eda529a2b77e8594c1d3008c2",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.thermal@1.0-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "3f5b1c78f8a06eb25ae5b4e873a010802ec8bd6546091095c5fdee22b45e1566",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.tlc.ddar@1.0-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "6b77b96f1cb4c36fcc8fd9a898e5539fa9ce43f52785bc3b8d3f467a555702b3",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.tlc.hdm@1.1-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "143fddf8fdda6ace43df6d8ed84168d90ca5d1dbfdd1b89092839c2e6a15f896",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.tlc.iccc@1.0-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "36ff251646f672e18f55d740f669c88394f466c1c457ea4052047112f361c0cb",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.tlc.snap@1.0-manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "f4d44bdd2840ca31559d52ada2cf400a4b0e22517c776eb23908c9b8489e683b",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.vibrator-default.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "d53ff90be9aa2bdb162eb593ad21998dbede710294b4bedb2b995a7eda7e73c3",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.wifi.hostapd.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "39a43b18dc72af926510af3ef013d57ea7dbad4557a0476a6c06250cba274c72",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest/vendor.samsung.hardware.wifi@2.0-service.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "6a0d60cc3e67348aded789f1dc34a3aa910de9cf38066de1b810f4c6dbb1597c",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest.xml",
+      "partition": "r8q_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "2.0",
+        "type": "device",
+        "target-level": "4"
+      },
+      "sha256": "5649288b789a3646cdaa8c00be2d86a239a65a0128051b751885537d2af845c7",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [
+        "30.0"
+      ],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/compatibility_matrix.xml",
+      "partition": "hyperos_vendor",
+      "kind": "compatibility-matrix",
+      "attrs": {
+        "version": "2.0",
+        "type": "device"
+      },
+      "sha256": "bf1d7d2cc5eff1940cd82a3934beb1a889c88aadf358c1b36bd2cc021c704d38",
+      "vendor_ndk": [
+        "30"
+      ],
+      "system_sdk": [
+        "29"
+      ],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.atrace@1.0-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "49e4a804e77b653064e7cb8fc5dc6c6b4aeea2ae4a2a62dab0ff52e0c463ee01",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.biometrics.fingerprint@2.1-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "473cf370500637de575dc89fbac74e4942d969717a0a72cb5adaa3511bdba693",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.cas@1.2-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "9357fb5a7b17fe81638ec82f79d06007bb35c19016e676104fa55449b5f0f0d2",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.configstore@1.1-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "42509570a3c1d3cd3a55979bec6541f87d6d7a0d4947a589e12ef6b078dd74c1",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.dumpstate@1.1-service.xiaomi.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "388b9e7b24adf678fccf59dacc79b948093688bc34c40124c2563c2c3809747d",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.gnss@2.1-service-qti.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "b12c00daff67f15983eaf9952d0ded199b2868ad1b9fb512fcab5f6bf813773d",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.graphics.mapper-impl-qti-display.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "00105bbff83fa177fff8c10776678fddcf99179464d866bd688a1bf61ee563b4",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.health@2.1.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "d79a8058bf0dd9d4cf7bf65f6ef2f47c3fd9452e641ebc746465d619aabb509c",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.lights-qti.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "570ac710477a2e70c8c983e4eea18ddd398907af0502ac95557f4293e9f85cc9",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.neuralnetworks@1.3-service-qti-hta.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "7f64773bee106cd0fd1e7328490376951f3d95eb35bb2876a1da4eca598f8695",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.neuralnetworks@1.3-service-qti.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "1fe231b6b3fd8ec56d0d4063ec9e547be4248da930b9c471212ff9cc9f4afc99",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.thermal@2.0-service.qti.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "963119de0310765a376a61ec01854f70c6daa91bff75f0d6eaedc6e4b7f2a8b3",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.usb@1.2-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "7f0bd8f15ad0f216869ae1de9c86893c67cd2ebbb6f8392bf0619afd755c5755",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.wifi.hostapd.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "0987df34924f250448248c527127b2bb654e251a02e624156ef17b8a1158ad86",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/android.hardware.wifi@1.0-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "5b785b5e6f63baab071ca757ec3e5bf0ee7a877186c17e2b36ce5bc63112756e",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/c2_manifest_vendor.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "f91b889f1dee3d7740862fae4632df0e9e553fea8ba11b23d6ae86f97e088f29",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "44eb838887d1bb904a0270bb80592691e0dcb01cea920012e681eb62bfb55b47",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.clearkey.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "4b9a9214df27df7f546dcd7b27efac3803f8d172548671c8d94903ef1d804aef",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.widevine.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "61cee1f6a061cf5348ca82f5326bd09cedda6bf2eea016c9ad3374f2cd03df7a",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.antdtx.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "e424d6a85e6f749f8ff61b056eb9432235648d42e447dcea2e601b8716b46e15",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.mfidoca.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "45259bc6ec5b86a2f78055bca9f6735b512e461e7aa84fd0b2d1a9e4c7fda343",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.midevauth@ucar.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "b8b890c9dbb0432bbeee68ab9f557eda3e44253298a125b932f7c920b9e17a30",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.mlipay.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "f56f457cd6ce24f24ded6b5557aaa02c3006dba497a9deca280019ecc3b36d46",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.mtdservice.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "976366fcd3f56df32ac5430a52f3c41fa2c8457ac0e6a745f637629ee47033a9",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.tidaservice.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "aef5af99620a76ff1e134f4db776e3ce85639b537472005f316f1f0cef6662be",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/manifest_vendor.xiaomi.hardware.vsimapp.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "ed9f56830965353c71378e68ec5044bcfc9265e470095a869358cbb62e12ce34",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/mrm.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "77f575f3024475c53f4d0747cc022f8dd6be6c62fbdbe6a96104542d5e2306de",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/power.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "541769636e0fe848700a472da66eddaffdfd00de06aab236827edbb334ca8bc3",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.qti.gnss@4.0-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "a2febcc396f453bdabfe60f8adc9b0bc89b110845b3bd4b0c582ce35054a5f4e",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.qti.hardware.display.allocator-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "7a916b6ca645ff92e2f1df462ae44e8e7316ffe339d384cbfc352a8e395ae3f5",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.qti.hardware.display.composer-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "944b74f6eba32f03cf63d5e3b956dc3f270bce4244b6babf441816c7e3b286b9",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.qti.hardware.limits@1.0-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "b7a7ec9cd9064450d650372f5c9a8f58ffe658190a613621c93fadbd69d63c70",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.qti.hardware.servicetracker@1.2-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "f57b12f5747dc5ba00186e1254dabebd071561c72ce3ae866cf8f9ce0ef901e0",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.cit.bluetooth@1.0_manifest.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "c432201e9c8115d544934c2bff08b9c2ad7c1fb181c34b0109dae0b54994db7f",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.cit.wifi@1.0_manifest.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "4ebce8e33deeb5e52c56cc734c8c79b8f9ba5411ece5c3f3f0e300f7e557666c",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.micharge@1.0.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "6917fc87232c03ee17949ac056807c8debbc9fc7e232275b512ff60e0f5a34d2",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.mimd@1.0-service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "b0fb8d5f10fe6dd6a78920e2a4f15cd0c90faf92fd160ea5a3369a4d06d2cc17",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.mioob@1.0.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "0328fdd7efd077cbff5e762de65f430bd05c14b0b3469859fb1738f888859a56",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.misys@1.0.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "602a8cfdc94b35daef282f36849223d6e23e88d5391d7af2f03debd66fcea2c4",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.misys@2.0.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "08cb47e46714816eb8b3aac650b651e8c39e12c4dcaa709b10f79b337f684ab4",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.misys@3.0.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "7a3c8ba2914cf7e10c6af6382586b1ec6f7354d18d6821ee4a42dcf95fe23478",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.misys@4.0.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "d12c17f64453f3f5ac00aedd57658135def706d7c05b664b83054ffed96ebdcd",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.hardware.vibratorfeature.service.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "8741807e881fabd408ddb73cc65140f19c6f73dc69ef323f18e4a2d2db581b34",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest/vendor.xiaomi.sensor.communicate@1.0_manifest.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "1.0",
+        "type": "device"
+      },
+      "sha256": "f208db0b5d02980f8ef62836ed6092a993660c9ab547a894dd744722f43cd893",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest.xml",
+      "partition": "hyperos_vendor",
+      "kind": "manifest",
+      "attrs": {
+        "version": "2.0",
+        "type": "device",
+        "target-level": "4"
+      },
+      "sha256": "1a3fcab232b8c2cf52a49e41add3464c8060177ca75668f9cf9cdb74a7ffff3c",
+      "vendor_ndk": [],
+      "system_sdk": [],
+      "manifest_sepolicy": [
+        "30.0"
+      ],
+      "matrix_sepolicy": [],
+      "kernel_policy": []
+    }
+  ]
+}

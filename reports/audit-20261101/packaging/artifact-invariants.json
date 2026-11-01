@@ -1,0 +1,28 @@
+{
+  "Correcao-P0r7-Windows.zip": {
+    "bytes": 27717,
+    "sha256": "2a036a0accd69094737113f5ef8a8987b45aa00d1c95d1746687d335e586acf6",
+    "crc_error": null
+  },
+  "Auditoria-R8Q-20261031.zip": {
+    "bytes": 4501288,
+    "sha256": "e27d2d2308a88f3fadc3b283eeaf0cb05c890ed09d37337ca827145659927c92",
+    "crc_error": null
+  },
+  "RELATORIO-VENDOR-1610.zip": {
+    "bytes": 4541224,
+    "sha256": "52611e12807255db3b37ea82ff4a483b2ae0686ca710843db1776de475d48e27",
+    "crc_error": null
+  },
+  "p0r7_source_matches": {
+    "corrigir_p0r7.py": true,
+    "CORRIGIR-P0r7.cmd": true,
+    "COMECE-P0r7.txt": true,
+    "p0r7-assets/chunks.json": true,
+    "p0r7-assets/installer-p0r5.sh": true,
+    "p0r7-assets/installer-p0r6.sh": true,
+    "p0r7-assets/installer-template.sh": true,
+    "p0r7-assets/LEIA-ME.txt": true,
+    "p0r7-assets/pins.json": true
+  }
+}

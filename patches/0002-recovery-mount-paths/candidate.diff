@@ -1,0 +1,33 @@
+--- a/delivery/Revisao-P0r7-Windows/p0r7-assets/installer-template.sh
++++ b/delivery/Revisao-P0r7-Windows/p0r7-assets/installer-template.sh
+@@ -355,7 +355,29 @@
+ # Child mounts first. Userdata and external storage stay mounted for the ZIP.
+ mount_list="$(awk '$2 ~ /^\/(system|system_root|vendor|product|system_ext|odm)(\/|$)/ {print length($2), $2}' /proc/mounts | sort -rn)"
+ if [ -n "$mount_list" ]; then
+-    printf '%s\n' "$mount_list" | while read -r length target; do
++    printf '%s\n' "$mount_list" | while read -r length encoded_target; do
++        # /proc/mounts escapes spaces, tabs and backslashes. Pass its raw bytes
++        # via ENVIRON: awk -v and printf %b would themselves interpret escapes.
++        R8Q_MOUNT_ESCAPED="$encoded_target"
++        export R8Q_MOUNT_ESCAPED
++        target="$(awk '
++            BEGIN {
++                s=ENVIRON["R8Q_MOUNT_ESCAPED"]; out=""
++                for (i=1; i<=length(s); i++) {
++                    c=substr(s,i,1)
++                    if (c!="\\") { out=out c; continue }
++                    code=substr(s,i+1,3)
++                    if (code=="040") out=out " "
++                    else if (code=="011") out=out "\t"
++                    else if (code=="134") out=out "\\"
++                    else exit 2
++                    i+=3
++                }
++                printf "%s", out
++            }
++        ')" || abort "Escape nao suportado no ponto de montagem $encoded_target; nenhuma imagem foi escrita."
++        case "$target" in /system|/system/*|/system_root|/system_root/*|/vendor|/vendor/*|/product|/product/*|/system_ext|/system_ext/*|/odm|/odm/*) ;;
++            *) abort "Ponto de montagem inesperado; nenhuma imagem foi escrita." ;; esac
+         umount "$target" || abort "Nao foi possivel desmontar $target; nenhuma imagem foi escrita."
+     done
+ fi

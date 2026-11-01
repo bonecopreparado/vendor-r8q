@@ -1,0 +1,18 @@
+{
+  "status": "NON_SHIPPING",
+  "source": "delivery/Revisao-P0r7-Windows/p0r7-assets/installer-template.sh",
+  "source_sha256": "690280161dfa294add407fcb6fa1e853c531b24dc52a38081ba6bcb022aa0ea6",
+  "candidate_sha256": "76d344f3a7b0be6aafd52d34a84509ec4ac2a90adfb3c9bd7fa95caf696fe737",
+  "reason": "Decode /proc/mounts paths before umount; current code aborts safely on escaped names",
+  "supported_escapes": [
+    "040",
+    "011",
+    "134"
+  ],
+  "refused_escapes": [
+    "012",
+    "all other escapes"
+  ],
+  "device_tested": false,
+  "published_installer_modified": false
+}

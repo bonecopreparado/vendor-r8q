@@ -1,0 +1,101 @@
+{
+  "status": "SOURCE_GUIDED_METADATA_AUDIT_NOT_CHECKVINTF_OR_BOOT_TEST",
+  "source_commit": "df89ad736e14ac375f61d50fa543ae7cd746a140",
+  "framework_matrix_levels": [
+    "202404",
+    "202504",
+    "202604",
+    "7",
+    "8"
+  ],
+  "unlevelled_framework_matrices": [
+    "reports/fs-configs/hyperos_system/system/etc/vintf/compatibility_matrix.device.xml",
+    "reports/fs-configs/hyperos_product/etc/vintf/compatibility_matrix.xml",
+    "reports/fs-configs/hyperos_product/etc/vintf/touch_framework_compatibility_matrix.xml"
+  ],
+  "framework_vendor_ndk": [
+    "34"
+  ],
+  "framework_base_matrix_sepolicy": [
+    "202404",
+    "202504",
+    "202604",
+    "31.0",
+    "32.0",
+    "33.0",
+    "34.0"
+  ],
+  "framework_system_sdk": [
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "CinnamonBun"
+  ],
+  "device_declarations": [
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/compatibility_matrix.xml",
+      "attrs": {
+        "version": "2.0",
+        "type": "device"
+      },
+      "vendor_ndk": [
+        "30"
+      ],
+      "sepolicy": [],
+      "system_sdk": [
+        "29"
+      ]
+    },
+    {
+      "file": "reports/fs-configs/r8q_vendor/etc/vintf/manifest.xml",
+      "attrs": {
+        "version": "2.0",
+        "type": "device",
+        "target-level": "4"
+      },
+      "vendor_ndk": [],
+      "sepolicy": [
+        "30.0"
+      ],
+      "system_sdk": []
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/compatibility_matrix.xml",
+      "attrs": {
+        "version": "2.0",
+        "type": "device"
+      },
+      "vendor_ndk": [
+        "30"
+      ],
+      "sepolicy": [],
+      "system_sdk": [
+        "29"
+      ]
+    },
+    {
+      "file": "reports/fs-configs/hyperos_vendor/etc/vintf/manifest.xml",
+      "attrs": {
+        "version": "2.0",
+        "type": "device",
+        "target-level": "4"
+      },
+      "vendor_ndk": [],
+      "sepolicy": [
+        "30.0"
+      ],
+      "system_sdk": []
+    }
+  ],
+  "limitations": [
+    "APEX VINTF collection is incomplete except selected VNDK30/scheduling payload checks",
+    "No kernel runtime or donor libvintf execution",
+    "No assertions that an XML edit would fix compatibility"
+  ]
+}
