@@ -33,11 +33,19 @@ no host nao resolve sozinha contextos, semantica dos aliases ou kernel/runtime.
 As imagens da ROM P0 nao foram alteradas por este pacote. VINTF tem pendencias.
 Policy binaria de pesquisa e CIL nao sao distribuidos como patch flashavel aqui.
 Se falhou apos gravar super, restaure a base antes de iniciar o estado incompleto.
+
+Vendor nova: a comparacao foi concluida em job separado e o relatorio pode estar
+em RELATORIO-VENDOR-1610.zip. Politicas SELinux iguais, referencia de brilho
+quebrada e script que tenta mascarar enforcement nao sustentam trocar a base.
+Manter vendor original por enquanto; Face HAL novo requer avaliacao separada.
 '''
 members = {'COMECE-AQUI.txt': readme.encode('utf-8')}
 for name in ('Correcao-P0r7-Windows.zip', 'Diagnostico-Leitura-R8Q-r2.zip'):
     path = OUT / name
     if path.is_file(): members[name] = path.read_bytes()
+vendor_report = OUT / 'RELATORIO-VENDOR-1610.zip'
+if vendor_report.is_file():
+    members[vendor_report.name] = vendor_report.read_bytes()
 for name in ('secilc-host', 'check-policy-caps', 'compiler-sha256.txt', 'selinux-source-commit.txt'):
     path = ROOT / 'build' / name
     if path.is_file(): members['linux-tools/' + name] = path.read_bytes()

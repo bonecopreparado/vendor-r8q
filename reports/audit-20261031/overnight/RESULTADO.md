@@ -47,9 +47,12 @@ O fluxo de CI compila libsepol/secilc do commit
 `6423998bc7b154da7f9fe726cfda9ace774dfa94`, que reconhece a capability, e exige
 serializar/reabrir a política mantendo os seis policycaps originais. A comparação
 inclui a falha original, o candidato com flags normais do init e a auditoria
-neverallow adicional. Resultado efetivo consta dos artefatos do CI, não deve
-ser inferido apenas pela presença do script. Fusões de alias também unificam
-permissões e contextos: compilar não aprova a semântica nem confirma carga no kernel.
+neverallow adicional. A execução real confirmou compilação e serialização no
+modo init com os seis policycaps. A auditoria adicional encontrou 335 registros
+neverallow; um controle com tipos separados apresentou os mesmos conjuntos de
+assertions/allows impressos. O job ficou vermelho por essa auditoria adicional.
+Fusões de alias também unificam permissões/contextos: compilar não aprova a
+semântica nem confirma carga no kernel. Ver selinux/CI-RESULTADO.md.
 
 ## Novos pontos de compatibilidade
 
@@ -83,8 +86,22 @@ já ajustado, sem tocar userdata/criptografia. Não foi aplicado à vendor.img.
 
 O uploader usa API oficial atual do GoFile, valida tamanho/hashes/URL, preserva
 proxy/TLS e não registra tokens. O artefato do GitHub é salvo antes do espelho.
-Upload e compilação só podem ser declarados concluídos após o resultado real.
+Upload inicial concluído: https://gofile.io/d/QwzAjDJr. A compilação real e o
+resultado da auditoria são descritos acima. O pacote final agrega a comparação
+de vendor e os relatórios posteriores, sem refazer os testes já aprovados.
 Nenhum log pessoal de recovery/logcat nem imagem da ROM foi publicado no branch.
+
+## Vendor nova: decisão após comparação real
+
+Os jobs 41258248272 e 41258897001 baixaram o asset exato e reconstruíram uma
+imagem limpa em e2fsck. A comparação mostrou 2571 hashes iguais, quatro arquivos
+alterados, oito adicionados e um removido; há limites de hash/xattrs descritos
+no relatório. Políticas SELinux iguais. A vendor nova mantém referência para
+brightness_sync.sh removido, anuncia SM8750 em vez de SM8250 e acrescenta script
+que tenta mascarar a leitura do enforcement, sem corrigir a política. Não é uma
+troca integral recomendada para a P0. Manter a base atual; Face HAL novo pode ser
+avaliado isoladamente após boot. Relatório completo em
+vendor/COMPARACAO-CONCLUIDA.md e https://gofile.io/d/nRL4xE8l.
 
 O próximo avanço de sistema precisa reconciliar a política e VINTF antes de
 apresentar uma build como pronta para uso. Falhas após gravar super deixam
