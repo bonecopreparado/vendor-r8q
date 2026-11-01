@@ -74,11 +74,11 @@ def decode_reports(artifact_name, blob):
         for entry in archive.infolist():
             name=entry.filename
             if (name in seen or name.startswith('/') or '\\' in name or '\0' in entry.orig_filename
-                    or any(part in {'.','..'} for part in name.rstrip('/').split('/'))):
+                    or any(part in {'','.','..'} for part in name.rstrip('/').split('/'))):
                 raise ValueError('Duplicate or unsafe evidence path')
             seen.add(name)
             mode=entry.external_attr>>16
-            if mode&0o170000==0o120000 or entry.flag_bits&1:
+            if mode&0o170000 not in {0,0o100000,0o040000} or entry.flag_bits&1:
                 raise ValueError('Symlink or encrypted evidence is forbidden')
             expanded+=entry.file_size
             if expanded>LIMIT:
@@ -126,11 +126,16 @@ def main():
         artifact=matching[0]
         if not 0<artifact['size_in_bytes']<=LIMIT:raise ValueError('Artifact size bound exceeded')
         blob=gh_bytes(prefix+'actions/artifacts/'+str(artifact['id'])+'/zip')
+        digest=artifact.get('digest')
+        if digest and digest!='sha256:'+hashlib.sha256(blob).hexdigest():
+            raise ValueError('Artifact digest differs from authenticated GitHub metadata')
         downloaded+=len(blob)
         if downloaded>LIMIT:raise ValueError('Total downloaded evidence exceeds 128 MiB')
         for path,data in decode_reports(name,blob).items():
             if path in collected:raise ValueError('Evidence artifacts overlap')
             collected[path]=data
+            if sum(map(len,collected.values()))>LIMIT:
+                raise ValueError('Total imported report data exceeds 128 MiB')
         provenance.append(dict(name=name,id=artifact['id'],bytes=len(blob),sha256=hashlib.sha256(blob).hexdigest()))
     if not REQUIRED<=set(collected):raise ValueError('Required policy/context/VINTF reports missing')
     if not validate_run(api(prefix+'actions/runs/'+str(run_id)),sha):
