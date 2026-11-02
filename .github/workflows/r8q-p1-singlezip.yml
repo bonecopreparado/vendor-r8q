@@ -7,7 +7,7 @@ permissions:
   contents: read
 concurrency:
   group: r8q-p1-singlezip
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -42,6 +42,14 @@ jobs:
             "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
           fi
           "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -D_FILE_OFFSET_BITS=64 -static -Os -s -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread
+          SDK_ROOT="$SDK_ROOT" /usr/bin/python3 - <<'PY'
+          import os
+          from pathlib import Path
+          ndk=Path(os.environ['SDK_ROOT'])/'ndk/27.2.12479018'
+          notices=[ndk/n for n in ('NOTICE','NOTICE.toolchain') if (ndk/n).is_file()]
+          if not notices:raise SystemExit('Android NDK copyright notices missing')
+          Path('build/android-ndk-notices.txt').write_bytes(b'\n\n'.join(p.read_bytes() for p in notices))
+          PY
           cc -D_FILE_OFFSET_BITS=64 -O2 -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread-host
           qemu-aarch64 build/r8q-zipread --version
       - name: Verify source tests and real ZIP64 / mksh fixtures
@@ -60,7 +68,7 @@ jobs:
       - name: Build one complete ZIP and verify every stored member and image
         id: package
         run: |
-          /usr/bin/python3 tools/package_p1_single.py --helper build/r8q-zipread --host-helper build/r8q-zipread-host --images-manifest reports/p1/ci-build/package-images.json --output "output/$ZIP_NAME"
+          /usr/bin/python3 tools/package_p1_single.py --helper build/r8q-zipread --host-helper build/r8q-zipread-host --ndk-notice build/android-ndk-notices.txt --images-manifest reports/p1/ci-build/package-images.json --output "output/$ZIP_NAME"
           /usr/bin/python3 - <<'PY'
           import json,os
           from pathlib import Path

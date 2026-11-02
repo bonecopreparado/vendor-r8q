@@ -121,11 +121,20 @@ The native reader avoids recovery unzip for multi-gigabyte ZIP64 member data;
 all compressed hashes, gzip CRCs, raw hashes and partition readbacks remain.
 '''
 
-def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None):
+def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk_notices=()):
     output=Path(output);root=Path(root)
     if output.exists() or output.is_symlink():raise ValueError('Output must be a new file')
     output.parent.mkdir(parents=True,exist_ok=True)
-    blob=helper_blob(helper,require_arm64);rows=image_chunks(images)
+    blob=helper_blob(helper,require_arm64)
+    if require_arm64 and not ndk_notices:raise ValueError('Static Android helper requires corresponding NDK notices')
+    license_data=(root/'LICENSE').read_bytes()
+    notice_data=(root/'THIRD_PARTY_NOTICES.md').read_bytes()
+    for path in ndk_notices:
+        path=Path(path)
+        if path.is_symlink() or not path.is_file() or not 0<path.stat().st_size<=32*1024**2:
+            raise ValueError('NDK notice input is missing or oversized')
+        notice_data+=b'\n\n--- Android NDK notices ---\n\n'+path.read_bytes()
+    rows=image_chunks(images)
     keys=('part','name','bytes','sha256','compressed_bytes','compressed_sha256','offset','readback_sha256')
     table='\n'.join(' '.join(str(r[k])for k in keys)for r in rows)
     script=template(root).replace('@@PAYLOAD_ROWS@@',table)
@@ -148,6 +157,8 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None):
             archive.writestr(info('META-INF/com/google/android/updater-script'),b'# Native ZIP64-backed shell installer\n')
             archive.writestr(info('P1-MANIFEST.json'),(json.dumps(manifest,indent=2)+'\n').encode())
             archive.writestr(info('README-TESTER.txt'),INSTRUCTIONS.encode())
+            archive.writestr(info('LICENSE.txt'),license_data)
+            archive.writestr(info('THIRD-PARTY-NOTICES.txt'),notice_data)
             image_chunks(images,archive=archive,expected=rows)
         with output.open('rb') as f:
             header=f.read(30);data_offset=30+struct.unpack_from('<H',header,26)[0]+struct.unpack_from('<H',header,28)[0]
@@ -155,7 +166,7 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None):
             f.seek(4096)
             if f.read(len(blob))!=blob:raise ValueError('Bootstrap helper bytes differ')
         with zipfile.ZipFile(output) as archive:
-            expected={HELPER_NAME,INSTALLER,'META-INF/com/google/android/updater-script','P1-MANIFEST.json','README-TESTER.txt'}|{'payloads/'+r['name']for r in rows}
+            expected={HELPER_NAME,INSTALLER,'META-INF/com/google/android/updater-script','P1-MANIFEST.json','README-TESTER.txt','LICENSE.txt','THIRD-PARTY-NOTICES.txt'}|{'payloads/'+r['name']for r in rows}
             if len(archive.infolist())!=len(expected) or set(archive.namelist())!=expected:raise ValueError('Final ZIP member set differs')
             if archive.read(INSTALLER)!=script.encode() or archive.getinfo(INSTALLER).external_attr>>16!=0o100755:raise ValueError('Updater content/mode differs')
             for row in rows:
@@ -199,8 +210,9 @@ def main():
     ap.add_argument('--images-manifest',type=Path,default=ROOT/'reports/p1/ci-build/package-images.json')
     ap.add_argument('--output',type=Path,default=ROOT/'output/HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip')
     ap.add_argument('--host-helper',type=Path)
+    ap.add_argument('--ndk-notice',type=Path,action='append',default=[])
     args=ap.parse_args()
-    report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper)
+    report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper,ndk_notices=args.ndk_notice)
     print(json.dumps(report,indent=2))
 
 if __name__=='__main__':main()
