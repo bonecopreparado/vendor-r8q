@@ -1,0 +1,36 @@
+{
+  "tool": "Unmodified LineageOS extract-utils LP parser/extractor",
+  "source": {
+    "url": "https://raw.githubusercontent.com/LineageOS/android_tools_extract-utils/78ba5d58c4b06712e18bb387a2a72eac8fbc8d70/extract_utils/lp.py",
+    "blob_sha1": "71c93c3595c9a98bf35698a42c0428ade8c7667d",
+    "sha256": "32a0b1eddf5d83398f22fea6c025d6d11dbb179c172d00785a7c1dac7987fe84"
+  },
+  "partitions": [
+    {
+      "name": "system",
+      "bytes": 1126187008,
+      "sha256": "c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72"
+    },
+    {
+      "name": "vendor",
+      "bytes": 1647726592,
+      "sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9"
+    },
+    {
+      "name": "product",
+      "bytes": 3181572096,
+      "sha256": "c848c1d270df7149e22b1bb259d8eab086b6853dc20db78aa94a9bd66cf24813"
+    },
+    {
+      "name": "odm",
+      "bytes": 19640320,
+      "sha256": "addb89433e775b5cb6ceb6b5703f66329bdb0ecc4f28c2f22e1cf3bc9ce357be"
+    },
+    {
+      "name": "system_ext",
+      "bytes": 834596864,
+      "sha256": "16e3571a1eb02df3c3b9c6e1c539237226ad69124438b41ff52348622c0820b4"
+    }
+  ],
+  "scope": "Independent partition enumeration, extents decoding and payload hashing. Does not establish boot/runtime compatibility."
+}

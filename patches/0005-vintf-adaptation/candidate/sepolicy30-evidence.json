@@ -1,0 +1,49 @@
+{
+  "status": "ADDITIVE_DECLARATION_OF_PRESENT_MAPPING_INTERFACE_REQUIRES_COHERENT_POLICY",
+  "source_sha256": "cee761dcc1ecbbb5c8169cace340bd201cd8734c19e17d34ec3a1580e8e23076",
+  "candidate_sha256": "0e9a5e24c3e3a06474918e692139d2bee2530f42ef913f82cf4e6742cc87a480",
+  "mapping_sources": [
+    {
+      "file": "system_mapping_30.0.cil",
+      "bytes": 126395,
+      "sha256": "50dcffe218ab56ed6a4701a10d00d242bba373b35b263af68b7a2668f0cce2c2"
+    },
+    {
+      "file": "system_mapping_30.0.compat.cil",
+      "bytes": 2849,
+      "sha256": "ba1b503300c418ddff935d31dfe4591aa70f99edad07046278dfadfc90f8d566"
+    },
+    {
+      "file": "system_ext_mapping_30.0.cil",
+      "bytes": 12834,
+      "sha256": "942fdc251849354d2b238c64c2e1a894220de5a650fa621c39d451641a3c57b0"
+    },
+    {
+      "file": "system_ext_mapping_30.0.compat.cil",
+      "bytes": 214,
+      "sha256": "ba5fe3df2d90d47c3a8c38e8284e2b0c0df3ef74a0b7f677fe6b809589bce8a2"
+    },
+    {
+      "file": "product_mapping_30.0.cil",
+      "bytes": 1448,
+      "sha256": "87cd4032fef3f609a017047e3b435d7ea11c61e38637a15a7f814df494ba71ef"
+    }
+  ],
+  "added_sepolicy_interface": "30.0",
+  "device_declared_interface_unchanged": "30.0",
+  "kernel_policy_version_unchanged": 30,
+  "removed_requirements": [],
+  "removed_hals": [],
+  "fcm_levels_unchanged": true,
+  "boot_ready": false,
+  "required_before_image_integration": [
+    "Integrate reviewed CIL repairs and compatible app context corrections coherently.",
+    "Compile exact complete final composition with all six capabilities intact.",
+    "Run exact final context, VINTF and kernel checks; review unresolved assertion findings.",
+    "Do not advertise this entry with unchanged original P0 CIL, which fails compilation."
+  ],
+  "limits": [
+    "Present mapping files and candidate init compilation demonstrate a supplied mapping path, not full semantic or runtime correctness.",
+    "No Android SELinux load, framework initialization, phone boot or hardware behavior was tested."
+  ]
+}

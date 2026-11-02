@@ -1,0 +1,60 @@
+{
+  "added": [],
+  "after_counts": {
+    "directory": 157,
+    "regular": 2575,
+    "symlink": 243
+  },
+  "after_inventory": {
+    "file": "vendor-fixes-only-tree-diff-after-inventory.json",
+    "sha256": "f2158dd60ea0a64613a439d702553cd3336523368f06b9dd28292097dc092266"
+  },
+  "after_unique_regular_bytes_hashed": 1631405937,
+  "before_counts": {
+    "directory": 157,
+    "regular": 2576,
+    "symlink": 243
+  },
+  "before_inventory": {
+    "file": "vendor-fixes-only-tree-diff-before-inventory.json",
+    "sha256": "f3f5c1612d449eb42f37f9c984690f88aca889fdf895c42f04f607ec4f6a14b3"
+  },
+  "before_unique_regular_bytes_hashed": 1631408731,
+  "boot_confirmed": false,
+  "build_report_sha256": "ba639d33c1c484e3e32c1a71dde2007c635a440ac813000f4de464fd0c18e5f0",
+  "candidate_sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9",
+  "content_changed": [
+    "/etc/init/hw/init.qcom.rc",
+    "/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+    "/etc/selinux/vendor_seapp_contexts"
+  ],
+  "directory_entries_changed": [
+    {
+      "added": [],
+      "path": "/etc/init",
+      "removed": [
+        "nxp.android.hardware.nfc@1.2-service.rc"
+      ]
+    }
+  ],
+  "failures": [],
+  "hardlink_topology_preserved": true,
+  "limits": [
+    "Independent reader does not validate ext4 metadata/data checksums, journals or xattrs.",
+    "File and parent xattr/timestamp preservation and clean fsck are validated by the separate writer build report.",
+    "Full regular-file byte verification and symlink/owner/mode comparison do not prove Android boot."
+  ],
+  "matched_plan_operations": 4,
+  "metadata_changed": [],
+  "read_only": true,
+  "reader_sha256": "20238634a665f703a38013b396ff69b11e0821978dafa913e430a3825e2c8f0d",
+  "regular_file_limit": 536870912,
+  "regular_files_skipped": 0,
+  "removed": [
+    "/etc/init/nxp.android.hardware.nfc@1.2-service.rc"
+  ],
+  "source_sha256": "18e48f734c31f263f330786ffea841738a733784da05b5b6d86b5e5217d82d5f",
+  "status": "FULL_EXT4_TREE_DIFF_MATCHES_PLAN",
+  "unchanged_entries": 2971,
+  "unchanged_regular_files": 2572
+}

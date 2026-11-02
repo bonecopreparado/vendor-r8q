@@ -1,0 +1,1731 @@
+{
+  "scope": "All 46 recorded factory APEX payloads read and SHA-verified; no /data modules or runtime activation claim",
+  "modules": [
+    {
+      "module": "com.android.adbd",
+      "container_sha256": "ea5a270655ac9752143b57efd659981bb03c45600db9761edaf4d1939167f50a",
+      "payload_sha256": "b245082f3259fa2a458723e873cacd6ad83292a85a27d5a4699609d0c0f637a3",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.adservices",
+      "container_sha256": "917a09055d0cced00e0bd1eef1ff138a6cbe9993453e746858dce6e239704f61",
+      "payload_sha256": "f248a70ef8022fd3eb16da39ef2b681e7b517d5b8f0b0ae1e2f4d18225a565a3",
+      "apk_paths": [
+        "/priv-app/AdServicesApk@CP2A.260605.016/AdServicesApk.apk",
+        "/app/SdkSandbox@CP2A.260605.016/SdkSandbox.apk"
+      ]
+    },
+    {
+      "module": "com.android.apex.cts.shim",
+      "container_sha256": "18451d0ac06a9532a0c75f2f89544a096ebb8b2a1b4ee7357b5747d972e60a42",
+      "payload_sha256": "fb08e966a5fca9c872961586172e51bdc341e7ed43fa09073c6a87d841dcb05d",
+      "apk_paths": [
+        "/priv-app/CtsShimPriv@MAIN/CtsShimPriv.apk",
+        "/app/CtsShim@MAIN/CtsShim.apk"
+      ]
+    },
+    {
+      "module": "com.android.appsearch",
+      "container_sha256": "baffc844df9de1012344624138dc88962583d04d1ba09d8201c0d68c22a997c5",
+      "payload_sha256": "2df3a906006562c8251021dc8bfac797fad53233e6c47c5cf7cdebdfff918592",
+      "apk_paths": [
+        "/priv-app/com.android.appsearch.apk@CP2A.260605.016/com.android.appsearch.apk.apk"
+      ]
+    },
+    {
+      "module": "com.android.art",
+      "container_sha256": "9ef73f12907c7d3075b8f7613118ed5fcd269a0e89412f28c9b179428f4cd375",
+      "payload_sha256": "cb0f83705c797e24b2d365f1b71b17d491c871b06bdede1bd5ec22f7307a5b3d",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.bt",
+      "container_sha256": "0f4650bc630b7a463f3eda1d4ab58c9bb808f77a950079a57db5a5612f61a3a5",
+      "payload_sha256": "bec4c1c5a10e215d7c4e4f978a57d46da613b38ce38d24762a112205f8dbbe50",
+      "apk_paths": [
+        "/app/Bluetooth@CP2A.260605.016/Bluetooth.apk"
+      ]
+    },
+    {
+      "module": "com.android.configinfrastructure",
+      "container_sha256": "066bca1e80f4b2a109bd9fe6c2f568362b1e4aa04a27b7bd38d40f25202a27ce",
+      "payload_sha256": "3739b9fcfcc26f29922f9f0c33e42bfdf770b126bded0e3a7e9651ccea972ae4",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.conscrypt",
+      "container_sha256": "16af4acc14fbbed65ca85156a9830b6fff803e81779a4ffa2f0f97d2a8824ce0",
+      "payload_sha256": "dc8431632bf65186f8a2d253ee00fcf6b1c1708f6cf7242832f52044ba1419f3",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.crashrecovery",
+      "container_sha256": "c1babb552c0e161e7cbaa3b26c30e23a870f76f352a6e3c19a17f2e01a70131f",
+      "payload_sha256": "7516643e27215109299c7d4988fbce83bde754a01cb784372b8ccf5af5ae335c",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.devicelock",
+      "container_sha256": "fccc16c2264a592ecd16f2b0c7ae42ad785d1c125ed3288a3787e95f82c404ed",
+      "payload_sha256": "6870907d1c76202d7fedbc9dd7fb3bc835613bf0dfab2f8bfbf7332271c6e9cf",
+      "apk_paths": [
+        "/priv-app/DeviceLockController@CP2A.260605.016/DeviceLockController.apk"
+      ]
+    },
+    {
+      "module": "com.android.extservices",
+      "container_sha256": "05c064eb3706433a2e70cbd5e17bbb3ba8f88dfcd71783d16e26dfedb0a6560c",
+      "payload_sha256": "18a6ab80ed305c99a421386cdb105bcab8931a743106d20a5bcfe1d8b4623b90",
+      "apk_paths": [
+        "/priv-app/ExtServices-sminus@CP2A.260605.016/ExtServices-sminus.apk"
+      ]
+    },
+    {
+      "module": "com.android.healthfitness",
+      "container_sha256": "d0250016aeb3d204de64c62e1456cb4e1c50a6382067a53d40b1d6cd09b8768b",
+      "payload_sha256": "607785100e49bba0ee9fb4b7c114ec312c70722b08930c7725db7eedeb00285a",
+      "apk_paths": [
+        "/priv-app/HealthConnectController@CP2A.260605.016/HealthConnectController.apk",
+        "/app/HealthConnectBackupRestore@CP2A.260605.016/HealthConnectBackupRestore.apk"
+      ]
+    },
+    {
+      "module": "com.android.i18n",
+      "container_sha256": "d57e8fde6ff250c640509bec2e1fafbde7f01f5d69e42294204874c39c9b65ec",
+      "payload_sha256": "22b4d8468adb2fba605649b6d367446811f98f2e49b2eb83263033609b7a265d",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.ipsec",
+      "container_sha256": "c888b199c9fef4eef3f57c6a8360aa9349b339803bef2069d3c7389a0ad29489",
+      "payload_sha256": "cdaf777f2f5fce1ddb6a799abd0836c67b6cb7cd00097f8e3bafbad4fc8a385c",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.media",
+      "container_sha256": "25d0ac145cbe5fc8d4986fc12cf76e74e65681886864dbc1f3599d6e56ee44e5",
+      "payload_sha256": "6da40ff0e29f3e70d1ff15d87745cb49b98347882ca2685bff89a2eca49b7fa8",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.media.swcodec",
+      "container_sha256": "5a50907d6cf8188cca8d5f23e6e443acd6d9ff97648658b2a8be9c9782b1cb75",
+      "payload_sha256": "f76c1118b1a3a7393e75b9bc420314f946acb0cdaf0f32fc4e38603047e1db48",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.mediaprovider",
+      "container_sha256": "d694ceb5b64edb774c0b97f52f8f81f3dc4dd6d8533e31a66d8e4db1d46fe88d",
+      "payload_sha256": "616817c70782fc2ca48b41bfe540d0a0c187c76894c4c2194e6cb267e47ffc13",
+      "apk_paths": [
+        "/priv-app/Photopicker@CP2A.260605.016/Photopicker.apk",
+        "/priv-app/MediaProvider@CP2A.260605.016/MediaProvider.apk"
+      ]
+    },
+    {
+      "module": "com.android.neuralnetworks",
+      "container_sha256": "c7bd638da8812727a9566c55a69a5cb5fe14931a4abee116e24241be333a13c8",
+      "payload_sha256": "aa76529340045434bc34b7134a23e407c84e4678ca3286b842e5fbd2f1507796",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.npumanager",
+      "container_sha256": "6cdc89cd68dbd149161ed8236cee107ea3a5a84c7505de7d35d5f8dfab931d1d",
+      "payload_sha256": "6591f98350d3f659b5478ad96fd3b5a5ce40186926e0393ec9c634cbd8a9985a",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.ondevicepersonalization",
+      "container_sha256": "ba22f5e9dada8c073ec0638a9edc4e5910c86d6996008f7a7469616685af1a11",
+      "payload_sha256": "539902b9ecc40eeefd140b8060e1d0ad55dad5105a73d937a8012490c850f141",
+      "apk_paths": [
+        "/priv-app/OnDevicePersonalization@CP2A.260605.016/OnDevicePersonalization.apk",
+        "/app/FederatedCompute@CP2A.260605.016/FederatedCompute.apk"
+      ]
+    },
+    {
+      "module": "com.android.os.statsd",
+      "container_sha256": "6cc613ea12797822ff1b62fb0ddac626b5100e9eb986807902ed00a72a3f899f",
+      "payload_sha256": "635fa9931aef1cbc7e5dbb2f44060bd91941f4baaf7f5fb7652c41f9b34f6a7f",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.permission",
+      "container_sha256": "baa8dcdd756db202cad1346e5eccea4e4fb498877fd81bd0b4d48a04a0423753",
+      "payload_sha256": "ec2736f363590180952eafcc27735019100451864fd8ee199e72a38f2557052b",
+      "apk_paths": [
+        "/priv-app/SafetyCenterResources@CP2A.260605.016/SafetyCenterResources.apk",
+        "/priv-app/PermissionController@CP2A.260605.016/PermissionController.apk"
+      ]
+    },
+    {
+      "module": "com.android.profiling",
+      "container_sha256": "477a9e4c55846ed974ea1b1ff7831353d9adb52a6654f698aa832acafbd32578",
+      "payload_sha256": "2e2cdf87da4283114bf24be73ba04f1e13ce2c7c3083a6e26ce8e6d383b3d5ba",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.resolv",
+      "container_sha256": "653dc4cb45f596b898ec86c208b446a3aa2e0b5964a07bed87e5acc089ed0d83",
+      "payload_sha256": "bae5aa498d0e0858a4552a5cbce4e5b8225d158aaf17ee7813690dc41e914ad4",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.rkpd",
+      "container_sha256": "1aa2f82ec9945c4c74b413b382f95c7ddeed8bb4e8b598124e349d51f8cb67da",
+      "payload_sha256": "13247691987edc9f2125a7a3087b6b6d2720dbc6aedb18121e219d987a25876f",
+      "apk_paths": [
+        "/priv-app/rkpdapp@CP2A.260605.016/rkpdapp.apk"
+      ]
+    },
+    {
+      "module": "com.android.runtime",
+      "container_sha256": "c1b933f35ce402da591c156e4c888a23c888d72f8329b8a702768c5104eed311",
+      "payload_sha256": "84710045ed7a1a333b9283d4a313829ff3a9dde70a4ac00a4a553aefcc7182c9",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.scheduling",
+      "container_sha256": "edef94cb727bd30ed644062eaaf86cdae2991dc17b1701fb787ab920cd98c507",
+      "payload_sha256": "acc2d7b6af919dbc195191a4e1f707e41f611ae23efbca84a3c7f8802fe04f01",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.sdkext",
+      "container_sha256": "ead816fb73302b73bc0f39a71e62bd3b22fded5123df4f16855dc1e0404dac56",
+      "payload_sha256": "826c8009f86799a8a11be301ffbf82976b2f1cc54d0bd0fef4a85d1ee78e2b6e",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.telephonycore",
+      "container_sha256": "38097efd2a6f6b2e0153b7292b1b1a358d127d20d65bb92f51f5b819eb79d907",
+      "payload_sha256": "74479238e3c1215eeb81700a080c5aeb8acc69adb716ef426da7d6643b35ca44",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.tethering",
+      "container_sha256": "adf35f297aa4d51915027a3fd865be7a91f110d3f2f9281b73374586daf0683c",
+      "payload_sha256": "6a6a83bc94c3543160270af6f64b8edfe758b179a667eeca570d506a79a8223f",
+      "apk_paths": [
+        "/priv-app/TetheringNext@CP2A.260605.016/TetheringNext.apk",
+        "/priv-app/ServiceConnectivityResources@CP2A.260605.016/ServiceConnectivityResources.apk"
+      ]
+    },
+    {
+      "module": "com.android.tzdata",
+      "container_sha256": "b01a08097a77e44a89302e09dc84d7a7c9a612fd148f1118e67fa551f2765f1c",
+      "payload_sha256": "3119a1a4fa7bdc2bd56ff60f7636772a73ad2c61558e9b0927d1509fea184806",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.uprobestats",
+      "container_sha256": "cb3e118ea05373c23bc93315dcc5389e01262db835ab7ad47ace169c0f9e4a99",
+      "payload_sha256": "a4007d8ccdd9b2087e8172fe4fbade68f54e3d734c4e4724cf0f42cebf867029",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.uwb",
+      "container_sha256": "5bc98338ff0c70ab8fe575f6aad2ecda0964bd610cd66a0ef331bc021f023a7d",
+      "payload_sha256": "72e0e96b52e7fd9a2aab8879277dfefb1bde659b2ced4a35255aadd16e8dee8d",
+      "apk_paths": [
+        "/priv-app/ServiceUwbResources@CP2A.260605.016/ServiceUwbResources.apk"
+      ]
+    },
+    {
+      "module": "com.android.virt",
+      "container_sha256": "9eee64565e85f5bffe104ab75ebfbf73dcb87351631d460d6e6556f7dc2b94d7",
+      "payload_sha256": "ed0ceecbab893bd59be63b8d0456e26c50eeb2cab116355d79c2099cf854fd77",
+      "apk_paths": [
+        "/priv-app/VmTerminalApp@CP2A.260605.016/VmTerminalApp.apk",
+        "/app/android.system.virtualmachine.res@CP2A.260605.016/android.system.virtualmachine.res.apk",
+        "/app/EmptyPayloadApp@CP2A.260605.016/EmptyPayloadApp.apk"
+      ]
+    },
+    {
+      "module": "com.android.webapp",
+      "container_sha256": "74c06df14156788d80e69a75cb92770db2f1c38e4fcd6725cdbdc67d73ef2225",
+      "payload_sha256": "439a900603de99d7539c76845839e34b76c047bd5d3be59f9af9eff61e765a7a",
+      "apk_paths": [
+        "/priv-app/WebAppService@CP2A.260605.016/WebAppService.apk"
+      ]
+    },
+    {
+      "module": "com.android.wifi",
+      "container_sha256": "f40ecd251c18fe77aaabaf480b1993471331508757f80317b1b06d72ec23dd39",
+      "payload_sha256": "48e3008c6d7a3dbd68f49c9d05ba231f961b2c2fe3d948fd1cf945b370c296ff",
+      "apk_paths": [
+        "/priv-app/ServiceWifiResources@CP2A.260605.016/ServiceWifiResources.apk",
+        "/app/WifiDialog@CP2A.260605.016/WifiDialog.apk",
+        "/app/OsuLogin@CP2A.260605.016/OsuLogin.apk"
+      ]
+    },
+    {
+      "module": "com.android.art.compatible",
+      "container_sha256": "4cd5973a1ded1bf71fe70ea5481827f60ae754a8cd1eb55904c7f45f0ca01edc",
+      "payload_sha256": "b5ffc9811d521cc54468ecd40009fc992a52ab129dad3f541168b3f19484734f",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.compos",
+      "container_sha256": "ba00cbfc389b2f919d0e37583e7684a429f3e85178bdb2d3ec2eda9196b9e31f",
+      "payload_sha256": "d730a64a34b849c15f5222d269fdb546e27642105c29f307f746f5ebe0d2392d",
+      "apk_paths": [
+        "/app/CompOSPayloadApp@CP2A.260605.016/CompOSPayloadApp.apk"
+      ]
+    },
+    {
+      "module": "com.android.hardware.biometrics.fingerprint.virtual",
+      "container_sha256": "7cbd25330f00d9d1c71df55a3145c5de8857f6271d1e989e842354158af62297",
+      "payload_sha256": "95c8bcf49eb8053e52aad2d30f06b6268004a9b8fdbe577b220b6105e14443be",
+      "apk_paths": []
+    },
+    {
+      "module": "com.android.vndk.v30",
+      "container_sha256": "8217800fbfc8a7b4a002fe13e5eb40e0f5d9eecf61afcf0f9d34c7da8bfe716a",
+      "payload_sha256": "aec3539cbd1a27b7ae39a6248a999a2e42bc608d0457f0fca4436002fc32752c",
+      "apk_paths": []
+    },
+    {
+      "module": "com.google.android.gmssystem",
+      "container_sha256": "fd56d1e45eb46c9a56253129242231c0d47555e568870ae39c1317ca818efa4c",
+      "payload_sha256": "de1ccb4ea1967fc12be71fa3eeccaf3d6bd3ab6da7400ca0df192e6e07a4d162",
+      "apk_paths": [
+        "/priv-app/PrebuiltGmsCoreVic@361800000/PrebuiltGmsCoreVic.apk"
+      ]
+    },
+    {
+      "module": "com.samsung.android.authfw.ta",
+      "container_sha256": "7615a011d12fe7c7b77b6908817bac978ac5be3daf74e135fc5cf1e2cec32ee1",
+      "payload_sha256": "fdd56aed6a8a75f4b23287537feb33e16773a791dae24ef9de4a1da3dfba2817",
+      "apk_paths": []
+    },
+    {
+      "module": "com.samsung.android.biometrics.face",
+      "container_sha256": "d152a1428cb5f46c0fd5c50d55cbf8008a6225ffa94423264179b38208b3f2b4",
+      "payload_sha256": "716b722d58e94d09e492a6b3dc9df889cfd0a98070b0933072ce3e4610bf387e",
+      "apk_paths": []
+    },
+    {
+      "module": "com.samsung.android.biometrics.fingerprint",
+      "container_sha256": "6c7128a54b9d0857ae8ecf2095d6055c2d7f9792b367125a0352411f3d6c4150",
+      "payload_sha256": "0eb71cabe47d91b8d2a2e2fed045584f2327bdaff99c5dde58fd96a5dff5eb89",
+      "apk_paths": []
+    },
+    {
+      "module": "com.samsung.android.camera.unihal",
+      "container_sha256": "5e49f94d2fa4bc81ec63ae1bc3561bc0bde57772b3b3b27e8b8a4c8cb1baf80e",
+      "payload_sha256": "ccc35ded4ac562dcd2b4dbfe0d3aadad36feb25660d1977ae6b53d8be9fb124f",
+      "apk_paths": []
+    },
+    {
+      "module": "com.samsung.android.wifi.broadcom",
+      "container_sha256": "0d003026c4aec1a1b57879a3ceff1cd58b435a549c040d47bfe2653060919aec",
+      "payload_sha256": "9ff948710fd3c1473e31a6a1c9d19bb4996ec9234b7d0ce808afbd1f333b3e1e",
+      "apk_paths": []
+    }
+  ],
+  "apks": [
+    {
+      "partition": "system",
+      "apex": "com.android.adservices",
+      "path": "/priv-app/AdServicesApk@CP2A.260605.016/AdServicesApk.apk",
+      "bytes": 11757918,
+      "sha256": "579c641028f34ff9a6affe6a8649d286ca4cf199b5f8b4c308979092cf8295c4",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.adservices.api",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f050155",
+              "type": 1
+            },
+            "label": {
+              "reference": "0x7f017fe9",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f067ff0",
+              "type": 1
+            },
+            "allowBackup": false,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.adservices",
+      "path": "/app/SdkSandbox@CP2A.260605.016/SdkSandbox.apk",
+      "bytes": 37359,
+      "sha256": "9e9db81e44a16a2a27c45fd3b8540ea9319ea262add590d356463ee5bb109a1c",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 1,
+            "versionName": "T-initial",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.sdksandbox",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "allowBackup": false,
+            "extractNativeLibs": false,
+            "networkSecurityConfig": {
+              "reference": "0x7f010000",
+              "type": 1
+            },
+            "usesNonSdkApi": false,
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "5855982f0f08a6c5ffde13ebb17bf5aafc9d0e68062e7fe3ccbbd9a861110d9c"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.apex.cts.shim",
+      "path": "/priv-app/CtsShimPriv@MAIN/CtsShimPriv.apk",
+      "bytes": 92194,
+      "sha256": "9f57f27d9928bc989dd15edbc455e498d5137a982abc9e6aa16760450a045e96",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 36,
+            "versionName": "16",
+            "compileSdkVersion": 36,
+            "compileSdkVersionCodename": "16",
+            "package": "com.android.cts.priv.ctsshim",
+            "platformBuildVersionCode": 36,
+            "platformBuildVersionName": 16
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 24,
+            "targetSdkVersion": 28
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "hasCode": false,
+            "multiArch": true,
+            "extractNativeLibs": false
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.apex.cts.shim",
+      "path": "/app/CtsShim@MAIN/CtsShim.apk",
+      "bytes": 8542,
+      "sha256": "7f79e8102fa9bd9d15176b818e45be189085ec1adb46fa0611f3598de02a9ef4",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 36,
+            "versionName": "16",
+            "compileSdkVersion": 36,
+            "compileSdkVersionCodename": "16",
+            "package": "com.android.cts.ctsshim",
+            "platformBuildVersionCode": 36,
+            "platformBuildVersionName": 16
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 24,
+            "targetSdkVersion": 28
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "hasCode": false,
+            "extractNativeLibs": false
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.appsearch",
+      "path": "/priv-app/com.android.appsearch.apk@CP2A.260605.016/com.android.appsearch.apk.apk",
+      "bytes": 233937,
+      "sha256": "fd6185842d4fa75fa4d464d92689f30fa42dfb6aac9f89aa18751c60109cbc4e",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.appsearch.apk",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "allowBackup": false,
+            "extractNativeLibs": false,
+            "directBootAware": true,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "rollbackDataPolicy": 2
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.bt",
+      "path": "/app/Bluetooth@CP2A.260605.016/Bluetooth.apk",
+      "bytes": 12234630,
+      "sha256": "298ead394fa3402b01749e4868adeafa13703af661c61e05a0107c3b78af75c2",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "sharedUserId": "android.uid.bluetooth",
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.bluetooth",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 36,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f1301e2",
+              "type": 1
+            },
+            "label": {
+              "reference": "0x7f120026",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f0800b4",
+              "type": 1
+            },
+            "name": "com.android.bluetooth.btservice.AdapterApp",
+            "persistent": false,
+            "backupAgent": "com.android.bluetooth.backup.BluetoothBackupAgent",
+            "allowBackup": true,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "usesCleartextTraffic": false,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "memtagMode": 1,
+            "enableOnBackInvokedCallback": false
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "9ce631cbfb2d59a596cbe7597f7260f7ffba6cd11ae7a3b7481a254631dcb63c"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.devicelock",
+      "path": "/priv-app/DeviceLockController@CP2A.260605.016/DeviceLockController.apk",
+      "bytes": 5101979,
+      "sha256": "1ed14fed02d9dd7874eb2ea571d257154ea5b750a898371e41bcf9fbf4aecd8a",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.devicelockcontroller",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 34,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f0f001c",
+              "type": 1
+            },
+            "name": "com.android.devicelockcontroller.DeviceLockControllerApplication",
+            "allowClearUserData": false,
+            "allowBackup": false,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.extservices",
+      "path": "/priv-app/ExtServices-sminus@CP2A.260605.016/ExtServices-sminus.apk",
+      "bytes": 15008592,
+      "sha256": "5e0c8f4a155449a95de8746ff22e429453377a275ab18a5b0253bc7f2f27e8b7",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 309999900,
+            "versionName": "2019-09",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "coreApp": true,
+            "package": "android.ext.services",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f120155",
+              "type": 1
+            },
+            "label": {
+              "reference": "0x7f110021",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f08008a",
+              "type": 1
+            },
+            "name": "android.ext.services.ExtServicesApplication",
+            "allowBackup": false,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.healthfitness",
+      "path": "/priv-app/HealthConnectController@CP2A.260605.016/HealthConnectController.apk",
+      "bytes": 7598165,
+      "sha256": "79328c799747f3c60624f72e3980b9eb78e7b5ab889d062cfd32f6ceba38d887",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.healthconnect.controller",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 34,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f1303a9",
+              "type": 1
+            },
+            "label": {
+              "reference": "0x7f12008f",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f0e0000",
+              "type": 1
+            },
+            "name": "com.android.healthconnect.controller.HealthConnectApplication",
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.healthfitness",
+      "path": "/app/HealthConnectBackupRestore@CP2A.260605.016/HealthConnectBackupRestore.apk",
+      "bytes": 16798,
+      "sha256": "27359ea612dac1fbcb2b5a56a49a632699b9ef5de8b81e0b25d66c819489c31c",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.health.connect.backuprestore",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 34,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "process": "system",
+            "backupAgent": "com.android.health.connect.backuprestore.HealthConnectBackupAgent",
+            "allowBackup": true,
+            "killAfterRestore": false,
+            "restoreAnyVersion": true,
+            "fullBackupOnly": true,
+            "extractNativeLibs": false,
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.mediaprovider",
+      "path": "/priv-app/Photopicker@CP2A.260605.016/Photopicker.apk",
+      "bytes": 19635245,
+      "sha256": "4d121dc17477461f1ad051cce4480060ac6308336dc85bfa9bd4777a39ce2ca8",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.photopicker",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 30,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f110225",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f0e0000",
+              "type": 1
+            },
+            "name": "com.android.photopicker.PhotopickerApplication",
+            "allowBackup": false,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "crossProfile": true,
+            "enableOnBackInvokedCallback": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "5e1299153a37cd822e51fc39e7dc8571ad844199a4b5a481ddbcc1a74c05e657"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.mediaprovider",
+      "path": "/priv-app/MediaProvider@CP2A.260605.016/MediaProvider.apk",
+      "bytes": 14117540,
+      "sha256": "a1e35d9463a8dc70bdc5f933c03593c4f211f643701e9692e666242de23bcfcb",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.providers.media.module",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 30,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f1301cf",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f100002",
+              "type": 1
+            },
+            "name": "com.android.providers.media.MediaApplication",
+            "backupAgent": "com.android.providers.media.backupandrestore.MediaBackupAgent",
+            "allowBackup": {
+              "reference": "0x7f05000a",
+              "type": 1
+            },
+            "killAfterRestore": false,
+            "restoreAnyVersion": true,
+            "largeHeap": true,
+            "supportsRtl": true,
+            "fullBackupOnly": true,
+            "extractNativeLibs": false,
+            "usesCleartextTraffic": false,
+            "backupInForeground": true,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "forceQueryable": true,
+            "crossProfile": true,
+            "dataExtractionRules": {
+              "reference": "0x7f160001",
+              "type": 1
+            }
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "5e1299153a37cd822e51fc39e7dc8571ad844199a4b5a481ddbcc1a74c05e657"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.ondevicepersonalization",
+      "path": "/priv-app/OnDevicePersonalization@CP2A.260605.016/OnDevicePersonalization.apk",
+      "bytes": 2407498,
+      "sha256": "9f960ff1bee122171a4b283c1c8aec736988aa0ab690492ad4ae923f6a6b12a6",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 370399999,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.ondevicepersonalization.services",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "name": "com.android.ondevicepersonalization.services.OnDevicePersonalizationApplication",
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.ondevicepersonalization",
+      "path": "/app/FederatedCompute@CP2A.260605.016/FederatedCompute.apk",
+      "bytes": 785030,
+      "sha256": "d36f6968a949441bbd74bfab306d6b6f7e0a9fbe6562a8e16fdc1cfc79cdadff",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 370399999,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.federatedcompute.services",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "extractNativeLibs": false,
+            "usesNonSdkApi": true,
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.permission",
+      "path": "/priv-app/SafetyCenterResources@CP2A.260605.016/SafetyCenterResources.apk",
+      "bytes": 170099,
+      "sha256": "2c39878502d7135a02d2dbf302307befa51fc81ec18da0cef8f77a620d87e3e4",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 330000000,
+            "versionName": "33 system image",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "coreApp": true,
+            "package": "com.android.safetycenter.resources",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 30,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f040054",
+              "type": 1
+            },
+            "extractNativeLibs": false,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.permission",
+      "path": "/priv-app/PermissionController@CP2A.260605.016/PermissionController.apk",
+      "bytes": 21910678,
+      "sha256": "b47a54922d58ea80c92b503dff2e8dab0dd4288c40e911ab8a933e0e292643c5",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 330000000,
+            "versionName": "33 system image",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "coreApp": true,
+            "package": "com.android.permissioncontroller",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f14022a",
+              "type": 1
+            },
+            "label": {
+              "reference": "0x7f1300dd",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f080561",
+              "type": 1
+            },
+            "name": "com.android.permissioncontroller.PermissionControllerApplication",
+            "allowClearUserData": false,
+            "allowBackup": false,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.rkpd",
+      "path": "/priv-app/rkpdapp@CP2A.260605.016/rkpdapp.apk",
+      "bytes": 1190233,
+      "sha256": "eff42e96a853fac80e8998f2ceb1d8fafe853686b529a408d6dbfb2bd80aeb5c",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.rkpdapp",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f090001",
+              "type": 1
+            },
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.tethering",
+      "path": "/priv-app/TetheringNext@CP2A.260605.016/TetheringNext.apk",
+      "bytes": 833244,
+      "sha256": "72512a96cb38fd042b625c9b6e3b4c8e461a8e4a132f04beb855128f2af36fe6",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "sharedUserId": "android.uid.networkstack",
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.networkstack.tethering",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": "Tethering",
+            "persistent": true,
+            "process": "com.android.networkstack.process",
+            "extractNativeLibs": false,
+            "usesCleartextTraffic": true,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true,
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "afee347d6e5ce8fe47472e65f258b4cc1d71e712d0638b80a14a92b115bf05c7"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.tethering",
+      "path": "/priv-app/ServiceConnectivityResources@CP2A.260605.016/ServiceConnectivityResources.apk",
+      "bytes": 1649438,
+      "sha256": "57f80cf61cb24d16f7ef0276e4d6cb098d2fac956fb2f4bdb6d80fdb963bb746",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 1,
+            "versionName": "S-initial",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "coreApp": true,
+            "package": "com.android.connectivity.resources",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f0e002d",
+              "type": 1
+            },
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.uwb",
+      "path": "/priv-app/ServiceUwbResources@CP2A.260605.016/ServiceUwbResources.apk",
+      "bytes": 16734,
+      "sha256": "4f3bcaec174ad231428b6c8ee64dad667752106ce748ccbe0c37216af48b65d8",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 1,
+            "versionName": "T-initial",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "coreApp": true,
+            "package": "com.android.uwb.resources",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 33,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f040002",
+              "type": 1
+            },
+            "hasCode": false,
+            "extractNativeLibs": false,
+            "usesCleartextTraffic": true,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.virt",
+      "path": "/priv-app/VmTerminalApp@CP2A.260605.016/VmTerminalApp.apk",
+      "bytes": 16091352,
+      "sha256": "730175317b35bc07d2804816e202c1bf2ea9a6fe1ab3e6f40d76c7ff0e97756d",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.virtualization.terminal",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 37,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f1103a0",
+              "type": 1
+            },
+            "label": {
+              "reference": "0x7f10001f",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f0d0000",
+              "type": 1
+            },
+            "name": "com.android.virtualization.terminal.Application",
+            "enabled": false,
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "usesCleartextTraffic": true,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.virt",
+      "path": "/app/android.system.virtualmachine.res@CP2A.260605.016/android.system.virtualmachine.res.apk",
+      "bytes": 8542,
+      "sha256": "49af7d865e72f56b79fea584e3a2ef17e59dd377fe17edefdf6f92265a354e28",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.virtualmachine.res",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 37,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "hasCode": false,
+            "extractNativeLibs": false,
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.virt",
+      "path": "/app/EmptyPayloadApp@CP2A.260605.016/EmptyPayloadApp.apk",
+      "bytes": 78186,
+      "sha256": "657d7422f2fad7c7bc258d128d146680d444b13422efcdc5a70d96cb7b6190ca",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.microdroid.empty_payload",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 34,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "hasCode": false,
+            "testOnly": true,
+            "extractNativeLibs": false
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.webapp",
+      "path": "/priv-app/WebAppService@CP2A.260605.016/WebAppService.apk",
+      "bytes": 2003892,
+      "sha256": "414079e2d0f85ced893aa623744a5091d802c04fb6518b5994aaa638fd48b657",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 370399999,
+            "versionName": "0",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.webapp.service",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 36,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f080003",
+              "type": 1
+            },
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true,
+            "forceQueryable": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.wifi",
+      "path": "/priv-app/ServiceWifiResources@CP2A.260605.016/ServiceWifiResources.apk",
+      "bytes": 427634,
+      "sha256": "2e4cd55ecd26b7518b3f825e72ab99cd43158fa36e327ad2e572bb25f0c57f4d",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 1,
+            "versionName": "R-initial",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "coreApp": true,
+            "package": "com.android.wifi.resources",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f08001a",
+              "type": 1
+            },
+            "hasCode": false,
+            "extractNativeLibs": false,
+            "defaultToDeviceProtectedStorage": true,
+            "directBootAware": true,
+            "networkSecurityConfig": {
+              "reference": "0x7f0a0000",
+              "type": 1
+            }
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.wifi",
+      "path": "/app/WifiDialog@CP2A.260605.016/WifiDialog.apk",
+      "bytes": 336565,
+      "sha256": "76f3e483c05b32bc4ff9355d80a7a6322205a706ab56019ab908e29f8a4994c6",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.wifi.dialog",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "theme": {
+              "reference": "0x7f0d015e",
+              "type": 1
+            },
+            "enabled": true,
+            "configChanges": "0x000004a0",
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory",
+            "usesNonSdkApi": true
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system",
+      "apex": "com.android.wifi",
+      "path": "/app/OsuLogin@CP2A.260605.016/OsuLogin.apk",
+      "bytes": 262622,
+      "sha256": "139ea60fe81ce51444b3dd280c703277059ec27a8438fef0389bc59e1d1a2f39",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.hotspot2.osulogin",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 31,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f0a0002",
+              "type": 1
+            },
+            "enabled": true,
+            "configChanges": "0x000004a0",
+            "supportsRtl": true,
+            "extractNativeLibs": false,
+            "networkSecurityConfig": {
+              "reference": "0x7f0d0000",
+              "type": 1
+            },
+            "appComponentFactory": "androidx.core.app.CoreComponentFactory"
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "system_ext",
+      "apex": "com.android.compos",
+      "path": "/app/CompOSPayloadApp@CP2A.260605.016/CompOSPayloadApp.apk",
+      "bytes": 13103,
+      "sha256": "8677cd50d4d6c8543741cce1c4d790b40a53f7a148171d1387236e1c44e698e3",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "versionCode": 37,
+            "versionName": "17",
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "17",
+            "package": "com.android.compos.payload",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": 17
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 37,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": "CompOS",
+            "hasCode": false,
+            "extractNativeLibs": false
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "d45f076fe23a1a5b7f486e3ff41547a2023dbfe1fe73353b1e48ebdfed72cc6f"
+      ]
+    },
+    {
+      "partition": "product",
+      "apex": "com.google.android.gmssystem",
+      "path": "/priv-app/PrebuiltGmsCoreVic@361800000/PrebuiltGmsCoreVic.apk",
+      "bytes": 217107692,
+      "sha256": "35f23040de6362a77103edb4b23825cfed7310ab6efe4d59310f817d79e6c1c2",
+      "manifest": [
+        {
+          "tag": "manifest",
+          "attrs": {
+            "sharedUserId": "com.google.uid.shared",
+            "versionCode": 261136035,
+            "versionName": "26.11.36 (260400-892401869)",
+            "sharedUserLabel": {
+              "reference": "0x7f150889",
+              "type": 1
+            },
+            "isolatedSplits": true,
+            "compileSdkVersion": 37,
+            "compileSdkVersionCodename": "Baklava",
+            "forceQueryable": true,
+            "sharedUserMaxSdkVersion": {
+              "reference": "0x7f0c00d6",
+              "type": 1
+            },
+            "package": "com.google.android.gms",
+            "platformBuildVersionCode": 37,
+            "platformBuildVersionName": "Baklava"
+          }
+        },
+        {
+          "tag": "uses-sdk",
+          "attrs": {
+            "minSdkVersion": 35,
+            "targetSdkVersion": 37
+          }
+        },
+        {
+          "tag": "application",
+          "attrs": {
+            "label": {
+              "reference": "0x7f150889",
+              "type": 1
+            },
+            "icon": {
+              "reference": "0x7f080312",
+              "type": 1
+            },
+            "name": "co.g.App",
+            "manageSpaceActivity": "co.g.Space",
+            "debuggable": false,
+            "backupAgent": "co.g.Bkp",
+            "allowBackup": {
+              "reference": "0x7f050031",
+              "type": 1
+            },
+            "killAfterRestore": false,
+            "restoreAnyVersion": true,
+            "supportsRtl": true,
+            "requiredForAllUsers": true,
+            "restrictedAccountType": "com.google",
+            "multiArch": true,
+            "extractNativeLibs": false,
+            "networkSecurityConfig": {
+              "reference": "0x7f1900e5",
+              "type": 1
+            },
+            "appComponentFactory": "com.google.android.gms.chimera.GmsAppComponentFactory",
+            "allowClearUserDataOnFailedRestore": false,
+            "requestLegacyExternalStorage": true,
+            "attributionsAreUserVisible": true,
+            "allowCrossUidActivitySwitchFromBelow": true,
+            "intentMatchingFlags": "0x00000001"
+          }
+        }
+      ],
+      "certificates_sha256": [
+        "5f2391277b1dbd489000467e4c2fa6af802430080457dce2f618992e9dfb5402",
+        "f0fd6c5b410f25cb25c3b53346c8972fae30f8ee7411df910480ad6b2d60db83"
+      ]
+    }
+  ]
+}

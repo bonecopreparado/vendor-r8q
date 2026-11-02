@@ -1,0 +1,36 @@
+{
+  "status": "OFFLINE_IMAGE_PATCHED_AND_LOGICALLY_VERIFIED_NOT_BOOT_TESTED",
+  "source_sha256": "c805fa6ef27930f8f7ff3abb00d311b2c2f3ab73df9de83daa3e8add0755f0fb",
+  "image_sha256": "16e3571a1eb02df3c3b9c6e1c539237226ad69124438b41ff52348622c0820b4",
+  "bytes": 834596864,
+  "entries_verified": 3669,
+  "changes": [
+    {
+      "path": "/etc/selinux/system_ext_sepolicy.cil",
+      "old_sha256": "4bd7dea8c506a79755e47fc43c7290925538599e894d9cba489ae616def0b851",
+      "sha256": "708f7ed4e8741c6b1e3345fba8318a6aeecbe3a8605f4e2dc8df4661ce96f791"
+    },
+    {
+      "path": "/etc/selinux/system_ext_seapp_contexts",
+      "old_sha256": "0740721ec93810e4c3efd5549a4362a754ad9778d4ba3e8f97e7579b49972a64",
+      "sha256": "5944f8010feca834ee46a99fdd2941b4e142be5af66f9ce2d30c719b9fd8743c"
+    },
+    {
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "old_sha256": "942fdc251849354d2b238c64c2e1a894220de5a650fa621c39d451641a3c57b0",
+      "sha256": "e84ce1941c3a66ff289b610fd575b1fc05de9bc0b4cd02872b310ae26d302c01"
+    },
+    {
+      "path": "/etc/vintf/manifest/r8q-vndk30.xml",
+      "old_sha256": null,
+      "sha256": "d2b35ccfbc92368a37a770a267188e014e3784bc92c4af5dbbb8e119df4f08d9"
+    }
+  ],
+  "deleted": [],
+  "source_incompat_features": 1,
+  "candidate_incompat_features": 1,
+  "no_new_incompat_features": true,
+  "metadata_preserved": true,
+  "original_unchanged": true,
+  "limitation": "Full PAX rebuild and logical readback do not replace kernel mount/boot tests."
+}

@@ -1,5 +1,12 @@
 # HyperOS R8Q port research and tooling
 
+**P1 filesystem candidate now built:** the actual rebuilt images compile their
+policy and pass all 2,879 collected context checks (zero invalid). Telephony
+seapp and Samsung NFC init fixes are integrated. Official host VINTF still
+reports legacy kernel/FCM/HAL contract issues; boot remains unconfirmed.
+See [P1 result and exact limits](reports/p1/RESULTADO.md). P1 images are large
+external build outputs; this source branch is not a recovery installation ZIP.
+
 This repository contains the installer source, audit tools, pinned input
 identities and validation evidence for an experimental HyperOS port to the
 Samsung Galaxy S20 FE Snapdragon: **SM-G781B and SM-G780G (`r8q`)**. It does

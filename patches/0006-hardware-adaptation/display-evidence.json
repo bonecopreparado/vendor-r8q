@@ -1,0 +1,45 @@
+{
+  "certificates": [
+    {
+      "name": "donor_framework",
+      "apk_sha256": "e79905f881bd3c09ac2282918f46b617261527d7219337009c389814240e776e",
+      "certificate_sha256": "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025",
+      "certificate_subject": "1.2.840.113549.1.9.1=miui@xiaomi.com,CN=MIUI,OU=MIUI,O=Xiaomi,L=Beijing,ST=Beijing,C=CN"
+    },
+    {
+      "name": "donor_product_overlay",
+      "apk_sha256": "2458bf6a28f0e9820a230e548240f523643cc5d7514e94c15f3929e84ec05823",
+      "certificate_sha256": "c9009d01ebf9f5d0302bc71b2fe9aa9a47a432bba17308a3111b75d7b2149025",
+      "certificate_subject": "1.2.840.113549.1.9.1=miui@xiaomi.com,CN=MIUI,OU=MIUI,O=Xiaomi,L=Beijing,ST=Beijing,C=CN"
+    }
+  ],
+  "certificate_same": true,
+  "samsung_vendor_brightness_resources": [
+    {
+      "name": "config_screenBrightnessSettingDefault",
+      "type": "integer",
+      "resource_id": "0x7f04000b",
+      "config_hex": "40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "value": 128,
+      "entry_flags": 0
+    },
+    {
+      "name": "config_screenBrightnessSettingMaximum",
+      "type": "integer",
+      "resource_id": "0x7f04000c",
+      "config_hex": "40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "value": 255,
+      "entry_flags": 0
+    },
+    {
+      "name": "config_screenBrightnessSettingMinimum",
+      "type": "integer",
+      "resource_id": "0x7f04000d",
+      "config_hex": "40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "value": 0,
+      "entry_flags": 0
+    }
+  ],
+  "signing_limit": "Certificate metadata was inspected, not a complete cryptographic APK signature verification. Matching certificate does not supply the private signing key.",
+  "cutout_limit": "Samsung vendor overlay has no physical cutout resource; do not invent an empty or donor-left cutout."
+}

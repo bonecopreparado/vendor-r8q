@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_image_sha256": "644d2a8741e840c6b2f126177616b27e5087e0c22ece310dcd3674e7e9a00bbd",
+  "operations": [
+    {
+      "op": "delete",
+      "path": "/etc/selinux/precompiled_sepolicy",
+      "old_sha256": "adfda692b2533f91b130c120d8b879ca293a207ee2000ca501c9003cf47760fc"
+    },
+    {
+      "op": "delete",
+      "path": "/etc/selinux/precompiled_sepolicy.plat_sepolicy_and_mapping.sha256",
+      "old_sha256": "e10082c7c4ae66db21b93c901bd2dcda69a7abdeef9c18dde4e74920b989b755"
+    },
+    {
+      "op": "delete",
+      "path": "/etc/selinux/precompiled_sepolicy.system_ext_sepolicy_and_mapping.sha256",
+      "old_sha256": "08d5544d7916e1b00614431c1b0b3d8b97f31fcc65648157602ff3b221fc11f4"
+    },
+    {
+      "op": "delete",
+      "path": "/etc/selinux/precompiled_sepolicy.product_sepolicy_and_mapping.sha256",
+      "old_sha256": "99ca6e7615dab47960b7a036cedcb65f1ad530519709aada04f2af41b4fcee67"
+    }
+  ]
+}

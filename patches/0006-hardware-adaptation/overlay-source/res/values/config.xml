@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- S20 FE panel peak capability. This does not force a fixed display mode. -->
+    <integer name="config_defaultPeakRefreshRate">120</integer>
+</resources>

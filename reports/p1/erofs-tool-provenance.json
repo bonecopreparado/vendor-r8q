@@ -1,0 +1,7 @@
+{
+  "mkfs.erofs_sha256": "544e2e502db2302710d7ffdb115eeb26bec374fb4a1ecf12c7aec1156dacc94c",
+  "dump.erofs_sha256": "7956eea01c768869d23deaf9555d70343693ffaf6212cf94cc9ed04853add0cd",
+  "fsck.erofs_sha256": "09bdee6a2dc7ccdc05547470d2b1f66dc5e1007890b8c3d8f1352e5767eb6b29",
+  "source_package_manifest": "tools/image-tools/packages/packages-manifest.json",
+  "method": "full streaming PAX; LZ4HC; preserved per-inode metadata; no inode byte edits"
+}

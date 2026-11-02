@@ -1,0 +1,10 @@
+--- original/system_ext/system_ext_seapp_contexts
++++ candidate/system_ext/system_ext_seapp_contexts
+@@ -30,7 +30,6 @@
+ user=_app seinfo=platform name=com.xiaomi.cadlauncher domain=mslg_app type=app_data_file levelFrom=all
+ user=product_hyperengine seinfo=untrusted_app name=com.xiaomi.winplay domain=untrusted_app type=app_data_file levelFrom=user
+ user=radio seinfo=platform name=.dataservices domain=vendor_dataservice_app type=radio_data_file
+-user=_app seinfo=platform name=com.qualcomm.telephony domain=radio_service type=app_data_file levelFrom=all
+ user=_app seinfo=platform name=org.codeaurora.ims isPrivApp=true domain=vendor_qtelephony type=app_data_file levelFrom=all
+ user=_app seinfo=platform name=com.qualcomm.qti.telephonyservice domain=vendor_qtelephony type=app_data_file levelFrom=all
+ user=_app seinfo=platform name=com.qualcomm.location isPrivApp=true domain=vendor_location_app type=app_data_file levelFrom=all
