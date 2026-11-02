@@ -23,6 +23,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Validate the planned upload name before rebuilding images
+        run: /usr/bin/python3 ci-r8q/tools/upload_rom_gofile.py "output/$ZIP_NAME" --check-name-only
       - name: Free unused hosted-runner SDK space
         run: |
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost /opt/hostedtoolcache/CodeQL
@@ -128,3 +130,16 @@ jobs:
             ci-vintf/gate.json
           if-no-files-found: warn
           retention-days: 30
+      - name: Preserve only a fully verified ROM if delivery fails
+        if: failure() && steps.package.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: P1r1-VERIFIED-ROM-DELIVERY-RETRY-NOT-DIRECT-FLASH
+          path: |
+            output/${{ env.ZIP_NAME }}
+            output/${{ env.ZIP_NAME }}.sha256
+            output/P1-SINGLE-build-report.json
+            output/P1-TESTER-ENGLISH.txt
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error

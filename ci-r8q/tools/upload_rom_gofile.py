@@ -2,6 +2,12 @@
 from pathlib import Path
 import argparse,hashlib,json,os,re,subprocess,tempfile,urllib.parse
 
+ROM_NAMES=frozenset(('HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip',
+                     'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip'))
+
+def validate_name(name):
+    if name not in ROM_NAMES:raise ValueError('Only a reviewed P1/P1r1 ROM ZIP name is accepted')
+
 def identities(path):
     sha=hashlib.sha256();md5=hashlib.md5(usedforsecurity=False);size=0
     with path.open('rb') as stream:
@@ -23,10 +29,16 @@ def public_result(response,path,before):
                 status='EXPERIMENTAL_P1_NOT_BOOT_CONFIRMED')
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('file',type=Path);ap.add_argument('--result',type=Path,required=True)
+    ap=argparse.ArgumentParser();ap.add_argument('file',type=Path);ap.add_argument('--result',type=Path)
+    ap.add_argument('--check-name-only',action='store_true',help='Validate the planned build name before reconstructing images; never uploads')
     args=ap.parse_args();path=args.file
-    if path.is_symlink() or not path.is_file() or not re.fullmatch(r'HyperOS4-R8Q-P1-[A-Za-z0-9_.-]+\.zip',path.name):
-        raise ValueError('Only the generated regular P1 ROM ZIP is accepted')
+    validate_name(path.name)
+    if args.check_name_only:
+        print('Reviewed ROM ZIP name accepted:',path.name)
+        return
+    if args.result is None:ap.error('--result is required for an upload')
+    if path.is_symlink() or not path.is_file():
+        raise ValueError('Only the generated regular ROM ZIP is accepted')
     path=path.resolve()
     if not re.fullmatch(r'[A-Za-z0-9_./@+-]+',str(path)):raise ValueError('Unsupported upload path')
     before=identities(path)
@@ -46,6 +58,7 @@ def main():
         # raw response, which can contain the service's anonymous account token.
         run=subprocess.run(['curl','--config',str(config),'--silent','--show-error','--fail',
                             '--connect-timeout','30','--max-time','2400','--speed-time','120',
+                            '--retry','2','--retry-delay','5','--retry-max-time','2400',
                             '--speed-limit','1024','--output',str(raw)],capture_output=True,timeout=2410)
         if run.returncode:raise RuntimeError('Streaming GoFile upload failed (curl exit '+str(run.returncode)+')')
         if raw.stat().st_size>1024**2:raise ValueError('GoFile response exceeds the expected bound')
