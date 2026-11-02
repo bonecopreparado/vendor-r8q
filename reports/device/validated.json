@@ -1,0 +1,36 @@
+{
+  "report_sha256": "5a5853ab307fe6b958ef49533ead54ee8e96eb84e291d96694de4f7c1b6831b4",
+  "collected_at": "2026-10-30T20:05:39.7244417-03:00",
+  "declared_target": "Samsung Galaxy S20 FE SM-G781B / r8q",
+  "device": "r8q",
+  "slot_suffix": "",
+  "kernel_reported": "4.19.325-SM8250-Paradigma/d8dc74eb",
+  "block_sizes": {
+    "super": {
+      "path": "/dev/block/sda29",
+      "bytes": 10292822016,
+      "proc_partitions_match": true
+    },
+    "boot": {
+      "path": "/dev/block/sda23",
+      "bytes": 67108864,
+      "proc_partitions_match": true
+    },
+    "dtbo": {
+      "path": "/dev/block/sda22",
+      "bytes": 10485760,
+      "proc_partitions_match": true
+    },
+    "recovery": {
+      "path": "/dev/block/sda24",
+      "bytes": 82694144,
+      "proc_partitions_match": true
+    }
+  },
+  "limits": [
+    "LP metadata not collected: original lpdump hung",
+    "Recovery properties release17/API32 are inconsistent; do not infer installed OS version from them",
+    "No source/dump of current boot or current vbmeta was collected",
+    "Reported kernel differs from Adrian candidate; this is provenance information, not a reason to swap kernels"
+  ]
+}

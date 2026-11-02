@@ -1,0 +1,16 @@
+{
+  "status": "APPLIED_TO_OFFLINE_BOOT_CANDIDATE_P0_NOT_DEVICE_TESTED",
+  "base_sha256": "7503f97efc04fa541473dfd2a2c863ff792edaf1e78020bf70f814d1073f9009",
+  "candidate_sha256": "fb924728b97b045ab9ecbece00da802cbd06aeb947aefa2aacb3ddbdd0a48873",
+  "changes": [
+    "Add EROFS product alternative",
+    "Add ext4 and EROFS system_ext first-stage entries"
+  ],
+  "requires": [
+    "Actual R8Q LP geometry/layout; physical capacities now confirmed",
+    "Confirm target init/fs_mgr and AVB handling",
+    "Confirm donor overlay mounts required after first stage",
+    "Device runtime boot and logs"
+  ],
+  "candidate_report": "reports/boot-candidate-p0.json"
+}
