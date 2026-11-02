@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tarfile
@@ -49,12 +50,12 @@ class CollectorTests(unittest.TestCase):
         # Redirect every absolute input/output path into this fixture. Production
         # code has no environment-controlled test override or privileged path.
         for path in ["/sys/fs/pstore", "/external_sd", "/usb_otg", "/storage", "/sdcard", "/data", "/tmp", "/proc"]:
-            script = script.replace(path, "@FIXTURE@" + path)
+            script = re.sub(r"(?<![A-Za-z0-9_.-])" + re.escape(path), "@FIXTURE@" + path, script)
         script = script.replace("@FIXTURE@", str(base))
         runner = base / "run.sh"
         runner.write_text(script)
         if missing_tools:
-            for command in ["awk", "date", "mkdir", "cat", "head", "wc", "tail", "rm", "sh"]:
+            for command in ["awk", "date", "mkdir", "cat", "head", "wc", "tail", "rm", "sh", "printf"]:
                 target = shutil.which(command)
                 self.assertIsNotNone(target)
                 (base / "bin" / command).symlink_to(target)
@@ -66,6 +67,7 @@ class CollectorTests(unittest.TestCase):
         self.assertIsNotNone(shell)
         proc = subprocess.run([shell, str(runner), "3", "", "unused.zip"], env=env, text=True, capture_output=True, timeout=20)
         self.assertEqual(proc.returncode, 0, proc.stderr + proc.stdout)
+        self.assertEqual(proc.stderr, "", proc.stderr)
         expected = base / {"external": "external_sd", "internal": "sdcard", "volatile": "tmp"}[storage]
         self.assertEqual(before, {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in sources})
         self.assertFalse(list((base / "usb_otg").glob("R8Q-*")))
@@ -88,6 +90,7 @@ class CollectorTests(unittest.TestCase):
                 self.assertIn("may be truncated", index)
                 self.assertIn("more than 8 records", index)
                 self.assertIn("CURRENT OrangeFox", index)
+                self.assertEqual(tar.extractfile(entries["current-recovery/proc-cmdline.txt"]).read(), b"fixture-cmdline\n")
                 self.assertIn("Missing/empty persistent records do NOT prove", index)
                 self.assertNotIn("block-target", str(entries))
             self.assertIn(str(archive), output)
