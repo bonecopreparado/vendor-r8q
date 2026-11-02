@@ -1,0 +1,46 @@
+{
+  "status": "OPTIONAL_MAPPING_OMISSION_HOST_CONTEXTS_PASSED_NOT_PHONE_BOOT_TEST",
+  "boot_confirmed": false,
+  "input_scope": "Seven hash-verified CILs previously read from actual P1 images; optional mapping arguments omitted. Filesystem deletion is not tested by this host probe.",
+  "policy_sha256": "a09214b72ab473870e055aa7f2678e53fc1c5e657477c0b24974ef201f025eed",
+  "policy_bytes": 1973586,
+  "omitted_selected_cils": [
+    "product_mapping_30.0.cil",
+    "system_ext_mapping_30.0.cil",
+    "system_ext_mapping_30.0.compat.cil"
+  ],
+  "compiler_exit": 0,
+  "capability_check_exit": 0,
+  "preserved_capabilities": [
+    "network_peer_controls",
+    "open_perms",
+    "extended_socket_class",
+    "nnp_nosuid_transition",
+    "netlink_xperm",
+    "functionfs_seclabel"
+  ],
+  "context_source_sha256": "6af85ddfbccf9434432520e01b61b59ace039b0f57ae925054dc1f67f08bf71a",
+  "context_checker_sha256": "d05f5928eaff5d8ea502852c11e49e5e1a2740076651dbba266c20d68954d7c5",
+  "contexts_checked": 2879,
+  "invalid_contexts": [],
+  "platform_mappings_preserved": [
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/mapping/30.0.cil",
+      "bytes": 126395,
+      "sha256": "50dcffe218ab56ed6a4701a10d00d242bba373b35b263af68b7a2668f0cce2c2",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/mapping/30.0.compat.cil",
+      "bytes": 2849,
+      "sha256": "ba1b503300c418ddff935d31dfe4591aa70f99edad07046278dfadfc90f8d566",
+      "matches_reviewed_input": true
+    }
+  ],
+  "limits": [
+    "Host acceptance does not prove OEM init selection, phone kernel policy load, equivalent permissions or boot.",
+    "A fresh actual-image check must verify optional directories are empty/absent in the generated candidate."
+  ]
+}

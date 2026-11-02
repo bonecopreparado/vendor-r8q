@@ -98,5 +98,29 @@ class NativeTests(unittest.TestCase):
         output=self.folder/'bad.zip'
         with self.assertRaisesRegex(ValueError,'Source image SHA256'):package.build(output,self.helper,images,require_arm64=False)
         self.assertFalse(output.with_suffix('.zip.sha256').exists());self.assertFalse(output.exists())
+    def test_mapping_variant_archive_instructions_and_guards_match_manifest(self):
+        images=[]
+        for part,length in [('super',32768),('boot',8192),('dtbo',4096)]:
+            data=(part.encode()*length)[:length];path=self.folder/(part+'.img');path.write_bytes(data)
+            images.append(dict(partition=part,file=str(path),bytes=len(data),sha256=hashlib.sha256(data).hexdigest()))
+        omitted=[dict(partition=p,path='/etc/selinux/mapping/30.0.cil',old_sha256='a'*64)for p in ('system_ext','product')]
+        output=self.folder/'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip'
+        report=package.build(output,self.helper,images,require_arm64=False,host_helper=self.helper,build_label='P1r1',omitted_optional_mappings=omitted)
+        self.assertEqual(report['build_label'],'P1r1');self.assertEqual(report['omitted_optional_mappings'],omitted)
+        with zipfile.ZipFile(output) as z:
+            script=z.read(package.INSTALLER).decode();manifest=json.loads(z.read('P1-MANIFEST.json'));notes=z.read('README-TESTER.txt').decode()
+            self.assertEqual(manifest['build_label'],'P1r1');self.assertFalse(manifest['boot_confirmed'])
+            self.assertIn(output.name,notes);self.assertIn('System/platform mappings',notes)
+            self.assertIn('P1r1 SINGLE ZIP EXPERIMENTAL',script)
+            self.assertIn('system_ext/product SELinux mappings omitted',script)
+            for guard in ('check_battery before-write','verify_written super','Conferindo o vbmeta'):
+                self.assertIn(guard,script)
+
+class VariantMetadataTests(unittest.TestCase):
+    def test_variant_rejects_platform_removal_or_missing_partition_evidence(self):
+        rows=[dict(partition=p,path='/etc/selinux/mapping/30.0.cil',old_sha256='a'*64)for p in ('system_ext','product')]
+        self.assertEqual(package.variant_metadata({'build_label':'P1r1','omitted_optional_mappings':rows})[0],'P1r1')
+        for invalid in ([],rows[:1],[dict(rows[0],partition='system'),rows[1]],[dict(rows[0],path='/etc/selinux/mapping/..'),rows[1]]):
+            with self.assertRaises(ValueError):package.variant_metadata({'build_label':'P1r1','omitted_optional_mappings':invalid})
 
 if __name__=='__main__':unittest.main()

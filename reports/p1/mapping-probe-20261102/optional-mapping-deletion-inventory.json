@@ -1,0 +1,168 @@
+{
+  "status": "OPTIONAL_MAPPING_DELETIONS_PLANNED_SOURCE_IMAGES_UNCHANGED",
+  "files": [
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202404.cil",
+      "old_sha256": "38da4cf88c0f1aca12438e3745f6934a65812587be85618bf8b648bf3309ae12",
+      "bytes": 10565
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202404.compat.cil",
+      "old_sha256": "b4d844057f2c4d585981e10d6ed092857419bb0c87e6ec524d2a613a6b725428",
+      "bytes": 29
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202504.cil",
+      "old_sha256": "2ca6bfab287c0c7d2af9b7cd39b69ea3ccd15994c1403964edaddcfddff130c0",
+      "bytes": 8432
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202504.compat.cil",
+      "old_sha256": "b4d844057f2c4d585981e10d6ed092857419bb0c87e6ec524d2a613a6b725428",
+      "bytes": 29
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202604.cil",
+      "old_sha256": "fdb605e9fe4e26365bc65008f1fae22c9ce17d4e3b6b0997033f20b3f43e4bbc",
+      "bytes": 43223
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "old_sha256": "942fdc251849354d2b238c64c2e1a894220de5a650fa621c39d451641a3c57b0",
+      "bytes": 12834
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/30.0.compat.cil",
+      "old_sha256": "ba5fe3df2d90d47c3a8c38e8284e2b0c0df3ef74a0b7f677fe6b809589bce8a2",
+      "bytes": 214
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/31.0.cil",
+      "old_sha256": "b40f003af651b289b0dc433cd215afcc2b2dbf566e4223f881d76d1260726a30",
+      "bytes": 16301
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/31.0.compat.cil",
+      "old_sha256": "bc162a6f83a1bb766bec52cd43462c426aff435651c05c4e7605908406a1d784",
+      "bytes": 214
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/32.0.cil",
+      "old_sha256": "10bf676203cc897ca294eaeff753cd7f38b7504dd0d4e325b24bfdd99e458c42",
+      "bytes": 14774
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/32.0.compat.cil",
+      "old_sha256": "047ec5819cf073dda7bdabd048b2c01b0b727750d3bb067bac9de77d8cc51116",
+      "bytes": 214
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/33.0.cil",
+      "old_sha256": "043adfed931c520c4d5537042f8c09884f9972bc9094925c7cc8c6e64ffb060f",
+      "bytes": 13325
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/33.0.compat.cil",
+      "old_sha256": "d69a87b039b01438bfbaed32dcb9a3cc37650e0ded7f91152b1e2ebdb1475d8f",
+      "bytes": 214
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/34.0.cil",
+      "old_sha256": "10f758a84616f76adcefe8ecb4a1ab5b9b290aac0ef0a95594ec32b593b6e207",
+      "bytes": 12027
+    },
+    {
+      "partition": "system_ext",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/34.0.compat.cil",
+      "old_sha256": "6e70d2748f6c96bf282d41da6606705d7a3ba2563478943bd4bc22daaa27b72f",
+      "bytes": 57
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202404.cil",
+      "old_sha256": "9eafa4355e2474c062fad49e81df66ffd67e01ef8904b23bffb2eded9b585838",
+      "bytes": 680
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202504.cil",
+      "old_sha256": "934bb77bba43f8dfe26c7eabb1498adb5a5656992d1c35fba815b62128a0b263",
+      "bytes": 542
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/202604.cil",
+      "old_sha256": "96724db22a779415a441191a1a4f0eebb79f0753b21b10883cfc6d50d9a3186a",
+      "bytes": 542
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "old_sha256": "87cd4032fef3f609a017047e3b435d7ea11c61e38637a15a7f814df494ba71ef",
+      "bytes": 1448
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/31.0.cil",
+      "old_sha256": "565ef5b228a9deca6eceb60ff8f6eb6a307d6f3bc83b906d41ffc600c0391695",
+      "bytes": 1587
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/32.0.cil",
+      "old_sha256": "41d078a8d4892ba772da1d475c2ba4173ede8be50fe2e47d5d9841a38a504d1c",
+      "bytes": 1396
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/33.0.cil",
+      "old_sha256": "12ca213df20603a0c10bf11d7315a0d255100112bd2a02ee0fba6dfdeeb0c562",
+      "bytes": 1328
+    },
+    {
+      "partition": "product",
+      "op": "delete",
+      "path": "/etc/selinux/mapping/34.0.cil",
+      "old_sha256": "8c712428ea9d531884f42246f14c5742f087076c8d68cd4e546fea60b0eb3dec",
+      "bytes": 801
+    }
+  ],
+  "platform_mapping_preserved": true,
+  "policy_cil_not_deleted": true
+}

@@ -9,16 +9,21 @@ def replace_once(text,old,new):
     if text.count(old)!=1:raise ValueError('Reviewed installer section changed: '+old[:90])
     return text.replace(old,new)
 
-def template(root=ROOT):
+def template(root=ROOT,build_label='P1'):
+    if build_label not in ('P1','P1r1'):raise ValueError('Unknown experimental build label')
     parent=(root/'delivery/Ready-P0r8/installer-template-ready.sh').read_bytes()
     if hashlib.sha256(parent).hexdigest()!=PARENT_SHA:raise ValueError('P0r8 template identity changed')
     s=parent.decode()
     s=s.replace('mktemp rm rmdir sync;','mktemp rm rmdir sync chmod;')
     s=s.replace('HyperOS4 -> R8Q P0r8 EXPERIMENTAL / boot not confirmed',
-                'HyperOS4 -> R8Q P1 SINGLE ZIP EXPERIMENTAL / boot not confirmed')
+                'HyperOS4 -> R8Q '+build_label+' SINGLE ZIP EXPERIMENTAL / boot not confirmed')
     s=s.replace('ui_print "Altera somente super, boot e dtbo. Nao formata userdata."',
                 'ui_print "Altera somente super, boot e dtbo. Nao formata userdata."\n'
                 'ui_print "P1: kernel/FCM/HAL compatibility work remains. This is an experimental boot test."')
+    if build_label=='P1r1':
+        s=s.replace('ui_print "P1: kernel/FCM/HAL compatibility work remains. This is an experimental boot test."',
+                    'ui_print "P1r1: system_ext/product SELinux mappings omitted; system mappings retained."\n'
+                    'ui_print "Experimental test only. Kernel/FCM/HAL compatibility work remains."')
     s=s.replace('trap \'rm -f "$WORK/probe"', 'trap \'rm -f "$WORK/zipread" "$WORK/probe"')
     start=s.index('# Payloads stay outside the tiny installer ZIP:')
     end=s.index('cat > "$WORK/payload.rows"',start)
@@ -56,7 +61,7 @@ ui_print "Single ZIP: native 64-bit stored-member reader is ready."
     end=s.index('# Named mounts are unmounted below.',start)
     s=s[:start]+'# All member data resides in the local ZIP protected by the mount guard above.\n'+s[end:]
     s=s.replace('ui_print "P0 gravada e hashes de retorno conferidos."',
-                'ui_print "P1 written; every readback hash matched. Boot remains unconfirmed."')
+                'ui_print "'+build_label+' written; every readback hash matched. Boot remains unconfirmed."')
     if 'PAYLOAD_DIR' in s:raise ValueError('External payload dependency remains')
     return s
 

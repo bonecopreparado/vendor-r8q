@@ -1,0 +1,130 @@
+name: Build P1r1 optional-mapping experiment single ZIP
+on:
+  push:
+    branches: [r8q-p1r1-mapping-20261102]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-p1r1-mapping
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+      ZIP_NAME: HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Free unused hosted-runner SDK space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          docker image prune -af >/dev/null
+          df -h "$GITHUB_WORKSPACE"
+      - name: Prepare reviewed filesystem and native build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex e2fsprogs mksh python3-brotli python3-zstandard qemu-user libdeflate0 liblz4-1 liblzma5 libselinux1 libuuid1 libxxhash0 libzstd1
+          curl -fsSL --max-time 120 https://deb.debian.org/debian/pool/main/e/erofs-utils/erofs-utils_1.8.6-1_amd64.deb -o /tmp/erofs-utils.deb
+          printf '%s  %s\n' 81042b8c0c3eb63699aa7d0763dceedc675a747d9f5cfebf914b4160233f411e /tmp/erofs-utils.deb | sha256sum -c -
+          dpkg-deb -x /tmp/erofs-utils.deb tools/image-tools/root
+          mkdir -p tools/image-tools/bin build output
+          for tool in dump.erofs fsck.erofs; do ln -s ../root/usr/bin/$tool tools/image-tools/bin/$tool; done
+          for tool in debugfs e2fsck; do ln -s "$(command -v "$tool")" tools/image-tools/bin/$tool; done
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -x "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" ]; then
+            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          fi
+          "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -D_FILE_OFFSET_BITS=64 -static -Os -s -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread
+          SDK_ROOT="$SDK_ROOT" /usr/bin/python3 - <<'PY'
+          import os
+          from pathlib import Path
+          ndk=Path(os.environ['SDK_ROOT'])/'ndk/27.2.12479018'
+          notices=[ndk/n for n in ('NOTICE','NOTICE.toolchain') if (ndk/n).is_file()]
+          if not notices:raise SystemExit('Android NDK copyright notices missing')
+          Path('build/android-ndk-notices.txt').write_bytes(b'\n\n'.join(p.read_bytes() for p in notices))
+          PY
+          cc -D_FILE_OFFSET_BITS=64 -O2 -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread-host
+          qemu-aarch64 build/r8q-zipread --version
+      - name: Verify source tests and real ZIP64 / mksh fixtures
+        run: |
+          /usr/bin/python3 -m unittest discover -s ci-r8q/tests -v
+          /usr/bin/python3 ci-r8q/regression/rebuild_erofs_fixture.py
+          /usr/bin/python3 ci-r8q/regression/single_zip_installer_tests.py
+      - name: Build matching modern policy compiler and context checker
+        run: |
+          bash ci-r8q/tools/build_secilc.sh
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_contexts.c .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
+      - name: Fetch reviewed official VINTF host tool and record known baseline
+        run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
+      - name: Rebuild P1r1 with only system_ext/product mapping files omitted
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings
+      - name: Build one complete ZIP and verify every stored member and image
+        id: package
+        run: |
+          /usr/bin/python3 tools/package_p1_single.py --helper build/r8q-zipread --host-helper build/r8q-zipread-host --ndk-notice build/android-ndk-notices.txt --images-manifest reports/p1/ci-build/package-images.json --output "output/$ZIP_NAME"
+          /usr/bin/python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('output/P1-SINGLE-build-report.json').read_text())
+          assert r['native_host_readback'] and not r['external_payloads_required']
+          assert r['build_label']=='P1r1' and len(r['omitted_optional_mappings'])==23
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('sha256='+r['sha256']+'\n')
+          PY
+      - name: Attest the exact full ZIP digest
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-name: HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip
+          subject-digest: sha256:${{ steps.package.outputs.sha256 }}
+      - name: Upload the single full ZIP to GoFile
+        env:
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+        run: /usr/bin/python3 ci-r8q/tools/upload_rom_gofile.py "output/$ZIP_NAME" --result output/gofile-rom.json
+      - name: Publish experimental download metadata and instructions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+          RELEASE_TAG: p1r1-mapping-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
+          /usr/bin/python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('output/gofile-rom.json').read_text())
+          notes=('P1r1 mapping experiment for S20 FE Snapdragon r8q G781B/G780G. Boot and hardware remain unconfirmed.\n\n'
+                 'Changes from P1: omit the 15 system_ext and 8 product SELinux mapping files recommended by the donor developer. System/platform mappings and policy CIL remain. Boot/kernel/dtbo are unchanged. P1 bootloop cause has not been established by failed-boot logs.\n\n'
+                 '[Download the ONE complete recovery ZIP]('+r['download_page']+')\n\n'
+                 'Size: '+str(r['size'])+' bytes. SHA256: `'+r['sha256']+'`.\n\n'
+                 'No payload folder, PC or installer generation is needed. Keep the ZIP compressed; use internal storage or exFAT because it exceeds 4 GiB.\n\n'
+                 'Known host VINTF kernel/FCM/HAL contract findings remain. This is not a stable release. Only super, dtbo and boot are written; userdata is not formatted.\n\n'
+                 '[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'
+                 +Path('output/P1-TESTER-ENGLISH.txt').read_text())
+          Path('output/P1-RELEASE-NOTES.md').write_text(notes)
+          PY
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'P1r1 system_ext/product mapping experiment — boot unconfirmed' --notes-file output/P1-RELEASE-NOTES.md \
+            "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json output/gofile-rom.json output/P1-SINGLE.intoto.jsonl
+      - name: Save small current-build evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: P1r1-SINGLE-BUILD-REPORTS-NOT-FLASHABLE
+          path: |
+            output/*.json
+            output/*.jsonl
+            output/*.txt
+            output/*.sha256
+            reports/p1/ci-build/**/*.json
+            reports/p1/ci-build/**/*.log
+            ci-vintf/gate.json
+          if-no-files-found: warn
+          retention-days: 30

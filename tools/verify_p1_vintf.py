@@ -7,6 +7,7 @@ from verify_p1_policy import Filesystem
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--output',type=Path,default=ROOT/'reports/p1/vintf-actual')
+    ap.add_argument('--product',type=Path,default=ROOT/'extracted/hyperos/product.img')
     args=ap.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     spec=importlib.util.spec_from_file_location('vintf_inputs',ROOT/'ci-r8q/tools/run_checkvintf.py')
     source=importlib.util.module_from_spec(spec);spec.loader.exec_module(source)
@@ -16,7 +17,7 @@ def main():
     assert hashlib.sha256(binary.read_bytes()).hexdigest()==pin['checkvintf_sha256']
     root=base/'root';records=[];images=[]
     for part in ('system','system_ext','product','vendor','odm'):
-        image=ROOT/('extracted/hyperos/product.img' if part=='product' else 'candidates/p1/'+part+'.img')
+        image=args.product.resolve() if part=='product' else ROOT/('candidates/p1/'+part+'.img')
         with image.open('rb') as f:digest=hashlib.file_digest(f,'sha256').hexdigest()
         fs=Filesystem(image);prefix='/system' if part=='system' else ''
         try:

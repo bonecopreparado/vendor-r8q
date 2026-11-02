@@ -135,6 +135,8 @@ def main():
     ap.add_argument('--discard-intermediate-images',action='store_true',
                     help='CI only: remove four derived partition files after their exact bytes are verified in super')
     ap.add_argument('--minimum-free-gib',type=int,default=32)
+    ap.add_argument('--omit-optional-mappings',action='store_true',
+                    help='P1r1 experiment: remove only system_ext/product SELinux mapping files')
     args=ap.parse_args()
     for path in (ROOT/'extracted/r8q',ROOT/'extracted/hyperos',ROOT/'candidates/p0',ROOT/'candidates/p1',WORK,ROOT/'tools/selinux-modern'):
         if path.exists() or path.is_symlink():
@@ -178,9 +180,11 @@ def main():
     boot=ROOT/'candidates/p0/boot-r8q-hyperos-p0.img'
     verify_named_file(boot,BOOT_SHA,67108864)
     padded_dtbo(ROOT/'extracted/r8q/dtbo.img',ROOT/'candidates/p0/dtbo-r8q-p0.img')
-    run('tools/prepare_p1_plans.py')
+    variant_args=['--omit-optional-mappings'] if args.omit_optional_mappings else []
+    run('tools/prepare_p1_plans.py',*variant_args)
     plans=ROOT/'patches/0007-policy-integration';out=ROOT/'candidates/p1';out.mkdir()
-    for part in ('system','system_ext'):
+    erofs_parts=('system','system_ext','product') if args.omit_optional_mappings else ('system','system_ext')
+    for part in erofs_parts:
         run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos'/(part+'.img'),
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),
             '--report',WORK/(part+'-build.json'))
@@ -190,8 +194,9 @@ def main():
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),'--report',report)
         run('tools/verify_ext4_tree_diff.py','--before',ROOT/'extracted/r8q'/(part+'.img'),
             '--after',out/(part+'.img'),'--build-report',report,'--report',WORK/(part+'-tree-diff.json'))
+    product=out/'product.img' if args.omit_optional_mappings else ROOT/'extracted/hyperos/product.img'
     run('tools/verify_p1_policy.py','--checker',ROOT/'build/check-contexts','--require-checker',
-        '--output',WORK/'policy')
+        '--product',product,'--output',WORK/'policy',*variant_args)
     policy=json.loads((WORK/'policy/result.json').read_text())
     if policy['status']!='ACTUAL_P1_CIL_CAPABILITIES_AND_CONTEXTS_PASSED_HOST_ONLY' or policy['contexts']['invalid']:
         raise ValueError('Actual rebuilt policy/context checks did not pass')
@@ -199,14 +204,24 @@ def main():
         host=args.host_tools.resolve();pin=json.loads((ROOT/'ci-r8q/pins/official-otatools.json').read_text())
         verify_named_file(host/'bin/checkvintf',pin['checkvintf_sha256'])
         link=ROOT/'tools/p1-host/aosp';link.parent.mkdir(parents=True,exist_ok=False);link.symlink_to(host,target_is_directory=True)
-        run('tools/verify_p1_vintf.py','--output',WORK/'vintf')
+        run('tools/verify_p1_vintf.py','--product',product,'--output',WORK/'vintf')
     composition=dict(reviewed)
     composition['partitions']=[dict(row)for row in reviewed['partitions']]
     for row in composition['partitions']:
-        if row['partition']=='product':continue
+        if row['partition']=='product' and not args.omit_optional_mappings:continue
         image=out/(row['partition']+'.img')
         row.update(file=str(image.relative_to(ROOT)),bytes=image.stat().st_size,sha256=digest(image),source='P1 reconstructed current build')
-    composition.update(status='P1_REBUILT_HOST_CHECKED_NOT_BOOT_TESTED',boot_confirmed=False)
+    build_label='P1r1' if args.omit_optional_mappings else 'P1'
+    omitted=[]
+    if args.omit_optional_mappings:
+        for part in ('system_ext','product'):
+            rows=json.loads((plans/(part+'-plan.json')).read_text())['operations']
+            removed=[dict(partition=part,path=r['path'],old_sha256=r['old_sha256']) for r in rows
+                     if r['op']=='delete' and r['path'].startswith('/etc/selinux/mapping/')]
+            if not removed:raise ValueError('Optional mapping removal evidence missing: '+part)
+            omitted+=removed
+    composition.update(status='P1_REBUILT_HOST_CHECKED_NOT_BOOT_TESTED',boot_confirmed=False,
+                       build_label=build_label,omitted_optional_mappings=omitted)
     plan=WORK/'composition.json';write_json(plan,composition)
     super_image=out/'super-r8q-hyperos-p1.img';super_report=WORK/'super-build.json'
     run('tools/build_super_p1.py','--plan',plan,'--output',super_image,'--report',super_report)
@@ -214,14 +229,15 @@ def main():
     images=[dict(partition='super',file=str(super_image.relative_to(ROOT)),bytes=super_image.stat().st_size,sha256=digest(super_image)),
             dict(partition='boot',file=str(boot.relative_to(ROOT)),bytes=67108864,sha256=BOOT_SHA),
             dict(partition='dtbo',file='candidates/p0/dtbo-r8q-p0.img',bytes=10485760,sha256=DTBO_SHA)]
-    write_json(WORK/'package-images.json',dict(name='HyperOS4-R8Q-P1',
+    write_json(WORK/'package-images.json',dict(name='HyperOS4-R8Q-'+build_label,
+        build_label=build_label,omitted_optional_mappings=omitted,
         status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,images=images,
         limits=['Host kernel/FCM4/HAL compatibility findings remain; no stable ROM claim.',
                 'Raw ext4/LP hashes are computed per build because filesystem bookkeeping timestamps may differ.']))
     if args.discard_intermediate_images:
         removed=[]
         for row in composition['partitions']:
-            if row['partition']=='product':continue
+            if row['partition']=='product' and not args.omit_optional_mappings:continue
             image=ROOT/row['file']
             verify_named_file(image,row['sha256'],row['bytes'])
             image.unlink()

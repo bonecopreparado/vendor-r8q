@@ -122,8 +122,26 @@ The native reader avoids recovery unzip for multi-gigabyte ZIP64 member data;
 all compressed hashes, gzip CRCs, raw hashes and partition readbacks remain.
 '''
 
-def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk_notices=()):
+def variant_metadata(manifest):
+    label=manifest.get('build_label','P1');omitted=manifest.get('omitted_optional_mappings',[])
+    if label not in ('P1','P1r1') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
+    if label=='P1' and omitted:raise ValueError('Baseline cannot omit mappings')
+    if label=='P1r1':
+        seen=set()
+        for row in omitted:
+            if not isinstance(row,dict):raise ValueError('Optional mapping evidence is not an object')
+            part,path=row.get('partition'),row.get('path')
+            if part not in ('system_ext','product') or not isinstance(path,str) or not re.fullmatch(r'/etc/selinux/mapping/[A-Za-z0-9_.-]+',path) or path.rsplit('/',1)[-1] in ('.','..'):
+                raise ValueError('Optional mapping evidence references an unexpected path')
+            if not re.fullmatch('[0-9a-f]{64}',row.get('old_sha256','')) or (part,path) in seen:
+                raise ValueError('Optional mapping evidence identity is invalid or duplicated')
+            seen.add((part,path))
+        if {part for part,_ in seen}!={'system_ext','product'}:raise ValueError('Both optional mapping partitions need evidence')
+    return label,omitted
+
+def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk_notices=(),build_label='P1',omitted_optional_mappings=()):
     output=Path(output);root=Path(root)
+    build_label,omitted=variant_metadata(dict(build_label=build_label,omitted_optional_mappings=list(omitted_optional_mappings)))
     if output.exists() or output.is_symlink():raise ValueError('Output must be a new file')
     output.parent.mkdir(parents=True,exist_ok=True)
     blob=helper_blob(helper,require_arm64)
@@ -138,10 +156,19 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
     rows=image_chunks(images)
     keys=('part','name','bytes','sha256','compressed_bytes','compressed_sha256','offset','readback_sha256')
     table='\n'.join(' '.join(str(r[k])for k in keys)for r in rows)
-    script=template(root).replace('@@PAYLOAD_ROWS@@',table)
+    script=template(root,build_label=build_label).replace('@@PAYLOAD_ROWS@@',table)
     script=script.replace('@@HELPER_BLOCKS@@',str(len(blob)//4096)).replace('@@HELPER_BYTES@@',str(len(blob))).replace('@@HELPER_SHA@@',SHA(blob))
     if '@@' in script:raise ValueError('Unresolved installer field')
-    manifest=dict(name='HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL',status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,
+    instructions=INSTRUCTIONS.replace('HyperOS4 R8Q P1 -','HyperOS4 R8Q '+build_label+' -').replace('HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip',output.name)
+    if build_label=='P1r1':
+        instructions=instructions.replace('IMPORTANT: boot is not confirmed.',
+            'P1r1 experiment: only system_ext/product SELinux mapping files were removed\n'
+            'from the P1 composition. System/platform mappings, policy CIL files,\n'
+            'kernel, boot and dtbo are retained. This tests the donor developer\'s\n'
+            'mapping advice; the cause of the previous bootloop remains unconfirmed.\n\n'
+            'IMPORTANT: boot is not confirmed.')
+    manifest=dict(name='HyperOS4-R8Q-'+build_label+'-SINGLE-EXPERIMENTAL',status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,
+                  build_label=build_label,omitted_optional_mappings=omitted,
                   known_host_vintf_status='LEGACY_KERNEL_FCM_HAL_CONTRACTS_UNRESOLVED',
                   images=[dict(partition=r['partition'],bytes=r['bytes'],sha256=r['sha256'],
                                representation='concatenated_gzip_members',
@@ -157,7 +184,7 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
             archive.writestr(info(INSTALLER,True),script.encode())
             archive.writestr(info('META-INF/com/google/android/updater-script'),b'# Native ZIP64-backed shell installer\n')
             archive.writestr(info('P1-MANIFEST.json'),(json.dumps(manifest,indent=2)+'\n').encode())
-            archive.writestr(info('README-TESTER.txt'),INSTRUCTIONS.encode())
+            archive.writestr(info('README-TESTER.txt'),instructions.encode())
             archive.writestr(info('LICENSE.txt'),license_data)
             archive.writestr(info('THIRD-PARTY-NOTICES.txt'),notice_data)
             image_chunks(images,archive=archive,expected=rows)
@@ -196,11 +223,12 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
         # Incomplete output is never given a checksum or success report.
         raise
     output.with_suffix(output.suffix+'.sha256').write_text(digest+'  '+output.name+'\n')
-    output.with_name('P1-TESTER-ENGLISH.txt').write_text(INSTRUCTIONS)
+    output.with_name('P1-TESTER-ENGLISH.txt').write_text(instructions)
     report=dict(status='SINGLE_ZIP_PACKAGED_AND_READ_BACK_NOT_BOOT_TESTED',file=output.name,bytes=output.stat().st_size,
                 sha256=digest,boot_confirmed=False,external_payloads_required=False,zip64=True,
                 members=len(expected),payload_chunks=len(rows),native_host_readback=bool(host_helper),
                 installer_sha256=manifest['installer_sha256'],helper_sha256=SHA(blob),images=manifest['images'],
+                build_label=build_label,omitted_optional_mappings=omitted,
                 checks=['source image capacities/hashes','two-pass compressed identities','ZIP CRCs','gzip CRCs','raw chunk hashes','early helper offset/bytes','updater executable mode','all members read back'])
     output.with_name('P1-SINGLE-build-report.json').write_text(json.dumps(report,indent=2)+'\n')
     return report
@@ -213,7 +241,9 @@ def main():
     ap.add_argument('--host-helper',type=Path)
     ap.add_argument('--ndk-notice',type=Path,action='append',default=[])
     args=ap.parse_args()
-    report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper,ndk_notices=args.ndk_notice)
+    label,omitted=variant_metadata(json.loads(args.images_manifest.read_text()))
+    report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper,ndk_notices=args.ndk_notice,
+                 build_label=label,omitted_optional_mappings=omitted)
     print(json.dumps(report,indent=2))
 
 if __name__=='__main__':main()

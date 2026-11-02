@@ -6,7 +6,7 @@ every capability; this does not load a policy into the phone kernel.
 """
 from pathlib import Path
 from collections import defaultdict
-import argparse,hashlib,json,re,struct,subprocess,sys
+import argparse,hashlib,json,re,stat,struct,subprocess,sys
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'ci-r8q/vendor_audit'))
@@ -25,6 +25,27 @@ SPEC=(
  ('vendor','/etc/selinux/plat_pub_versioned.cil','vendor_plat_pub_versioned.cil'),
  ('vendor','/etc/selinux/vendor_sepolicy.cil','vendor_vendor_sepolicy.cil'))
 SHA=lambda b:hashlib.sha256(b).hexdigest()
+OPTIONAL_MAPPING_PARTITIONS=('system_ext','product')
+OPTIONAL_MAPPING_DIRECTORY='/etc/selinux/mapping'
+
+def cil_spec(omit_optional_mappings=False):
+    """Retain platform mappings and all partition policies in both variants."""
+    return tuple(row for row in SPEC if not (omit_optional_mappings and
+        row[0] in OPTIONAL_MAPPING_PARTITIONS and
+        row[1].startswith(OPTIONAL_MAPPING_DIRECTORY+'/')))
+
+def verify_optional_mapping_absence(readers):
+    """Require actual optional directories to be absent or strictly empty."""
+    checked=[]
+    for part in OPTIONAL_MAPPING_PARTITIONS:
+        fs=readers[part];path=OPTIONAL_MAPPING_DIRECTORY
+        present=fs.exists(path)
+        if present:
+            entries=fs.checked_directory(path)
+            if entries:
+                raise ValueError('Optional mapping directory still contains entries: '+part+':'+path)
+        checked.append(dict(partition=part,path=path,state='empty'if present else'absent',entries=0))
+    return checked
 
 def file_sha(path):
     with path.open('rb')as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
@@ -58,6 +79,35 @@ class Filesystem:
     def exists(self,path):
         parent,name=path.rsplit('/',1)
         return any(n==name for n,_ in self.ls(parent or '/'))
+    def checked_directory(self,path):
+        # Unlike permissive optional-tree walking, an unreadable or non-directory
+        # target must not be accepted as proof that the mapping files are gone.
+        if self.ext:
+            if not stat.S_ISDIR(self.ext.stat(path,follow_symlinks=False)['mode']):
+                raise ValueError('Expected a real filesystem directory: '+path)
+            return list(self.ext.list_dir(path))
+        r=command([ROOT/'tools/image-tools/bin/dump.erofs','--ls','--path='+path,self.image])
+        text=r.stdout.decode(errors='replace')
+        if r.returncode or not re.search(r'^Size:.*\bdirectory\s*$',text,re.M):
+            raise ValueError('Unable to verify filesystem directory: '+path)
+        rows=[];started=False;dots=set()
+        for line in text.splitlines():
+            if re.fullmatch(r'\s*NID\s+TYPE\s+FILENAME\s*',line):
+                started=True
+                continue
+            if not started or not line.strip():continue
+            m=re.match(r'^\s*\d+\s+(\d+)\s+(.+)$',line)
+            if not m:raise ValueError('Malformed filesystem directory listing: '+path)
+            if m[2]in('.','..'):
+                if m[1]!='2':raise ValueError('Invalid filesystem dot-directory entry')
+                dots.add(m[2])
+            else:
+                if '/'in m[2] or m[2]in('.','..'):
+                    raise ValueError('Unsafe filesystem directory entry')
+                rows.append((m[2],m[1]=='2'))
+        if not started or dots!={'.','..'}:
+            raise ValueError('Incomplete filesystem directory listing: '+path)
+        return rows
     def read(self,path):
         if not self.exists(path):raise FileNotFoundError(str(self.image)+':'+path)
         if self.ext:return self.ext.read_file(path,max_bytes=16*1024**2)
@@ -116,9 +166,11 @@ def main():
     ap.add_argument('--output',type=Path,default=ROOT/'reports/p1/policy-validation')
     ap.add_argument('--checker',type=Path)
     ap.add_argument('--require-checker',action='store_true')
+    ap.add_argument('--omit-optional-mappings',action='store_true',
+                    help='Require system_ext/product mapping directories to be empty or absent; preserve platform mappings')
     args=ap.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
     images={p:(args.product if p=='product'else args.images_dir/(p+'.img')).resolve()for p in('system','system_ext','product','vendor','odm')}
-    readers={};report=dict(status='P1_POLICY_VALIDATION_STARTED_NOT_BOOT_TESTED',boot_confirmed=False,images={},cil=[],context_files=[],init_files=[],limits=['Host init-compatible compilation is not a phone kernel load test.','Policy version 30 follows the observed original ODM binary; maximum kernel policy version remains unmeasured.','Dynamic MLS, /data applications, inode xattrs and runtime permission decisions are not validated by label checks.'])
+    readers={};report=dict(status='P1_POLICY_VALIDATION_STARTED_NOT_BOOT_TESTED',boot_confirmed=False,omit_optional_mappings=args.omit_optional_mappings,images={},cil=[],context_files=[],init_files=[],limits=['Host init-compatible compilation is not a phone kernel load test.','Policy version 30 follows the observed original ODM binary; maximum kernel policy version remains unmeasured.','Dynamic MLS, /data applications, inode xattrs and runtime permission decisions are not validated by label checks.'])
     try:
         for part,path in images.items():
             report['images'][part]=dict(path=str(path),bytes=path.stat().st_size,sha256=file_sha(path))
@@ -134,7 +186,9 @@ def main():
         # Match the exact already reviewed CIL candidate while proving it is
         # now embedded in the actual new filesystems.
         cil_dir=out/'cils';cil_dir.mkdir(exist_ok=True);inputs=[]
-        for part,path,name in SPEC:
+        if args.omit_optional_mappings:
+            report['optional_mapping_directories_verified']=verify_optional_mapping_absence(readers)
+        for part,path,name in cil_spec(args.omit_optional_mappings):
             data=readers[part].read(path);candidate='candidate/'+name;original='original/'+name
             expected=manifest['files'][candidate if candidate in manifest['files']else original]
             if SHA(data)!=expected:raise ValueError('Actual embedded CIL identity differs: '+part+':'+path)
