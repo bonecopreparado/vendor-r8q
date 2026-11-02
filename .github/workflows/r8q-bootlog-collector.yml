@@ -1,0 +1,61 @@
+name: R8Q phone-only previous-boot log collector
+on:
+  push:
+    branches: [r8q-bootlog-20261102]
+    paths:
+      - tools/bootlog_collector.sh
+      - tools/package_bootlog_collector.py
+      - ci-r8q/tests/test_bootlog_collector.py
+      - delivery/Bootlog-Collector/README-ENGLISH.txt
+      - .github/workflows/r8q-bootlog-collector.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  collector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install shell for recovery compatibility tests
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+      - name: Test read-only collection and build the recovery ZIP
+        run: |
+          python3 -m unittest discover -s ci-r8q/tests -p test_bootlog_collector.py -v
+          python3 tools/package_bootlog_collector.py --output delivery/Bootlog-Collector/R8Q-BOOTLOG-COLLECTOR.zip
+          cd delivery/Bootlog-Collector
+          sha256sum R8Q-BOOTLOG-COLLECTOR.zip > R8Q-BOOTLOG-COLLECTOR.zip.sha256
+      - name: Attest the exact collector ZIP
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: delivery/Bootlog-Collector/R8Q-BOOTLOG-COLLECTOR.zip
+      - name: Publish the ready-to-run diagnostic collector
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: r8q-bootlog-collector-${{ github.run_number }}-${{ github.run_attempt }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" delivery/Bootlog-Collector/R8Q-BOOTLOG-COLLECTOR.intoto.jsonl
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'R8Q previous-boot log collector — phone only' \
+            --notes-file delivery/Bootlog-Collector/README-ENGLISH.txt \
+            delivery/Bootlog-Collector/R8Q-BOOTLOG-COLLECTOR.zip \
+            delivery/Bootlog-Collector/R8Q-BOOTLOG-COLLECTOR.zip.sha256 \
+            delivery/Bootlog-Collector/R8Q-BOOTLOG-COLLECTOR.intoto.jsonl \
+            delivery/Bootlog-Collector/README-ENGLISH.txt
+      - name: Retain diagnostic tool build files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: BOOTLOG-COLLECTOR-BUILD-FILES
+          path: delivery/Bootlog-Collector/
+          retention-days: 30

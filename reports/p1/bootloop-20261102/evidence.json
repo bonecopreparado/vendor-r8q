@@ -1,0 +1,32 @@
+{
+  "status": "FLASH_CONFIRMED_FAILED_BOOT_REPORTED_NO_FAILED_BOOT_LOG",
+  "source_commit": "8a06af65b76c124b32674af8782be494d6637890",
+  "sources": [
+    {
+      "file": "dmesg (1).log",
+      "bytes": 774184,
+      "sha256": "4606eb5c873e70a5cb9bdc6b872e29143332f10666d963e5824d231ea1336aea",
+      "lines": 8348
+    },
+    {
+      "file": "logcat (1).log",
+      "bytes": 4171497,
+      "sha256": "0ecebc361b828b3ca3df5b59f2bd9c7a3df950325551b711b03a37f660178373",
+      "lines": 23097
+    },
+    {
+      "file": "recovery (2).log",
+      "bytes": 16136441,
+      "sha256": "accea1bc0c83b8bdc3473ab9c0180a73428f92a0b494d41d42a4763d99ee9189",
+      "lines": 159744
+    }
+  ],
+  "raw_logs_published": false,
+  "boot_confirmed": false,
+  "pd_mapper_linker_failures_in_recovery": 458,
+  "hyper_bpfloader_events_in_recovery_logcat": 0,
+  "needs": [
+    "previous boot pstore/ramoops or last_kmsg",
+    "post-flash recovery restart and Format Data confirmation"
+  ]
+}
