@@ -37,6 +37,7 @@ jobs:
           dpkg-deb -x /tmp/erofs-utils.deb tools/image-tools/root
           mkdir -p tools/image-tools/bin build output
           for tool in dump.erofs fsck.erofs; do ln -s ../root/usr/bin/$tool tools/image-tools/bin/$tool; done
+          for tool in debugfs e2fsck; do ln -s "$(command -v "$tool")" tools/image-tools/bin/$tool; done
           SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           if [ ! -x "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" ]; then
             "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'

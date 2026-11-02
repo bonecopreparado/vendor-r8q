@@ -143,6 +143,14 @@ def main():
         raise ValueError('Minimum free-space bound must be between 24 and 128 GiB')
     if shutil.disk_usage(ROOT).free < args.minimum_free_gib*1024**3:
         raise ValueError('Insufficient build space; use a clean runner with at least '+str(args.minimum_free_gib)+' GiB free')
+    for name in ('mkfs.erofs','dump.erofs','fsck.erofs'):
+        binary=ROOT/'tools/image-tools/root/usr/bin'/name
+        if not binary.is_file() or not os.access(binary,os.X_OK):
+            raise ValueError('Missing required EROFS tool before downloading sources: '+name)
+    for name in ('debugfs','e2fsck'):
+        binary=ROOT/'tools/image-tools/bin'/name
+        if not (binary.is_file() and os.access(binary,os.X_OK)) and not shutil.which(name):
+            raise ValueError('Missing required ext4 tool before downloading sources: '+name)
     verify_named_file(ROOT/'reports/device/super-first-1MiB.bin', PREFIX_SHA, 1048576)
     for path in ('originals','extracted','candidates','reports/r8q','reports/hyperos'):
         (ROOT/path).mkdir(parents=True,exist_ok=True)

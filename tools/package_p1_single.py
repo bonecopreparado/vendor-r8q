@@ -106,8 +106,9 @@ stable ROM or a claim that network, NFC, fingerprint or camera work.
    it also requires active charging, and below 20% it always stops.
 5. In OrangeFox Files, select HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip and swipe
    to install. Use a local file on /data or external storage.
-6. After successful writes, reboot to RECOVERY first and save/export recovery.log
-   outside /data. The agreed first-boot test needs clean userdata. A separate
+6. After successful writes, save/export recovery.log outside /data BEFORE
+   rebooting, then reboot to RECOVERY to refresh partition mappings.
+   The agreed first-boot test needs clean userdata. A separate
    manual OrangeFox Format Data erases internal storage, including downloaded
    ZIPs and backups stored there. Keep backups, the working restoration ROM and
    logs on external SD/USB before choosing it. The installer never formats data.

@@ -4,6 +4,7 @@ import difflib
 import hashlib
 import json
 import re
+import shutil
 import subprocess
 import sys
 
@@ -16,6 +17,10 @@ def read(part,path):
     erofs=part in {'system','system_ext','product'}
     image=ROOT/'extracted'/('hyperos' if erofs else 'r8q')/(part+'.img')
     tool=ROOT/'tools/image-tools/bin'/('dump.erofs' if erofs else 'debugfs')
+    if not tool.is_file():
+        fallback=shutil.which('dump.erofs' if erofs else 'debugfs')
+        if not fallback:raise ValueError('Required filesystem reader is unavailable before P1 planning')
+        tool=Path(fallback)
     args=[str(tool),'--cat','--path='+path,str(image)] if erofs else [str(tool),'-R','cat '+path,str(image)]
     p=subprocess.run(args,capture_output=True,check=True,timeout=30)
     if not p.stdout:raise ValueError('Missing original file: '+part+path)
