@@ -1,0 +1,348 @@
+{
+  "status": "ISOLATED_CONFIGURATION_FIX_NOT_BOOT_TESTED",
+  "changes": [
+    {
+      "partition": "system_ext",
+      "line": 33,
+      "original": "user=_app seinfo=platform name=com.qualcomm.telephony domain=radio_service type=app_data_file levelFrom=all",
+      "reason": "invalid_radio_service_process_domain_duplicate",
+      "retained_domain": "vendor_qtelephony"
+    },
+    {
+      "partition": "vendor",
+      "line": 1,
+      "original": "user=_app seinfo=platform name=com.samsung.ucm.baiplugin domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.samsung.ucm.baiplugin"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 2,
+      "original": "user=_app seinfo=platform name=com.sec.smartcard.manager domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.sec.smartcard.manager"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 3,
+      "original": "user=_app seinfo=sec_untrusted name=com.sec.android.service.singlesignon domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.sec.android.service.singlesignon"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 4,
+      "original": "user=_app seinfo=sec_untrusted name=com.sds.stsm.esetest domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.sds.stsm.esetest"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 5,
+      "original": "user=_app seinfo=platform name=com.samsung.android.oneconnect* domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.samsung.android.oneconnect*"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 9,
+      "original": "user=_app seinfo=trustonicpartner domain=trustonicpartner_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "seinfo_signer_absent",
+        "seinfo": "trustonicpartner",
+        "mac_signer_sha256": [
+          "0bdc216e25055b1d50f7969c118c29781b8067ab037db4f4370bcab97dd65be6",
+          "138dec774d9a9080df1368b961a7d7b524726482601173c6f601037c4f528f51",
+          "26e9ebcb51b6e2f7d98ec7d6d307fdcf87ae59dde1414077d3ae0eaa6556feb3",
+          "2d6b021882b2fa8c9232e2f0ff4ef38987c59d426c58021f59ede720b83e1032",
+          "3aa9d70084a48148629b92d1219ebaf988a96ed454b208e36192b28d8f09a926",
+          "4349b24ddc23f6c80c6ad5254c495b20bc7aca4303fc64a0fea2c67b9c36742d",
+          "51f95efc4b28f36fad0cbfbde27213be39390907eacf688d3b1c2601487fa80d",
+          "58618be5219e6cdc864e0b6921c70f5f037fe6227f7d49f6c9d90b083f08c05b",
+          "94f970ad0e5d34625f737ab2638c56c12ba3b4eb1ff0dee1234863ee61ae7036",
+          "9c3a700c8c20e2b723d1a8ad647f22f7923fb419e89a0d7ecb8c82fcb8bcc4f0",
+          "ad27b68a191ce2d91204badb438550f4620054c15ebfa13c10b492cd998fdc40",
+          "b0dd0e22029e4d2bf87428035db43462dc614b57d93617fa471b4658111b4cbd",
+          "b312a83195920e6731a09a4beab5e6d8b3029417c9444623dca6ab5bb20b432e",
+          "b7113be90c000115cb1e21974ee6d31a9f29a423cd2c5ad027807e8375180996",
+          "c4393fcf778b7de2a812bc83848302cc68431fba19a1ace112415fc18dd05c18",
+          "cd13b3e1a176ea78b70a410b5f71fce5cdfb03a4b08a1a444ec1198c8d141469",
+          "d98ec9a51bbb5b7eaf5f29f600fcec02da3f064be5282853454f5e4824c26db2",
+          "db7ec064fcdce6a949faf3894a8028601ecd834ac4e547e1a7bda7e2749ffb6a",
+          "f0181f6fab0ddb21ce1b8f5068d9d705506f6c33d4f1717ee4ddf3cf6cd5e04c",
+          "f40a33c103b9d6a653339c524dae44828aef46a1dceea0250c91a4823ae34d9b"
+        ]
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 10,
+      "original": "user=_app minTargetSdkVersion=28 seinfo=trustonicpartner domain=trustonicpartner_app type=app_data_file levelFrom=all",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "seinfo_signer_absent",
+        "seinfo": "trustonicpartner",
+        "mac_signer_sha256": [
+          "0bdc216e25055b1d50f7969c118c29781b8067ab037db4f4370bcab97dd65be6",
+          "138dec774d9a9080df1368b961a7d7b524726482601173c6f601037c4f528f51",
+          "26e9ebcb51b6e2f7d98ec7d6d307fdcf87ae59dde1414077d3ae0eaa6556feb3",
+          "2d6b021882b2fa8c9232e2f0ff4ef38987c59d426c58021f59ede720b83e1032",
+          "3aa9d70084a48148629b92d1219ebaf988a96ed454b208e36192b28d8f09a926",
+          "4349b24ddc23f6c80c6ad5254c495b20bc7aca4303fc64a0fea2c67b9c36742d",
+          "51f95efc4b28f36fad0cbfbde27213be39390907eacf688d3b1c2601487fa80d",
+          "58618be5219e6cdc864e0b6921c70f5f037fe6227f7d49f6c9d90b083f08c05b",
+          "94f970ad0e5d34625f737ab2638c56c12ba3b4eb1ff0dee1234863ee61ae7036",
+          "9c3a700c8c20e2b723d1a8ad647f22f7923fb419e89a0d7ecb8c82fcb8bcc4f0",
+          "ad27b68a191ce2d91204badb438550f4620054c15ebfa13c10b492cd998fdc40",
+          "b0dd0e22029e4d2bf87428035db43462dc614b57d93617fa471b4658111b4cbd",
+          "b312a83195920e6731a09a4beab5e6d8b3029417c9444623dca6ab5bb20b432e",
+          "b7113be90c000115cb1e21974ee6d31a9f29a423cd2c5ad027807e8375180996",
+          "c4393fcf778b7de2a812bc83848302cc68431fba19a1ace112415fc18dd05c18",
+          "cd13b3e1a176ea78b70a410b5f71fce5cdfb03a4b08a1a444ec1198c8d141469",
+          "d98ec9a51bbb5b7eaf5f29f600fcec02da3f064be5282853454f5e4824c26db2",
+          "db7ec064fcdce6a949faf3894a8028601ecd834ac4e547e1a7bda7e2749ffb6a",
+          "f0181f6fab0ddb21ce1b8f5068d9d705506f6c33d4f1717ee4ddf3cf6cd5e04c",
+          "f40a33c103b9d6a653339c524dae44828aef46a1dceea0250c91a4823ae34d9b"
+        ]
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 11,
+      "original": "user=_app minTargetSdkVersion=29 seinfo=trustonicpartner domain=trustonicpartner_app type=app_data_file levelFrom=all",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "seinfo_signer_absent",
+        "seinfo": "trustonicpartner",
+        "mac_signer_sha256": [
+          "0bdc216e25055b1d50f7969c118c29781b8067ab037db4f4370bcab97dd65be6",
+          "138dec774d9a9080df1368b961a7d7b524726482601173c6f601037c4f528f51",
+          "26e9ebcb51b6e2f7d98ec7d6d307fdcf87ae59dde1414077d3ae0eaa6556feb3",
+          "2d6b021882b2fa8c9232e2f0ff4ef38987c59d426c58021f59ede720b83e1032",
+          "3aa9d70084a48148629b92d1219ebaf988a96ed454b208e36192b28d8f09a926",
+          "4349b24ddc23f6c80c6ad5254c495b20bc7aca4303fc64a0fea2c67b9c36742d",
+          "51f95efc4b28f36fad0cbfbde27213be39390907eacf688d3b1c2601487fa80d",
+          "58618be5219e6cdc864e0b6921c70f5f037fe6227f7d49f6c9d90b083f08c05b",
+          "94f970ad0e5d34625f737ab2638c56c12ba3b4eb1ff0dee1234863ee61ae7036",
+          "9c3a700c8c20e2b723d1a8ad647f22f7923fb419e89a0d7ecb8c82fcb8bcc4f0",
+          "ad27b68a191ce2d91204badb438550f4620054c15ebfa13c10b492cd998fdc40",
+          "b0dd0e22029e4d2bf87428035db43462dc614b57d93617fa471b4658111b4cbd",
+          "b312a83195920e6731a09a4beab5e6d8b3029417c9444623dca6ab5bb20b432e",
+          "b7113be90c000115cb1e21974ee6d31a9f29a423cd2c5ad027807e8375180996",
+          "c4393fcf778b7de2a812bc83848302cc68431fba19a1ace112415fc18dd05c18",
+          "cd13b3e1a176ea78b70a410b5f71fce5cdfb03a4b08a1a444ec1198c8d141469",
+          "d98ec9a51bbb5b7eaf5f29f600fcec02da3f064be5282853454f5e4824c26db2",
+          "db7ec064fcdce6a949faf3894a8028601ecd834ac4e547e1a7bda7e2749ffb6a",
+          "f0181f6fab0ddb21ce1b8f5068d9d705506f6c33d4f1717ee4ddf3cf6cd5e04c",
+          "f40a33c103b9d6a653339c524dae44828aef46a1dceea0250c91a4823ae34d9b"
+        ]
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 12,
+      "original": "user=_app minTargetSdkVersion=30 seinfo=trustonicpartner domain=trustonicpartner_app type=app_data_file levelFrom=all",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "seinfo_signer_absent",
+        "seinfo": "trustonicpartner",
+        "mac_signer_sha256": [
+          "0bdc216e25055b1d50f7969c118c29781b8067ab037db4f4370bcab97dd65be6",
+          "138dec774d9a9080df1368b961a7d7b524726482601173c6f601037c4f528f51",
+          "26e9ebcb51b6e2f7d98ec7d6d307fdcf87ae59dde1414077d3ae0eaa6556feb3",
+          "2d6b021882b2fa8c9232e2f0ff4ef38987c59d426c58021f59ede720b83e1032",
+          "3aa9d70084a48148629b92d1219ebaf988a96ed454b208e36192b28d8f09a926",
+          "4349b24ddc23f6c80c6ad5254c495b20bc7aca4303fc64a0fea2c67b9c36742d",
+          "51f95efc4b28f36fad0cbfbde27213be39390907eacf688d3b1c2601487fa80d",
+          "58618be5219e6cdc864e0b6921c70f5f037fe6227f7d49f6c9d90b083f08c05b",
+          "94f970ad0e5d34625f737ab2638c56c12ba3b4eb1ff0dee1234863ee61ae7036",
+          "9c3a700c8c20e2b723d1a8ad647f22f7923fb419e89a0d7ecb8c82fcb8bcc4f0",
+          "ad27b68a191ce2d91204badb438550f4620054c15ebfa13c10b492cd998fdc40",
+          "b0dd0e22029e4d2bf87428035db43462dc614b57d93617fa471b4658111b4cbd",
+          "b312a83195920e6731a09a4beab5e6d8b3029417c9444623dca6ab5bb20b432e",
+          "b7113be90c000115cb1e21974ee6d31a9f29a423cd2c5ad027807e8375180996",
+          "c4393fcf778b7de2a812bc83848302cc68431fba19a1ace112415fc18dd05c18",
+          "cd13b3e1a176ea78b70a410b5f71fce5cdfb03a4b08a1a444ec1198c8d141469",
+          "d98ec9a51bbb5b7eaf5f29f600fcec02da3f064be5282853454f5e4824c26db2",
+          "db7ec064fcdce6a949faf3894a8028601ecd834ac4e547e1a7bda7e2749ffb6a",
+          "f0181f6fab0ddb21ce1b8f5068d9d705506f6c33d4f1717ee4ddf3cf6cd5e04c",
+          "f40a33c103b9d6a653339c524dae44828aef46a1dceea0250c91a4823ae34d9b"
+        ]
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 13,
+      "original": "user=_app seinfo=good_trustonicpartner domain=trustonicpartner_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "seinfo_signer_absent",
+        "seinfo": "good_trustonicpartner",
+        "mac_signer_sha256": []
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 14,
+      "original": "user=oneseg domain=oneseg_apk type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "oneseg_shared_uid_absent"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 18,
+      "original": "user=system seinfo=platform name=com.gd.mobicore.pa domain=teeregistryd_app",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.gd.mobicore.pa"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 19,
+      "original": "user=system seinfo=platform name=com.trustonic.teeservice domain=teed_app",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.trustonic.teeservice"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 34,
+      "original": "user=dsms seinfo=platform name=com.samsung.android.dsms domain=dsms_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.samsung.android.dsms"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 38,
+      "original": "user=_app seinfo=release name=com.sec.android.app.shealth* domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.sec.android.app.shealth*"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 39,
+      "original": "user=_app seinfo=shealth name=com.sec.android.app.shealth* domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.sec.android.app.shealth*"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 41,
+      "original": "user=_app seinfo=samsung name=com.samsung.android.voicewakeup domain=sec_untrusted_app type=app_data_file levelFrom=user",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.samsung.android.voicewakeup"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 61,
+      "original": "user=_app seinfo=platform name=com.samsung.android.app.kfa domain=kfa_app type=app_data_file",
+      "reason": "inactive_legacy_samsung_app_selector",
+      "proof": {
+        "kind": "package_or_prefix_absent",
+        "selector_name": "com.samsung.android.app.kfa"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 64,
+      "original": "user=system seinfo=platform name=com.qualcomm.qti.services.systemhelper:systemhelper_service domain=vendor_systemhelper_app type=app_data_file levelFrom=user",
+      "reason": "retain_framework_system_uid_data_label",
+      "retained_partition": "system_ext",
+      "retained_rule": {
+        "user": "system",
+        "seinfo": "platform",
+        "name": "com.qualcomm.qti.services.systemhelper:systemhelper_service",
+        "domain": "vendor_systemhelper_app",
+        "type": "system_app_data_file"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 71,
+      "original": "user=_app seinfo=platform name=org.codeaurora.ims isPrivApp=true domain=vendor_qtelephony type=app_data_file levelFrom=all",
+      "reason": "identical_duplicate_selector_output",
+      "retained_partition": "system_ext",
+      "retained_rule": {
+        "user": "_app",
+        "seinfo": "platform",
+        "name": "org.codeaurora.ims",
+        "isPrivApp": "true",
+        "domain": "vendor_qtelephony",
+        "type": "app_data_file",
+        "levelFrom": "all"
+      }
+    },
+    {
+      "partition": "vendor",
+      "line": 72,
+      "original": "user=_app seinfo=platform name=com.qualcomm.qti.devicestatisticsservice domain=vendor_qtelephony type=app_data_file levelFrom=all",
+      "reason": "identical_duplicate_selector_output",
+      "retained_partition": "product",
+      "retained_rule": {
+        "user": "_app",
+        "seinfo": "platform",
+        "name": "com.qualcomm.qti.devicestatisticsservice",
+        "domain": "vendor_qtelephony",
+        "type": "app_data_file",
+        "levelFrom": "all"
+      }
+    }
+  ],
+  "files": [
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_seapp_contexts",
+      "before_sha256": "277a1b6bd188077be9e398f6cdf8cdd8aabbddfa8cb6678aab68c8ddf47e2848",
+      "after_sha256": "d609023e7ab6df17f7687f6624fc45bf2d034fd7e2950ef11bbfdee1e01d3e61"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_seapp_contexts",
+      "before_sha256": "0740721ec93810e4c3efd5549a4362a754ad9778d4ba3e8f97e7579b49972a64",
+      "after_sha256": "5944f8010feca834ee46a99fdd2941b4e142be5af66f9ce2d30c719b9fd8743c"
+    }
+  ],
+  "real_factory_apks": 401,
+  "factory_apex_modules": 46,
+  "cil_or_allow_changes": false,
+  "rom_images_changed": false,
+  "limits": [
+    "Factory APK manifests and signing-certificate metadata were inspected; APK signatures were not independently cryptographically verified.",
+    "No /data packages or runtime state were available. Samsung/Trustonic app suites are not supported by this factory composition.",
+    "App launch, radio/IMS/Trustonic behavior still requires runtime validation."
+  ]
+}

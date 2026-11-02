@@ -1,0 +1,75 @@
+{
+  "status": "P1_PATCHED_FILESYSTEMS_HOST_VALIDATED_RUNTIME_UNTESTED",
+  "target": "SM-G781B / r8q",
+  "declared_recovery": "OrangeFox R12.0_1",
+  "partitions": [
+    {
+      "partition": "system",
+      "source": "P1 actual filesystem changes",
+      "file": "candidates/p1/system.img",
+      "bytes": 1126187008,
+      "sha256": "c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72",
+      "filesystem": "erofs"
+    },
+    {
+      "partition": "system_ext",
+      "source": "P1 actual filesystem changes",
+      "file": "candidates/p1/system_ext.img",
+      "bytes": 834596864,
+      "sha256": "16e3571a1eb02df3c3b9c6e1c539237226ad69124438b41ff52348622c0820b4",
+      "filesystem": "erofs"
+    },
+    {
+      "partition": "product",
+      "source": "hyperos_mi10",
+      "file": "extracted/hyperos/product.img",
+      "bytes": 3181572096,
+      "sha256": "c848c1d270df7149e22b1bb259d8eab086b6853dc20db78aa94a9bd66cf24813",
+      "filesystem": "erofs"
+    },
+    {
+      "partition": "vendor",
+      "source": "P1 actual filesystem changes",
+      "file": "candidates/p1/vendor.img",
+      "bytes": 1647726592,
+      "sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9",
+      "filesystem": "ext4"
+    },
+    {
+      "partition": "odm",
+      "source": "P1 actual filesystem changes",
+      "file": "candidates/p1/odm.img",
+      "bytes": 19640320,
+      "sha256": "addb89433e775b5cb6ceb6b5703f66329bdb0ecc4f28c2f22e1cf3bc9ce357be",
+      "filesystem": "ext4"
+    }
+  ],
+  "total_logical_bytes": 6809432064,
+  "target_super_capacity": 10292822016,
+  "target_boot_capacity": 67108864,
+  "target_dtbo_capacity": 10485760,
+  "boot_reference": "extracted/r8q/boot.img",
+  "dtbo_reference": "extracted/r8q/dtbo.img",
+  "excluded_from_target": [
+    "hyperos boot.img",
+    "hyperos vendor.img",
+    "hyperos odm.img",
+    "all Xiaomi firmware-update/ images",
+    "original Xiaomi flashing scripts",
+    "original incomplete Adrian updater-script"
+  ],
+  "pending": [
+    "Recovery installer execution",
+    "Runtime mount/boot/framework/HAL tests",
+    "ColorOS-specific ODM service behavior",
+    "Donor overlays and Samsung display/biometric adaptation"
+  ],
+  "capacity_source": "reports/device/validated.json; blockdev/proc-partitions agree",
+  "conservative_metadata_alignment_reserve": 4194304,
+  "proposed_group_limit": 10288627712,
+  "bytes_available_after_proposed_group_and_images": 3479195648,
+  "boot_candidate": "candidates/p0/boot-r8q-hyperos-p0.img",
+  "geometry_source": "reports/device/lp-metadata.json; measured geometry and groups preserved",
+  "observed_avb_flags": 3,
+  "boot_confirmed": false
+}

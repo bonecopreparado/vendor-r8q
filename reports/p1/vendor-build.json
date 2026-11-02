@@ -1,0 +1,212 @@
+{
+  "status": "OFFLINE_EXT4_CANDIDATE_VALIDATED_NOT_BOOT_TESTED",
+  "source": "extracted/r8q/vendor.img",
+  "source_sha256": "18e48f734c31f263f330786ffea841738a733784da05b5b6d86b5e5217d82d5f",
+  "output": "candidates/p1/vendor.img",
+  "output_sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9",
+  "bytes": 1647726592,
+  "plan_sha256": "af96813f79eb41c597e1605b2bc1f56887a25dbca1ab6dc58036cc567c46467e",
+  "source_e2fsck": {
+    "argv": [
+      "/workspace/hyperos-space/tools/image-tools/bin/e2fsck",
+      "-f",
+      "-n",
+      "extracted/r8q/vendor.img"
+    ],
+    "exit": 0,
+    "stdout": "Pass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\nvendor: 2985/3120 files (1.5% non-contiguous), 394585/402277 blocks\n",
+    "stderr": "e2fsck 1.47.2 (1-Jan-2025)\n"
+  },
+  "candidate_e2fsck": {
+    "argv": [
+      "/workspace/hyperos-space/tools/image-tools/bin/e2fsck",
+      "-f",
+      "-n",
+      "/workspace/hyperos-space/candidates/p1/.r8q-ext4-b7ph3rdf.img"
+    ],
+    "exit": 0,
+    "stdout": "Pass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\nvendor: 2984/3120 files (1.5% non-contiguous), 394584/402277 blocks\n",
+    "stderr": "e2fsck 1.47.2 (1-Jan-2025)\n"
+  },
+  "staging_e2fsck_preen": {
+    "exit": null,
+    "skipped": true,
+    "reason": "Read-only candidate check was already clean; no repair or optimization requested",
+    "argv": []
+  },
+  "changes": [
+    {
+      "path": "/etc/selinux/vendor_seapp_contexts",
+      "op": "replace",
+      "old_sha256": "277a1b6bd188077be9e398f6cdf8cdd8aabbddfa8cb6678aab68c8ddf47e2848",
+      "sha256": "d609023e7ab6df17f7687f6624fc45bf2d034fd7e2950ef11bbfdee1e01d3e61",
+      "metadata": {
+        "inode": 807,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 7955,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769951648,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    },
+    {
+      "path": "/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+      "op": "replace",
+      "old_sha256": "df893bbe3b600fcc01a939443d6dfeebb8692ccc5db4b251a8fcf2eb3e4a101c",
+      "sha256": "8897b100b8fb7feef9b5d32bf3045736387745c86a709e4818e460ead9c02393",
+      "metadata": {
+        "inode": 551,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 610,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769951647,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    },
+    {
+      "path": "/etc/init/nxp.android.hardware.nfc@1.2-service.rc",
+      "op": "delete",
+      "old_sha256": "c7d546b6ee6d3e6662e88f774efa41629dcc857952d8e0ebd9281418438b75f8",
+      "sha256": null,
+      "metadata": {
+        "inode": 554,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 384,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769951647,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    },
+    {
+      "path": "/etc/init/hw/init.qcom.rc",
+      "op": "replace",
+      "old_sha256": "f99ed349e998bf2e313fdbc6eb4b298be29730060f102e75d9e8d2f724ff9028",
+      "sha256": "9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea",
+      "metadata": {
+        "inode": 523,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 34955,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769951647,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    }
+  ],
+  "preserved_parent_metadata": [
+    "/",
+    "/etc",
+    "/etc/init",
+    "/etc/init/hw",
+    "/etc/selinux"
+  ],
+  "boot_confirmed": false,
+  "promotion": "Independent full-tree comparison passed; replaces earlier intermediate that automatically indexed two unchanged directories"
+}

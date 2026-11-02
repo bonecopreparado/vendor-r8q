@@ -1,0 +1,15 @@
+test_changed_replacement_stops_before_output (__main__.Tests.test_changed_replacement_stops_before_output) ... ok
+test_existing_output_preserved (__main__.Tests.test_existing_output_preserved) ... ok
+test_full_patch_preserves_metadata_links_xattrs_and_original (__main__.Tests.test_full_patch_preserves_metadata_links_xattrs_and_original) ... Reading every source file and inode...
+Comparing every target file and inode...
+ok
+test_generic_add_delete_plan_preserves_unmodified_files (__main__.Tests.test_generic_add_delete_plan_preserves_unmodified_files) ... Reading every source file and inode...
+Comparing every target file and inode...
+ok
+test_report_cannot_overwrite_source_image (__main__.Tests.test_report_cannot_overwrite_source_image) ... ok
+test_source_hash_mismatch_stops_before_output (__main__.Tests.test_source_hash_mismatch_stops_before_output) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.162s
+
+OK

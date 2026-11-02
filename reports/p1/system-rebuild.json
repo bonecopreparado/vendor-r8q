@@ -1,0 +1,21 @@
+{
+  "status": "OFFLINE_IMAGE_PATCHED_AND_LOGICALLY_VERIFIED_NOT_BOOT_TESTED",
+  "source_sha256": "860042f76f081717bcca12301a5d5f580e988a2df4455453041d7f51a3f35b77",
+  "image_sha256": "c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72",
+  "bytes": 1126187008,
+  "entries_verified": 5026,
+  "changes": [
+    {
+      "path": "/system/etc/vintf/compatibility_matrix.device.xml",
+      "old_sha256": "cee761dcc1ecbbb5c8169cace340bd201cd8734c19e17d34ec3a1580e8e23076",
+      "sha256": "0e9a5e24c3e3a06474918e692139d2bee2530f42ef913f82cf4e6742cc87a480"
+    }
+  ],
+  "deleted": [],
+  "source_incompat_features": 1,
+  "candidate_incompat_features": 1,
+  "no_new_incompat_features": true,
+  "metadata_preserved": true,
+  "original_unchanged": true,
+  "limitation": "Full PAX rebuild and logical readback do not replace kernel mount/boot tests."
+}

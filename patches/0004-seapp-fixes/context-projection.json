@@ -1,0 +1,35 @@
+{
+  "status": "PRIOR_BINARY_MEASUREMENT_SUBSET_PROJECTION_NOT_FRESH_RUNTIME_CHECK",
+  "policy_sha256": "70278111389ef8affecddf0eee346f4d3cba4b72fe7bc907e512f7c610d769ad",
+  "original_unique_contexts": 2888,
+  "candidate_unique_contexts": 2880,
+  "new_labels": [],
+  "removed_invalid_contexts": [
+    "u:r:dsms_app:s0",
+    "u:r:kfa_app:s0",
+    "u:r:oneseg_apk:s0",
+    "u:r:radio_service:s0",
+    "u:r:sec_untrusted_app:s0",
+    "u:r:teed_app:s0",
+    "u:r:teeregistryd_app:s0",
+    "u:r:trustonicpartner_app:s0"
+  ],
+  "remaining_invalid_contexts": [
+    "u:r:logdumpd:s0"
+  ],
+  "candidate_files": [
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_seapp_contexts",
+      "before_sha256": "277a1b6bd188077be9e398f6cdf8cdd8aabbddfa8cb6678aab68c8ddf47e2848",
+      "after_sha256": "d609023e7ab6df17f7687f6624fc45bf2d034fd7e2950ef11bbfdee1e01d3e61"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_seapp_contexts",
+      "before_sha256": "0740721ec93810e4c3efd5549a4362a754ad9778d4ba3e8f97e7579b49972a64",
+      "after_sha256": "5944f8010feca834ee46a99fdd2941b4e142be5af66f9ce2d30c719b9fd8743c"
+    }
+  ],
+  "scope": "All changed seapp contexts are removals; remaining labels were included in the prior exact binary policy check. Recheck actual composed images before release."
+}

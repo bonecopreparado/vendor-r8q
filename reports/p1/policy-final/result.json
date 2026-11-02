@@ -1,0 +1,1999 @@
+{
+  "status": "ACTUAL_P1_CIL_CAPABILITIES_AND_CONTEXTS_PASSED_HOST_ONLY",
+  "boot_confirmed": false,
+  "images": {
+    "system": {
+      "path": "/workspace/hyperos-space/candidates/p1/system.img",
+      "bytes": 1126187008,
+      "sha256": "c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72"
+    },
+    "system_ext": {
+      "path": "/workspace/hyperos-space/candidates/p1/system_ext.img",
+      "bytes": 834596864,
+      "sha256": "16e3571a1eb02df3c3b9c6e1c539237226ad69124438b41ff52348622c0820b4"
+    },
+    "product": {
+      "path": "/workspace/hyperos-space/extracted/hyperos/product.img",
+      "bytes": 3181572096,
+      "sha256": "c848c1d270df7149e22b1bb259d8eab086b6853dc20db78aa94a9bd66cf24813"
+    },
+    "vendor": {
+      "path": "/workspace/hyperos-space/candidates/p1/vendor.img",
+      "bytes": 1647726592,
+      "sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9"
+    },
+    "odm": {
+      "path": "/workspace/hyperos-space/candidates/p1/odm.img",
+      "bytes": 19640320,
+      "sha256": "addb89433e775b5cb6ceb6b5703f66329bdb0ecc4f28c2f22e1cf3bc9ce357be"
+    }
+  },
+  "cil": [
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_sepolicy.cil",
+      "bytes": 3301148,
+      "sha256": "5b463f556391a6e2486056132da8a814b896c66c2d4d63f042ab83e3a50d1087",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/mapping/30.0.cil",
+      "bytes": 126395,
+      "sha256": "50dcffe218ab56ed6a4701a10d00d242bba373b35b263af68b7a2668f0cce2c2",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/mapping/30.0.compat.cil",
+      "bytes": 2849,
+      "sha256": "ba1b503300c418ddff935d31dfe4591aa70f99edad07046278dfadfc90f8d566",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_sepolicy.cil",
+      "bytes": 1068220,
+      "sha256": "708f7ed4e8741c6b1e3345fba8318a6aeecbe3a8605f4e2dc8df4661ce96f791",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "bytes": 12879,
+      "sha256": "e84ce1941c3a66ff289b610fd575b1fc05de9bc0b4cd02872b310ae26d302c01",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/mapping/30.0.compat.cil",
+      "bytes": 214,
+      "sha256": "ba5fe3df2d90d47c3a8c38e8284e2b0c0df3ef74a0b7f677fe6b809589bce8a2",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_sepolicy.cil",
+      "bytes": 92768,
+      "sha256": "38ec7e429ca9750339573ecc55616f377f25ec24fa82b0b5b8b8dd432bed4adc",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "bytes": 1448,
+      "sha256": "87cd4032fef3f609a017047e3b435d7ea11c61e38637a15a7f814df494ba71ef",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/plat_pub_versioned.cil",
+      "bytes": 965793,
+      "sha256": "2c87f51a1394e89e2b2587966e37def2a0aa98fe49d0f29fe0638dc2245ef65a",
+      "matches_reviewed_input": true
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_sepolicy.cil",
+      "bytes": 1874114,
+      "sha256": "291ab0e40932af38acc2cf5c13c03994ea60e0d47fcdfee4d73f266c38dd4de4",
+      "matches_reviewed_input": true
+    }
+  ],
+  "context_files": [
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_file_contexts",
+      "bytes": 50498,
+      "sha256": "608895445f9cd8bd7c83c2611cae1a5ed27c15cecf3e2ad8560edecbf5768fc6",
+      "binary": false
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_hwservice_contexts",
+      "bytes": 8865,
+      "sha256": "e9f9f83ce1dfec4b036e09baa3b5cedeb27e8855b59164d42979ef5903f10668",
+      "binary": false
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_keystore2_key_contexts",
+      "bytes": 1544,
+      "sha256": "5255d73632178621b13f5dc9698a31a55a59b614761a1713ea82cecfa709eef2",
+      "binary": false
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_property_contexts",
+      "bytes": 129091,
+      "sha256": "41be5c817db561e0cdf8f49a02b7200cbeffc7970b8fbb7ad5c1ff72a31a8b75",
+      "binary": false
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_seapp_contexts",
+      "bytes": 4938,
+      "sha256": "37211f7e67111828257e67ab9fb9457c75162abcc3c4d503847f777d3097c64d",
+      "binary": false
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_service_contexts",
+      "bytes": 47192,
+      "sha256": "27111193bb8883bbc10babac98b8f5d323b72f731f1d20d776348dc9bf3b26a8",
+      "binary": false
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/selinux/plat_tee_service_contexts",
+      "bytes": 832,
+      "sha256": "8277a4d8afee32d53ed9b1527f01fc1c7c215e905e5f5a08b3b800ae88d7124d",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_file_contexts",
+      "bytes": 17386,
+      "sha256": "dd9349d905e8fc10a857e905ec1e739155ee9891b2013578da0bfd570e821e6c",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_hwservice_contexts",
+      "bytes": 433,
+      "sha256": "05151cf8e83257565e5c434aea1bdf369109455f11e1fe346bfb613999f4dad9",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_keystore2_key_contexts",
+      "bytes": 177,
+      "sha256": "b61a4c12ffdd0ebdb20f9f22c3832d4253866b365dd3795aa67557ec2b158249",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_property_contexts",
+      "bytes": 33417,
+      "sha256": "705d9075c57ef29631f7f6396974ad3dfb61a96d432f25a11901120680e0ac54",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_seapp_contexts",
+      "bytes": 6681,
+      "sha256": "5944f8010feca834ee46a99fdd2941b4e142be5af66f9ce2d30c719b9fd8743c",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_service_contexts",
+      "bytes": 12558,
+      "sha256": "5b6d066375fd5f71dae9c0cf80c0b5a8a3e0a4d80402406cfcca626edfa66777",
+      "binary": false
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_tee_service_contexts",
+      "bytes": 175,
+      "sha256": "0fac54c6839a62588a7d34b20fb8ed36c45ded2a21920dfb8dbb45e864c9a7bb",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_file_contexts",
+      "bytes": 887,
+      "sha256": "bcea6da8d3e09943b73d05c1603d0f7544b9f28247476c59b4c8f17a5a0615cd",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_hwservice_contexts",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_keystore2_key_contexts",
+      "bytes": 178,
+      "sha256": "a360f040b69dd5183696805ecaa625bfb7abe12987d8e345b79c44f9c4518b88",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_property_contexts",
+      "bytes": 2093,
+      "sha256": "516910d1dca53cfe2edec61d22d84a931283ca7759ce079bfda3f1bdc3264637",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_seapp_contexts",
+      "bytes": 702,
+      "sha256": "2fd04f9d730e073a00621765150741958e02e9ba6a4aa4079d3ac68908aadbf0",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_service_contexts",
+      "bytes": 103,
+      "sha256": "26dbd3f533249aa2c3bb2c72f516d271a0950ee4a4e262498b394fa3d14e2076",
+      "binary": false
+    },
+    {
+      "partition": "product",
+      "path": "/etc/selinux/product_tee_service_contexts",
+      "bytes": 176,
+      "sha256": "832e9b8802ea7413586d1cfeb0be63e6942583003d6b0ebe292bdf88e3cc0ded",
+      "binary": false
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_file_contexts",
+      "bytes": 160691,
+      "sha256": "440d7777858ebf8b253cd2ce7e042ad72bb35253db68fbae832a6900992692cf",
+      "binary": false
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_hwservice_contexts",
+      "bytes": 18806,
+      "sha256": "cfb944f45e60c94cf78309aad07de1f8daa70c76b69585a4d3ee8c0ae45ab5e6",
+      "binary": false
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_property_contexts",
+      "bytes": 24753,
+      "sha256": "10122fb2715f716aa3b74ea1442effef0e414cf11411df28d086c6e1881ac7b3",
+      "binary": false
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_seapp_contexts",
+      "bytes": 5621,
+      "sha256": "d609023e7ab6df17f7687f6624fc45bf2d034fd7e2950ef11bbfdee1e01d3e61",
+      "binary": false
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_service_contexts",
+      "bytes": 5652,
+      "sha256": "2d5d2f73207d5e7cb9094a746afc6d514c6b2b872b9b20a9631a5405aa2aff87",
+      "binary": false
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vndservice_contexts",
+      "bytes": 1017,
+      "sha256": "cf6fcc383aeed6609fbab83b666f13d29e03f35acb306ee717ad19efa58848e8",
+      "binary": false
+    }
+  ],
+  "init_files": [
+    {
+      "partition": "system",
+      "path": "/system/etc/init/aconfigd.rc",
+      "sha256": "78d6bb311aa7126384da4b59780d4a87d9b321c4fd211d04e1339fbd8975447b",
+      "bytes": 1214
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/aisealhostservice.rc",
+      "sha256": "94721f43565412a4f97f76c1e56224fd4ba98065148710b3c6a732b100984196",
+      "bytes": 462
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/android.system.suspend-service.rc",
+      "sha256": "957c6d8bbce641fc3bf1c64fd38bd84e7ce223f9299646d84ff63402a595860b",
+      "bytes": 276
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/aoad.rc",
+      "sha256": "d466930689825255233dceed7d6e66d99304dd6cc965bc512ee1a2edef120695",
+      "bytes": 193
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/apexd.rc",
+      "sha256": "4baae395daa83df7a35debff152cd8cdedb3bf7b9d87abb5c4ebb9fdde6fabe6",
+      "bytes": 1334
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/atrace.rc",
+      "sha256": "6f0ec34d66e7050fc8fde7143e75b0a67abf27da76864e9f7731570a8e32df6d",
+      "bytes": 40428
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/audioserver.rc",
+      "sha256": "46fa0f821083d399f86a256a4a7885d171940c538732902ccf3f35681f1a3b17",
+      "bytes": 3782
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/blank_screen.rc",
+      "sha256": "1e4d509471f2f88e46a15c1247bb0e5d8a4732b2dcc066eaa09aa70019e525be",
+      "bytes": 113
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/bootanim.rc",
+      "sha256": "169b5b22d43b16d05423c2def447077183d329cc41c02f1f3da84ecdfbbd26c8",
+      "bytes": 397
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/bootstat.rc",
+      "sha256": "fddcd823ddcde967e358a8412eb6ea8ce66a0051e608fc5939dd03075338a55d",
+      "bytes": 4119
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/cameraserver.rc",
+      "sha256": "1c12b62fb0f653ef89dba4dce44744803bc665e1a6e08a3d5e4e2e49242fc2c4",
+      "bytes": 785
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/casefolding_remover.rc",
+      "sha256": "d4d04423e275a13c77dfa70655e2ca93770a33bc3714c967357ce5409dd7bad4",
+      "bytes": 173
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/cppreopts.rc",
+      "sha256": "0e236c52663a4126a2c1b1aec315d6cb52e4f117d585fb5b4a0be5274ec83476",
+      "bytes": 1690
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/credstore.rc",
+      "sha256": "40208b72af17cf8f045cdae924a8d5054ff6945b1d4eeb71a63dac174896fe68",
+      "bytes": 186
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/dmesgd.rc",
+      "sha256": "fb3c26e424a78839070c6fa79c6b35bc426b9218972ceed883308424d7b34301",
+      "bytes": 647
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/drmserver_dynamic.rc",
+      "sha256": "c19b689745ff104d5b8471bebd2b2d84ffd0a8eafbf697645ecf8d316fdc0a8a",
+      "bytes": 217
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/dumpstate.rc",
+      "sha256": "73d89e8bbca2a59f40898b54b74a38c2211b9ce72707cc30bf54f619ad64cfb3",
+      "bytes": 1853
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/flags_health_check.rc",
+      "sha256": "76c3bf64f41057bc9c9ce0ca433f71c5d6a0f42cd4bd17c0b696debb97763239",
+      "bytes": 504
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/gatekeeperd.rc",
+      "sha256": "d03a1ca16e4db87a11d47d03433f5d31cce5c9251f3cf8f5bd52f74bf3a9ae64",
+      "bytes": 140
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/gpuservice.rc",
+      "sha256": "a4f71d84d4c830c08aae58a434727691fa972a40a2b5cb8e2288d2d80d42f7de",
+      "bytes": 102
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/graphicsengine.rc",
+      "sha256": "c70eebeaa20cc19c663691193519d942e7f76668bfc75be4435769a99738ed1a",
+      "bytes": 198
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/gsid.rc",
+      "sha256": "891aa13d00c847784594e2f24ed25763a1778a3a57fae8fff5d25cd81759992f",
+      "bytes": 800
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/heapprofd.rc",
+      "sha256": "325c7e57909523e3c617a4d28311f5f15c575b69c0ccbf96c99d6d657b0a6475",
+      "bytes": 2121
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hidservice.rc",
+      "sha256": "ea82c12388dc1f2b06e226ee582d0918bfe1a58211fabe616ac1d687e4b6479c",
+      "bytes": 130
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/drmserver.zygote64.rc",
+      "sha256": "c1aa5d24a70152301e69fc71beb8e2e85abe8865013649f4e175dbefe8772ff2",
+      "bytes": 157
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/drmserver.zygote64_32.rc",
+      "sha256": "b7210c1bfc517f16d1f20d88f48635c6047eb62f9fbe213fb5886f17ab9ff0e0",
+      "bytes": 157
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.boringssl.no_zygote.rc",
+      "sha256": "02f224884ba6120068a2d9db54af7ba919354d6503540756ffae646481e05377",
+      "bytes": 29
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.boringssl.zygote32.rc",
+      "sha256": "02f224884ba6120068a2d9db54af7ba919354d6503540756ffae646481e05377",
+      "bytes": 29
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.boringssl.zygote64.rc",
+      "sha256": "dbad9c5c5b6dbb16615f893c03ccb3be700e1054ebd90ad92bac82c1e50a1284",
+      "bytes": 196
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.boringssl.zygote64_32.rc",
+      "sha256": "afeaef2628f6ab1e7352f49274aa8e745ea2ceb4555f7216e732856b56b61c32",
+      "bytes": 392
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.rc",
+      "sha256": "40277b3c46beb95a6379bf61828574c5bd2cede072c95d5de806287ff97f3ec5",
+      "bytes": 79632
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.usb.configfs.rc",
+      "sha256": "b261028bb09eb04e38679d5036165dbdb18eb6ffd0687afbacc78e41b8f7e867",
+      "bytes": 13017
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.usb.rc",
+      "sha256": "0f08f29820a03ee5a145a2b91638f57f873c2cf87875e9429046a3a835ddce17",
+      "bytes": 5763
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.zygote32.rc",
+      "sha256": "899cce8ed0d6415d43a011f60a015995e529c0a3d53f1a6784a43cff1170e524",
+      "bytes": 1244
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.zygote64.rc",
+      "sha256": "f90de6ec5f3a3e46f678f03287cabc933ac4d679bdfc5fb485bf50c34aec9ce9",
+      "bytes": 1097
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/init.zygote64_32.rc",
+      "sha256": "ca8ad539813ea134a3464066adf816aa71612d711cbc5b318e4c9bea75bd672d",
+      "bytes": 715
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/mediaserver.64bit_false.rc",
+      "sha256": "923dd57f8ae4c13197bca38308d32652e83e520d3d2335a78a939f9c4d802121",
+      "bytes": 216
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/hw/mediaserver.64bit_true.rc",
+      "sha256": "026b42f822df68b4758b5bc6a7f802df4e845277670a47f997fed86f3d08ab5e",
+      "bytes": 216
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/idmap2d.rc",
+      "sha256": "4dc195022f473d4b93770b441997d7086dfa07de82f73a713167bf6d62596779",
+      "bytes": 84
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/incidentd.rc",
+      "sha256": "a989c870659f49b09f9fa618513cab952878326142331af9b7d2a2e59629c7ca",
+      "bytes": 851
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/init-perfetto.rc",
+      "sha256": "a3de46ffbe93424655648d06f80d1a2664677bb2967906425a9fec02f0d496a5",
+      "bytes": 1450
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/installd.rc",
+      "sha256": "fcb59d1c3f8e49c5348d383805ca287b54c24d8f8fc3b70378078736676ed4a2",
+      "bytes": 4783
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/kcmdlinectrl.rc",
+      "sha256": "690982e3b0b3dd0153903b0e463d8c60f7855cc92d9926e9d9a5d921ef6a0730",
+      "bytes": 944
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/kcmdlinemodprobe.rc",
+      "sha256": "dd90c0101e90a4e0f8508fd1a0d5c6863fdf43accab8f0314cfa87a4509ec9fd",
+      "bytes": 713
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/keystore2.rc",
+      "sha256": "8e8688ddc5841d25436100e96cc564715438745623087391f4b4894fc15ce465",
+      "bytes": 732
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/llkd.rc",
+      "sha256": "915ed69cf1cca279e4a0a8ce03d9b79fd4e274f688cd07d47bdb85e13e93a5c3",
+      "bytes": 1217
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/lmkd.rc",
+      "sha256": "e7d2b765ccef63a126de2b1f2ccfeab826503cd84ea4b5aa8c84c9fce77ee195",
+      "bytes": 3268
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/logd.rc",
+      "sha256": "432f08b78e7f98fc250a2eb1d4fa6380958fc9709e0ecd0090c0b0481daa39b5",
+      "bytes": 1253
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/lpdumpd.rc",
+      "sha256": "8bc75276337f68cbf977e1bb732e95cde28d5a928f4d3a96155c52c3f5b73b5a",
+      "bytes": 1346
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mdnsd.rc",
+      "sha256": "6dcc3f787ed0bb94abb3843504604625c62852072219d8bf15e8628baef2cb95",
+      "bytes": 142
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/media.codeclist.generator.rc",
+      "sha256": "b09eda2b0866db6f70753e84299270dc644a648983514992b48f8c533cd015ca",
+      "bytes": 187
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mediaextractor.rc",
+      "sha256": "679f6722ee487f9ea335754f74198ff5969e57b163830ccd8fb31ae4401321b4",
+      "bytes": 162
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mediametrics.rc",
+      "sha256": "ba56048f8697b096cf1a9107e3018c20d304bced4d837906381ced804ea6eaaf",
+      "bytes": 215
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mediaserver_dynamic_QCOM.rc",
+      "sha256": "96b0835c2bb764535991871a7b104fa8bcf870c2277d80a868627f38f2395279",
+      "bytes": 162
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mieed.rc",
+      "sha256": "02501de400314fe3aedade2a0b840cc87f43214996b27953e917cd22d4da453c",
+      "bytes": 447
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/misctrl.rc",
+      "sha256": "7cc878b32487f411a158cf1442bfbfaf9fdfe68f2cc1db1fa90c62bc5d1f7d6e",
+      "bytes": 105
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mmd.rc",
+      "sha256": "be84e970758bf2bf9abedb4335a764fa77671cc3306961b175bfc33c7edeab7a",
+      "bytes": 1488
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/mtectrl.rc",
+      "sha256": "470c851b7a55b96002edba0affed0d9d1f560100b277f5a3a8e59b2abb09a2ec",
+      "bytes": 1943
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/netbpfload.rc",
+      "sha256": "14c576d0d33894504202743e0a1ea28d16f964a72c6ac1924f78ef371736b05d",
+      "bytes": 2952
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/netd.rc",
+      "sha256": "51039198c9ec69111b1f7f1c8257ae12ee0a677c14599a87416c5b24b112948b",
+      "bytes": 2387
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/odsign.rc",
+      "sha256": "050034426570b9e084accefd20e69d636e3fe9cf4d043e75ca067b467d4e36e5",
+      "bytes": 517
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/perfetto.rc",
+      "sha256": "2e3dc25100f9bbdd8f7e266f950b07cb0e93aae6eb3b5cc5c3219885943b035f",
+      "bytes": 12699
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/pipelineinfosuploader.rc",
+      "sha256": "fb147fe496d1b9050050a854bd98253fe93b56c8b5120c9d427770ea1ed13b10",
+      "bytes": 240
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/prefetch.rc",
+      "sha256": "9f5edb4f578d14ea63e56f7b5a0004154ea63404ec81c2a4dbddbc9cf6d17283",
+      "bytes": 1899
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/prng_seeder.rc",
+      "sha256": "6c4763c65ab372e459e5b1558e733fa08a85615198d2555a4112276b47cb71d4",
+      "bytes": 307
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/recovery-persist.rc",
+      "sha256": "0c5e3bee4329907791a861067722bbea0d56ad6639cd796fba2526c26bc975fa",
+      "bytes": 127
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/recovery-refresh.rc",
+      "sha256": "0f6e0fb90d9d9d964fcc29b299f60c292b56882b06676136758e015e849839fa",
+      "bytes": 76
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/rss_hwm_reset.rc",
+      "sha256": "22e991061614907864fc59838b0eea34037e6497ac356b4ba3c196af961eb4e5",
+      "bytes": 900
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/servicemanager.rc",
+      "sha256": "3db677dbeada9dd99bab220181fe4ff4086326ad9ccb1423442cfb50548c7807",
+      "bytes": 719
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/simpleperf.rc",
+      "sha256": "526982501006570fd3e39855e3d8265cf0094178c9d7cb1e0e1ee28ec97c15cd",
+      "bytes": 480
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/snapuserd.rc",
+      "sha256": "3a6966f87823b2726a231e7244adf78ad91d581bf4e8b1580630ebb82cc6c498",
+      "bytes": 537
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/storaged.rc",
+      "sha256": "91bbdb0a4b307a9edac822cc8503e6fafa10544eeca8f5d7a24c7dce964f801c",
+      "bytes": 176
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/surfaceflinger.rc",
+      "sha256": "85a5df7858ec15ce135a30e15909313af44de32de040771cb23c7f80fdf27905",
+      "bytes": 731
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/tombstoned.rc",
+      "sha256": "fc4a4486332af51be3fa98e77ab4cd6cb4e13d738c061e3e6ad47aafdf4490d4",
+      "bytes": 297
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/traced_perf.rc",
+      "sha256": "757876dc3c2c849394c600b5b823d7a1cd45cb8ba63923c90020be45525341eb",
+      "bytes": 2137
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/tradeinmode.rc",
+      "sha256": "2d17e7087250a77ecdc31c9583210b83cb12b963a96e71c2d095c1f3c74d4c83",
+      "bytes": 431
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/uncrypt.rc",
+      "sha256": "33927f1ea0404cb0ec7f87ff89ce012a40a8ceb16b37376b69d2714e71938ed1",
+      "bytes": 621
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/update_engine.rc",
+      "sha256": "0a1821fe1b129515ca6d69e37ada4c28bcb5c55ecfc0a88991191b6f4d4348fc",
+      "bytes": 2641
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/update_verifier.rc",
+      "sha256": "adeed811f2d98f272cb95bfb378f5f27b85df28d942fb74d52c4bd32f56e9b07",
+      "bytes": 122
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/usbd.rc",
+      "sha256": "772b27f3affb6e67d1a6bc83a2b201cbdc053854789326ac9833ab84277ff995",
+      "bytes": 103
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/vdc.rc",
+      "sha256": "51e20689b446f6d05a15a1a3179914cb6ccb2768e7f63dab6b2df5ddbb27d937",
+      "bytes": 601
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/virtual_camera.hal.rc",
+      "sha256": "d7e11a4db117dc8e685676b53b3b38a49d9098fa4767c1f71b5c8edcb9becf54",
+      "bytes": 350
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/vold.rc",
+      "sha256": "655dabdfc2899115be32ff7ca923070c76443caced6923996fb0a07d42e2097b",
+      "bytes": 377
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/wifi.rc",
+      "sha256": "8b5ecc42f728d2729ace6fc030828699a9b02476362b7fa21232c7510472dcc6",
+      "bytes": 3927
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/init/zygote_next.rc",
+      "sha256": "8dc957f041e9c35afebd352ee0106a8d0be508dfb09ac24d9c9341c58448e649",
+      "bytes": 415
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/android.hidl.allocator@1.0-service.rc",
+      "sha256": "2daefa28c9013feb1d6b17e366bcb2dfbd5b904e239b644d93a16df01b15c29d",
+      "bytes": 187
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/bpf_service.rc",
+      "sha256": "23115eab7271983827cadfafbe3857eba7ee6a23d89724fa708f3a4161727c66",
+      "bytes": 510
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/checknv.rc",
+      "sha256": "affb67f20e20f8c2d2b57db75297f5ab72fcb104730c75c10831f72e08dda6f4",
+      "bytes": 89
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/com.qualcomm.qti.sigma_miracast@1.0-service.rc",
+      "sha256": "4facb8d31d4bf4ca95d1f506673a8b0259e218181413906cbb4ebcf172a6f72d",
+      "bytes": 401
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/com.qualcomm.qti.sigma_miracast_aidl-service.rc",
+      "sha256": "9041e9381a632286aaf553108acb66e166f7916e4ba4c8a7caad12c84b33ca86",
+      "bytes": 130
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/com.xiaomi.perfobserve.rc",
+      "sha256": "4390081a0b6cb0bb29908047e0c0c42d8416c55d559bb887dd851ead8d3c54eb",
+      "bytes": 5265
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/dpmd.rc",
+      "sha256": "f2b68252ae6086ebeb67ef5885f83c63cdd4faf2fe6f00024beb678bd0ae6261",
+      "bytes": 683
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/f2fs.dfc.native@1.0-service.rc",
+      "sha256": "8616db9a58c378d5a6b9bc5a85b1f305bc2266b56aeb81698787bc668ea6d949",
+      "bytes": 371
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/frameworks_utils_service.rc",
+      "sha256": "459ec34022d844a6193d73e47d1425a48546bf554520aad6cecb13b61718bbd8",
+      "bytes": 505
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/gppservice.rc",
+      "sha256": "aeea12499efa0a5683a385026a80f66e1b493af2d50cf670b14119dd5ac5de87",
+      "bytes": 636
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/hwservicemanager.rc",
+      "sha256": "fec3f3312b7cb0f5c22438b62cca189964878874f8aabd47396ae1f4faf8c4f9",
+      "bytes": 497
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/hyper_bpfloader.rc",
+      "sha256": "861162a23c8d04c21d1eb572fe64724e455d5930c82790ccad6e69ba8022c321",
+      "bytes": 5303
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/hypsys_system.rc",
+      "sha256": "d94d67910ed9c7662210bea135a3cb96f62cbb88f9b9b1de00879cf17124d1d3",
+      "bytes": 2571
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/imsvtdaemon.rc",
+      "sha256": "9fe5820341f02b26d35eed9cc7dc833d67ad483c4cbc3af628baf74095551ef0",
+      "bytes": 331
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.dmadio.rc",
+      "sha256": "ba55ead2bff626e5cc7e64f9d3e7b738bd41da9eb131795d7bb3d75346c21969",
+      "bytes": 86
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.hyos_spawner.rc",
+      "sha256": "c76db86b8033706d3e5de57f18815807a3da4293fc98757095644fcf819e5ea5",
+      "bytes": 673
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.launch_boost.rc",
+      "sha256": "fc8952d3a009c795dced757f865e4629969b9c8ad1696cd9fa7b7c776d211002",
+      "bytes": 766
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.midfs.rc",
+      "sha256": "ef8599a17bae666b2911202dedd2effefedae62f26cfc786f1806d5804232c86",
+      "bytes": 373
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.milletmonitor.rc",
+      "sha256": "c4f01393bea227d42b14342a2b9736acae5111c968bc60dcea37094d646f943d",
+      "bytes": 1279
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.misight.rc",
+      "sha256": "ddad7a1a475400b3910421b7c2eb38035018b816822c8c00ac9d7407a397953c",
+      "bytes": 307
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.miui.cameraopt.rc",
+      "sha256": "6bdf1f19593fb203c76d1fca7e6624f0b565f00ac8887c89eb9eac8741a9ceaf",
+      "bytes": 10363
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.miui.cust.rc",
+      "sha256": "ad7fd6685f7064a914bfc324a719e9c0ca42ef7475fac625a0f5733d30b9f82b",
+      "bytes": 1191
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.miui.dumpaudiobinderInfo.rc",
+      "sha256": "40f3d2d5e09bb37623ce1948fe3c61810861cf8a971037f5354abfa3d3659fa7",
+      "bytes": 647
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.miui.ext.rc",
+      "sha256": "b4ea43508b933ec56eab29d71aac156309621b3cf623e6b6dbc7beff0d8a849f",
+      "bytes": 18175
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.miuitcptracker.rc",
+      "sha256": "91bb2402b9b68aed822448e97a8ccffae360a1d8aea841e63bb9aec5a67ffa75",
+      "bytes": 347
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.nativedebug.rc",
+      "sha256": "323711faa74ca200753fdf0a0724163b3af98ece5dabfcd95e82321689accb25",
+      "bytes": 2106
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.offline.log.rc",
+      "sha256": "c55d2d7166b2e5eb5693f522c742c532a49182bd7bced1be931045ba1feb0f52",
+      "bytes": 2306
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.qseelogd.rc",
+      "sha256": "1db70b42aa4dbe9d1e79da4ef60978a5f9a867bdbbdd5b69e7d2b0911941e890",
+      "bytes": 316
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.secureboot.rc",
+      "sha256": "3829c9335828dd0bf0590058bb0358ca7262c9d70f07be7dc7e423222199e117",
+      "bytes": 366
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/init.xiaomi.cammsger.rc",
+      "sha256": "0cc72f32cb3ac1fdc2fff74473e1dfa815dd6d95d5bf97f76df9733302027918",
+      "bytes": 3135
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/loc_sys_service.rc",
+      "sha256": "bdb98db727c2da512e5179e6aab20ad73cf53ca1fe6227f176fcf2540016adff",
+      "bytes": 411
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/memory.fbo.native@1.0-service.rc",
+      "sha256": "760215235138dee225d99f828c911e686ba4756fa6e3562679aada3f2401dda2",
+      "bytes": 319
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/memory.swap.native@1.0-service.rc",
+      "sha256": "aec4313a9573742e9ddd6c4731485db1616d59aaa177723a0868b596a3c59d8f",
+      "bytes": 291
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/mi-32bit-trans.rc",
+      "sha256": "371c500c3dcf11252d3ef86f2b8f627819900768432ad58c5379673412fbc94e",
+      "bytes": 1711
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/miuibooster.rc",
+      "sha256": "2f7a72202be5733080b72a1d0103da5335ba8880b277d178210fa718f87185c0",
+      "bytes": 84
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/miupdater.rc",
+      "sha256": "030e86607e7da128d39c2b1906a62145402fd2e991c265219a63c09a8e9305e4",
+      "bytes": 908
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/miuserfs.rc",
+      "sha256": "ab275e451576d2e5c40379424f68b74030a101d19a13d13a888f1dda424cb3d0",
+      "bytes": 660
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/native.hang@1.0-service.rc",
+      "sha256": "5fbcc70511566be14f3cd17e7e511287603c336d5ed3f5b4e3e1ce015e7db991",
+      "bytes": 431
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/perfservice.rc",
+      "sha256": "58b56ede847e23afa20e0970ff421f1ab729cfccfd99b01619a58f4e4ae9f1a8",
+      "bytes": 525
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/qsguard.rc",
+      "sha256": "e311262e32531cf5a795f2506690ad81cfdf75a3a44115a4a7e94db9f35b80fc",
+      "bytes": 259
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/qspa_system.rc",
+      "sha256": "a1231b13364f2334e96da7343cca4f13fa814bf804919f704e8786de86a5595c",
+      "bytes": 190
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/qspmsvc.rc",
+      "sha256": "3db57f00c534742ac9f5516ee9d14a4e7e8d6d9feb0b082f06ed599846afb2a9",
+      "bytes": 485
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/samba.rc",
+      "sha256": "08376417e9861d96f8490e6214c2a02c03ec38278234065acd4772f4801a0b1e",
+      "bytes": 903
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/sxrauxd_ext.rc",
+      "sha256": "16548c6448c0e0dc14f3867ccaa6796bc56cebe06639e141a61a024d954e5062",
+      "bytes": 675
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/vendor.qti.hardware.qccsyshal@1.2-service.rc",
+      "sha256": "cbf36c51dcf41c37fe7d8b80cb7648d7c7a0decffc6f079f37b919da3424b080",
+      "bytes": 1896
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/vendor.qti.qccsyshal_aidl-service.rc",
+      "sha256": "6a072dca524fefba9a892b6b5084d94f25cdec04dd277e6b5c7c73ffc9b4cf20",
+      "bytes": 1938
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/init/wfdservice.rc",
+      "sha256": "cfd2a1aaf71fbe26d00faa0943827e14adaa197d860d498e8d40285de5a05fe1",
+      "bytes": 595
+    },
+    {
+      "partition": "product",
+      "path": "/etc/init/init.miui.atomic.rc",
+      "sha256": "97b74521964218fa36db2238d5e9e70bc0749918dc1a7f6263104a5955465e4a",
+      "bytes": 373
+    },
+    {
+      "partition": "product",
+      "path": "/etc/init/init.miui.opconfig.rc",
+      "sha256": "ca5719c9d107e39a0780363c2419d2ab108468d9023554bf7b00bcd274206f62",
+      "bytes": 695
+    },
+    {
+      "partition": "product",
+      "path": "/etc/init/init.mtmr.rc",
+      "sha256": "d631f37b77248e89a4c444d44604f0147abed7b38aa26b5cecc313039dea6fe5",
+      "bytes": 1947
+    },
+    {
+      "partition": "product",
+      "path": "/etc/init/init.qti.display.rc",
+      "sha256": "42d8d3fd727f02a2c6618555f5b3bacb6f2935376a984cef9f6b5cf83e5be747",
+      "bytes": 556
+    },
+    {
+      "partition": "product",
+      "path": "/etc/init/vendor.qti.qvirt-service.rc",
+      "sha256": "756caa37557e02f5b1aa6c443a3a94bf9211d7db941faf81ffab018d09ad8da0",
+      "bytes": 240
+    },
+    {
+      "partition": "product",
+      "path": "/etc/init/vendor.qti.qvirt-service_rs.rc",
+      "sha256": "bf04cd622abc35a29f2a4682314379c3caf94afccc69065a362dfe9928f3f9b4",
+      "bytes": 236
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.atrace@1.0-service.rc",
+      "sha256": "f44c51e9892d48823ef4246d3f47e3f4455ac0bfed9ba63bc74e3b6822bc72f0",
+      "bytes": 552
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.audio.service.rc",
+      "sha256": "9f333cf5552c40153a199ae173eb48a3d558b53a3f097c2702bfbfde2f1565fb",
+      "bytes": 406
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.bluetooth@1.0-service-qti.rc",
+      "sha256": "56b56c6ae6aac56c730d2f307b2a709057a54c16e07e8bee90697566dea12c9e",
+      "bytes": 218
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.cas@1.2-service-lazy.rc",
+      "sha256": "3685b9d58cdd79ef31ad3ee146ef4b31a6c27c1633a2af1919724abde87b0a04",
+      "bytes": 413
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.configstore@1.1-service.rc",
+      "sha256": "b659d349489e7f56a4a6f4d7f3995944ee4eab869a665cf98977968d761a52e7",
+      "bytes": 302
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.drm@1.3-service.clearkey.rc",
+      "sha256": "da4f4a3867787cd947da35475983185a2217cba1064619506dab478af3381a32",
+      "bytes": 705
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.drm@1.3-service.widevine.rc",
+      "sha256": "f1cbbb9cf4791c566636523e46f64544a73eb8fe41231fd7e301bfcd8977e144",
+      "bytes": 1048
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.dumpstate@1.1-service-lazy.rc",
+      "sha256": "6ca12502e4bcb4418da2075257a18ac3db2758759c6fcb05956551da72fccf6b",
+      "bytes": 305
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.gatekeeper@1.0-service-mdfpp.rc",
+      "sha256": "66c51b8c0da2edcfc090f802c09f874a333180882258de88d56e85e5ff1dc520",
+      "bytes": 272
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc",
+      "sha256": "740cec97862d8f457f205d424c218a6d9b31e25acd3fec8075fe9076cdeb93da",
+      "bytes": 140
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.gnss@2.1-service-qti.rc",
+      "sha256": "6e71203addc9b996845906d1c5f6dfef6171337dd6638c1555e3c73921622169",
+      "bytes": 147
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.health@2.1-service-samsung.rc",
+      "sha256": "31976ea1f9b66fa35c71c2c598657fc0cf0939248517a0e9a16d7ee2f2856fee",
+      "bytes": 194
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.keymaster@4.0-service.rc",
+      "sha256": "f8f7a87f5dbd2116f3d3c5ff047d1f09dbc083d8c4044d107df5ad7d95e26b5b",
+      "bytes": 481
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.keymaster@4.0-strongbox-service-qti.rc",
+      "sha256": "c3aa917a2ae8c7d76d6cecbe671a3f43051dc734cdbebd93056a320ef723358a",
+      "bytes": 189
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.media.omx@1.0-service.rc",
+      "sha256": "39ec885edf9e9f1b3cebc657b450c1c45e30fd9e172237ccc1883274d9bc629d",
+      "bytes": 232
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.memtrack@1.0-service.rc",
+      "sha256": "28f305d029a0aac7daaeb97e748b3be0d797e3c66a7aa24571c2e507b0141456",
+      "bytes": 195
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.neuralnetworks@1.3-service-qti.rc",
+      "sha256": "bdc0dde498e8218fcec017653d9a67613f62ee5df54c21f3125b886537363b34",
+      "bytes": 454
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.secure_element@1.0-service-gto-sku.rc",
+      "sha256": "c72da7fe8137a133889530063e28974f6295f8da0af3269a954f2110c821ceee",
+      "bytes": 263
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.secure_element@1.0-service-sku.rc",
+      "sha256": "421b78b550b88f6049e34d43853aef6148cafe33c84aaf1f04c87499a8a8c251",
+      "bytes": 250
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.sensors@2.0-service-multihal.rc",
+      "sha256": "04d81088132291eef70d165ded6f12360d44d3df731bb1f6a6a797b72e716d7a",
+      "bytes": 409
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.usb@1.3-service.coral.rc",
+      "sha256": "a31d27cd87f62ad5515a1733eb982234bf059403482dc489c6a19ea021db6dde",
+      "bytes": 872
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.wifi.supplicant-service.rc",
+      "sha256": "3beed69a1dccb2c9756edbda4d1b4d4f5cd5a21365f6eeb54fb872ca8d52189c",
+      "bytes": 920
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/android.hardware.wifi@1.0-service.rc",
+      "sha256": "ad76dc52f91f79c254279044067713e9beb9247917267730af7ac7dc0931a603",
+      "bytes": 448
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/boringssl_self_test.rc",
+      "sha256": "459fea4e63e78a19b04b37e6298e4ce22a816f2f5604b17289d04c3a57e1fe1d",
+      "bytes": 751
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/btcoex_cont_config.rc",
+      "sha256": "167c69f3f13cea70be6a69c2def289e069e2c3f994aa350343ecdfbf162158e8",
+      "bytes": 288
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/camera.unihal.rc",
+      "sha256": "ec332d07913d256d29cd64d42abe764ad3e74a30ac15e9290e3360376d639cef",
+      "bytes": 58
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/cass.rc",
+      "sha256": "abeecba2c4c796f6e1c2b03fb070e83303dbe4e454597bdfe0ca5c5b750644a8",
+      "bytes": 169
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/dataadpl.rc",
+      "sha256": "8fb07a4eb3f8222e9266deada743d05f40633a6f8a9b06d0577e3af632210443",
+      "bytes": 386
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/emservice.rc",
+      "sha256": "82f3f984bb5db1ed1d33ffd294e41dd906bb1909f1647d9434197917b7f55224",
+      "bytes": 200
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/fingerprint_common.rc",
+      "sha256": "99f4907ee47f486ecb19f117f901cb12aa2e31bc48fb1daff9cf07250e43dca9",
+      "bytes": 1588
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hostapd.android.rc",
+      "sha256": "bf173cc6e9ac12033f85b7e008a91c5283a165ef7ef53e3d9ba2bf4e0ddb2abd",
+      "bytes": 807
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.qcom.factory.rc",
+      "sha256": "9231679b45207ae272245a26a51de5d0e9804f774e62b299a80b0c234844f857",
+      "bytes": 8030
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.qcom.rc",
+      "sha256": "9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea",
+      "bytes": 34657
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.qcom.usb.rc",
+      "sha256": "271ad2ab0df267ad92d2d2a303f99b435f3fbca3378524b2d02b632887a3c467",
+      "bytes": 133622
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.r8q.rc",
+      "sha256": "f72795183a8fc90c60d5e8a5bd3e524d9f926b829df2ebfadf9ab9c1cf5add43",
+      "bytes": 9601
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.samsung.bsp.rc",
+      "sha256": "8aa7664c15e37b48ae065341821c26dffae72d18d03feebb14f74ad16f5c4541",
+      "bytes": 4746
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.samsung.display.rc",
+      "sha256": "5a9e2893351e0fe845d8d396afc1c54465cf844b7ddc9573324f156390e5a2c4",
+      "bytes": 17189
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.samsung.eif.rc",
+      "sha256": "c0dde651ad8acedd29c585895ea09242f8b87c056037ccdc83e3e8584e38ac6e",
+      "bytes": 3090
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.samsung.rc",
+      "sha256": "8daa10c29c2d7cd237a0eaf34c542ab13de05305076798b9acdd47ff64d071be",
+      "bytes": 10495
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.target.rc",
+      "sha256": "d1e82b089bac28ef1150c1e2ff1300fae70992d7b8be151ffa9256aa4d3873a1",
+      "bytes": 10137
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hyper-default-sec.rc",
+      "sha256": "ceffae1ad4a9e07a891e7ca88ac46c28bd72890ae192160aac78b0b217c9003d",
+      "bytes": 236
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.fingerprint.rc",
+      "sha256": "99f4907ee47f486ecb19f117f901cb12aa2e31bc48fb1daff9cf07250e43dca9",
+      "bytes": 1588
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.nfc.samsung.rc",
+      "sha256": "d2b6ca4a82492c8051fcd7d3fa1352bb6ede5ecb0c59417cc990c37195abd106",
+      "bytes": 1363
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.qti.fm.rc",
+      "sha256": "bf511ef4ca873230aa8049a30527509d48fce3cc6b10b1add1e1c687e3f57872",
+      "bytes": 120
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.qti.media.rc",
+      "sha256": "cf5bcfbdc369622f7f8c0bcf6ed783d2e098b74984a65b3f086f495655221ece",
+      "bytes": 2032
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.qti.qcv.rc",
+      "sha256": "c30d04f9038c5b723e345dfedbc125fed28592a692f3eea08c440ad23a94c96d",
+      "bytes": 509
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.ramplus.rc",
+      "sha256": "53b55286713abb673f41a495a0d3e821bd9db6cf8bae1fa753dec39c2f74aac0",
+      "bytes": 95
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.spdaemon_wait_spunvm.rc",
+      "sha256": "ceeba17bdb36bbbdb5d32b40580ad75cef1469e8c528434dbda12d4083b64340",
+      "bytes": 299
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.time_daemon.rc",
+      "sha256": "8af014921d1a2794d3e4861d2e91609a909b5158fcc3c6e829fb9710b6240441",
+      "bytes": 554
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.vendor.onebinary.rc",
+      "sha256": "8ba07bf0a850d61cf0b5cbed4851ad5d067614440f27bb3be8dd977e0f1af73b",
+      "bytes": 441
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.vendor.rilchip.rc",
+      "sha256": "06f62823d26a96412161072684bd59aa01310e999d5a58314dd136c07829d161",
+      "bytes": 1391
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.vendor.rilcommon.rc",
+      "sha256": "589fb2f25a29641514ad215d2d643e9d5d798084070318062c70b485f631687a",
+      "bytes": 920
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.vendor.sensors.rc",
+      "sha256": "4c1c9ff99eb0b682d088b74a1bbe8e4cc718094604454a9cb925a928ba23ce63",
+      "bytes": 2754
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init.vendor.sysfw.rc",
+      "sha256": "3d3522e6392a87557d2a99936349518920b13be1c80637790c71337764fe0499",
+      "bytes": 823
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/init_thermal-engine.rc",
+      "sha256": "eef1e4f3d90983ec244041ccc6aca2ed5c5606f02eb14536a7ee741f1eb8abef",
+      "bytes": 532
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/ipa_fws.rc",
+      "sha256": "20eff0d45b053323d7e53888dd188b0a2f7c6ea9080bda85b79e4d88d04cedd0",
+      "bytes": 173
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/ipacm-diag.rc",
+      "sha256": "8211647bf67bc48a84bb935126010be0d04c64f6f2bf83f9f78b6399365470a8",
+      "bytes": 469
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/ipacm.rc",
+      "sha256": "99f90516e99bf2dd9d1e9185458dc14160455632c952a13d08a4c0264896300e",
+      "bytes": 1675
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/lights-default-sec.rc",
+      "sha256": "e83fb7a55d9d5938c90d35ee8b67e3d4a518df1a4fd7ded49cd58ae43532ae0b",
+      "bytes": 146
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/mppserver_ros.rc",
+      "sha256": "a791002097168b7dfc1d4a888f783da005af69121ad72f77dedbad9070c0d90d",
+      "bytes": 395
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+      "sha256": "8897b100b8fb7feef9b5d32bf3045736387745c86a709e4818e460ead9c02393",
+      "bytes": 832
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/mutualex.rc",
+      "sha256": "e77a8f80a9936f771d8cbe76556ebb758473da48c922bb53db6ddcdb85e9ed57",
+      "bytes": 158
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/netmgrd.rc",
+      "sha256": "fb5595a1aaee8af7ed5b766316ab443a4412bf12fd4c3d8dc1413a767fbe89e7",
+      "bytes": 3746
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/pa_daemon_qsee.rc",
+      "sha256": "e3828b572fd3795620619788755891eefc49809c1695cefd84a96143b9f223a3",
+      "bytes": 253
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/power-default-sec.rc",
+      "sha256": "44d3c81a081155c3e05e9c2c7ee33dcb66e18bfc56b2624a8e7dc17551b74a6d",
+      "bytes": 256
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/qdcmss.rc",
+      "sha256": "7e217b9bf00d8afb0acb693f3f672904dba2c8db26e9130875e0b376d0ed7d12",
+      "bytes": 288
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/qseecomd.rc",
+      "sha256": "9023d41ed1320a89e9b4b891f00a8376888259d9549b71baebe095f97eef6ad7",
+      "bytes": 258
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/samsung.software.media.c2@1.0-service.rc",
+      "sha256": "f423a524199c294c06b29a5536199d8fa8c9234fda0fad854bc7360e213c857a",
+      "bytes": 221
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/shsusrd.rc",
+      "sha256": "820122fbc4f465ef72d7a2e36994602a851bb6d099bd69516e535be738178f44",
+      "bytes": 742
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/snap_utility.rc",
+      "sha256": "70883ec28e370d5d06ce80f89fc4de416dd9cea617edfc0a3078251bf0c5f52e",
+      "bytes": 1558
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/snaplite_utility.rc",
+      "sha256": "342863e3db92b96d42f0bb06137f47fd685b5f5f99689d22a7e22b464629ad1d",
+      "bytes": 1378
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/ssgtzd.rc",
+      "sha256": "a98038ec12f8f0b0be4c268b47d6f35d8e5f51adeb91c494d47d14813c617524",
+      "bytes": 494
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vaultkeeper_common.rc",
+      "sha256": "7215d911bd344193b78803ce059666576c68be629d5442e2e4590ac5a0948853",
+      "bytes": 411
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.display.color@1.0-service.rc",
+      "sha256": "9f450ab55031c52612b8c662bb75947d1ed2a8ba7d91079e8276302b1fe56336",
+      "bytes": 125
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.adsprpc-service.rc",
+      "sha256": "a0731e3ecd5cf6ae35cf75b9b493491d7cf154e14a3c88d703ad86683b470995",
+      "bytes": 1890
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.cdsprpc-service.rc",
+      "sha256": "514380195888662a57b0279ac4fbed6f75b96f9aa02f4d834c0bfbb072846575",
+      "bytes": 1863
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.capabilityconfigstore@1.0-service.rc",
+      "sha256": "8df50b2fbfc95cd7722648753b4770505adc25c1bce45fcecf7cf605d00fbc7e",
+      "bytes": 288
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.display.allocator-service.rc",
+      "sha256": "5f1d3dbdd7c2ca4ffbcdfd54883f5d6f1b98fe0eed6f0f0c84f67644da828f78",
+      "bytes": 236
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.display.composer-service.rc",
+      "sha256": "6f9974e904c1677b2d9506eb6258b8d657227e7f841597ac918a3e4f3ab379c2",
+      "bytes": 322
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.dsp@1.0-service.rc",
+      "sha256": "dc2d534f3425c73e56bd9a215c8a7094b9a6973e87531f5de2e0c2bd2283b9e0",
+      "bytes": 388
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.iop@2.0-service.rc",
+      "sha256": "b87602587ac458e94bf586b913edd8aca6f0fbde124f6480a86d6aa7b201921b",
+      "bytes": 604
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.perf@2.2-service.rc",
+      "sha256": "67150124b64b0e41a5bff3791d55a8a9ba1c04612a0cf9aec8a342919e50d15a",
+      "bytes": 553
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc",
+      "sha256": "fe3a6b4c1fbd70e60f8688be4f580f08ab3bb7949189aabea0750db5d001db79",
+      "bytes": 308
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.qteeconnector@1.0-service.rc",
+      "sha256": "90ab48bc6399a7ca5a9098d84c8011f7086792449bd1f6ce1500a6cf960016b7",
+      "bytes": 138
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.servicetracker@1.2-service.rc",
+      "sha256": "c0815e0ff3f81f1c4ad925fd006fd73d97d30df4e0c56208cc39c3262dc3010d",
+      "bytes": 143
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.hardware.tui_comm@1.0-service-qti.rc",
+      "sha256": "f3c8ff77022521f2d9a8f038dc548139711b83b245f6225fc0e0b5f1620d68b6",
+      "bytes": 136
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.rmt_storage.rc",
+      "sha256": "e43198fb1fbdac63e8439d1445d9068d5a2c168a7daeb8683c3168e1155d0169",
+      "bytes": 255
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.qti.tftp.rc",
+      "sha256": "34d02802ef8800322df81a85a69d806e37948eb27ad53ae4c709da561d60d024",
+      "bytes": 308
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.authfw@1.0-service.rc",
+      "sha256": "99afa32dbab0d0cd5299a6cb061c9a6aac3acd12455a65e722171aff0e2acd33",
+      "bytes": 235
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.biometrics.face@3.0-service.rc",
+      "sha256": "280764cf3a6e58637fb496032c910eeeedd22eda0c060d1eea328e4fdefa89ad",
+      "bytes": 334
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.biometrics.fingerprint@3.0-service.rc",
+      "sha256": "540a3c78b3c4b78e03fa608f357c101ef06af595fe41f604ffc9beca0828e14e",
+      "bytes": 335
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.camera.provider@4.0-service_64.rc",
+      "sha256": "90512b8da147496de1ecba1548fe2ae3265ca3b0751a06b3854b4771fd1a6462",
+      "bytes": 1679
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.hqm@1.0-service.rc",
+      "sha256": "d7555498596c4d98ab2cc953b136e69f2d3f7f65cd97910f1daa62c1fbdf1b91",
+      "bytes": 205
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.media.converter@1.0-service.rc",
+      "sha256": "dc46b7a7ecab46880efd0c15d16fa06209c2a00f9740a0a44418fbd88ba6c266",
+      "bytes": 170
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.miscpower@2.0-service.rc",
+      "sha256": "0cf247ba1da12efbe7bbdd048b01d80aeb51ad85c887634b21260f1a10ca6f6f",
+      "bytes": 134
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.securesnap-default.rc",
+      "sha256": "a908d310b33c4217b2f2f074535858793df75202921b618838001c4c1589f7b9",
+      "bytes": 152
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.security.drk@2.0-service.rc",
+      "sha256": "4d4ab152598d54f3831f11798d6045a38eb6c3fa1b3bc18edf37de69667b3486",
+      "bytes": 435
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.security.engmode@1.0-service.rc",
+      "sha256": "b611e9eceb212d0884d93cfbbe3254e1dc9d2b6b3f75c22ff742d26de6e73ca4",
+      "bytes": 138
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.security.hdcp.keyprovisioning@1.0-service.rc",
+      "sha256": "a593c0b2f1d955cb4c52d7ff99d8a5dae195f3c2c16da7f1ff719e328f707584",
+      "bytes": 163
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.security.sem@1.0-service.rc",
+      "sha256": "39d3a519cc5bb6d2ddf0156ab842a123561d772341f68373f964e009f283b2f1",
+      "bytes": 224
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.security.skpm@1.0-service.rc",
+      "sha256": "65d68648a18848d6cc448afd9cd1821ab2f48cb14239e6ee6234889d7796ce18",
+      "bytes": 228
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.security.widevine.keyprov@1.0-service.rc",
+      "sha256": "e72fc5a1bc080a9cb2e2ae8afb5085c10d5818e632d3342177dfa243cb2ad65e",
+      "bytes": 297
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.snap-default.rc",
+      "sha256": "407be6493349a3cd84c7323d85cd057bbd4d1146949b6e0166df0ae76bf12c4a",
+      "bytes": 143
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.sysinput@1.3-service.rc",
+      "sha256": "fd8c832c1d5018738046def8843244969f865934b623e42eb1c468c46383313f",
+      "bytes": 8526
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.thermal@1.0-service.rc",
+      "sha256": "935745797f94d0be28ff052bb7819dacb5ed133985039db5a70d318a7fda0eb9",
+      "bytes": 393
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.blockchain@1.0-service.rc",
+      "sha256": "b3a131e2975d5183b5224b88466a1f5c3b94f616a5555578b8a5ae5f7dc593af",
+      "bytes": 306
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.ddar@1.0-service.rc",
+      "sha256": "b5525c9a261e39099e4481a5f061135d8c548a6ebe873d7c3a7b248696e6d539",
+      "bytes": 454
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.hdm@1.1-service.rc",
+      "sha256": "56d481495a22559bb5a27e85e8fd79b7625fa50cc6af9d0f0b5a507a800b8aea",
+      "bytes": 457
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.iccc@1.0-service.rc",
+      "sha256": "8aef9a7078f6057225b74987bd820ee8ca535842609702848d71ef40280b41a1",
+      "bytes": 218
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.payment@1.0-service.rc",
+      "sha256": "33099e6b176a633d2a16775af6aea19067f22cfe3008db1f8eff993c33eaf0b5",
+      "bytes": 291
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.snap@1.0-service.rc",
+      "sha256": "1d9811e823b62430fa7a5a1c35ecb87732f384789b27ef955fa1c70961106a82",
+      "bytes": 220
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.tlc.ucm@2.0-service.rc",
+      "sha256": "2994905810e39e8bfb30cd0e022e4e0e2d95af4b072dbd5e96b3b1ec3595ae06",
+      "bytes": 213
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.vibrator-default.rc",
+      "sha256": "96653e11ab16af4c826aaa84d10f6021532191838f2cd95dee208473e24c815e",
+      "bytes": 4233
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.samsung.hardware.wifi@2.0-service.rc",
+      "sha256": "4a569036c6be5c998943cee8bd0fac56ec29a1479f896816033c332ec8698773",
+      "bytes": 437
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vendor.sensors.sscrpcd.rc",
+      "sha256": "62a156926422eb3a287bb138038458b465d35a2c339138c625c9db1be1d9e478",
+      "bytes": 1901
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/vndservicemanager.rc",
+      "sha256": "8dda986d89a2ab17268872e823eaa5d3899466c6a81693eddbeebb2070cd12a8",
+      "bytes": 301
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/wifi.rc",
+      "sha256": "f8e2aca471496328b21497f8638230ae8fe8cf68b78a3ab6e26f71e342563f28",
+      "bytes": 2440
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/wifi_qcom.rc",
+      "sha256": "9ffdd9351833c1ab80de061502cc798765c5bb511a7d145abdad618a3d7bff2c",
+      "bytes": 1945
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/wsm-service.rc",
+      "sha256": "7fa629c7ce24d0cfdfbf6ea126f0f768e5a172d0d369ff22f4ca796de61b35ef",
+      "bytes": 235
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/init.SN100x.nfc.rc",
+      "sha256": "634a360195abfd55b873e839db770bc05c7da48a16138cfa232b75e4e5f77dff",
+      "bytes": 201
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/oplus_performance.rc",
+      "sha256": "d810e4fcca055d7dbf76da67ea508f0629d9457a4074ece21c25a93bf1aa804f",
+      "bytes": 792
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/ormsHalService-default.rc",
+      "sha256": "afb03c865d74c8b6e9ec751d1f86863bb22c838813b2861a7cda24e1707cf8aa",
+      "bytes": 8812
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor-oplus-hardware-performance-V1-service.rc",
+      "sha256": "0caffb8f23e8bf1f075bbb37438950d67fc0e272220f8dd7f9b555c32c15ab95",
+      "bytes": 298
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor-oplus-hardware-power-powermonitor-V1-service.rc",
+      "sha256": "de194926863d3b0f6f9e77ba7ac7ca003b02137856d14042d66e4cee98580fcd",
+      "bytes": 316
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.nxp.hardware.nfc@1.2-service.rc",
+      "sha256": "000ff26980e30f70337979b04591cfdadc2049818026470ca4c1d791410bf2d1",
+      "bytes": 1684
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.charger-V3-service.rc",
+      "sha256": "986d49f4a531125790fdf9d8d9949993ea5ce3c56b9e08e78a5ec1f1ef0ed78a",
+      "bytes": 3126
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.charger@1.0-service.rc",
+      "sha256": "57cee4d7c34b53cd8b131603642c9c8dec8df3e85a315a2438b9919f799755e2",
+      "bytes": 2988
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.lmvibrator@1.0-service.rc",
+      "sha256": "90cf00ebb23b46c3caf959e9e3e5e89c09172bc033b5a43a85639e4728e20b33",
+      "bytes": 134
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.nfcExtns-service.rc",
+      "sha256": "bbec9cc3d02be08793e869bbc456bce63bb55746bbeaa29a23f163249e4aab05",
+      "bytes": 127
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.nfc_aidl-service.rc",
+      "sha256": "8721993cfd215a31091191a707729098f6ff90e1c56bbcabbac0720af2296765",
+      "bytes": 801
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.olc2-V1-service.rc",
+      "sha256": "097bbc11096d70184bb087a994556eb29a4a86809148aef591a351ab95439e6d",
+      "bytes": 207
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.stability.oplus_project-V1-service.rc",
+      "sha256": "41f613b8abbd0dcbb94251af3db688dc9930062bb0854b8c04c3cd0f2a607bd3",
+      "bytes": 234
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.thermalmntcfg@1.0-service.rc",
+      "sha256": "5d4dc15e3ae4a51f1eb6b95c009e98ea45bdada90960422b01762af6e38ec8b2",
+      "bytes": 205
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/init/vendor.oplus.hardware.wifi-aidl-service-qcom.rc",
+      "sha256": "9d23c33b832c82ff289476a1ba26deabeb094d31be69674f95f8493fae415cc9",
+      "bytes": 358
+    }
+  ],
+  "limits": [
+    "Host init-compatible compilation is not a phone kernel load test.",
+    "Policy version 30 follows the observed original ODM binary; maximum kernel policy version remains unmeasured.",
+    "Dynamic MLS, /data applications, inode xattrs and runtime permission decisions are not validated by label checks."
+  ],
+  "reviewed_cil_manifest_sha256": "0564e9aaac5c78d065d675c718aee7af6841bf83fa41e00b13f3a149c6733576",
+  "compiler_tools": {
+    "source_repository": "https://github.com/SELinuxProject/selinux",
+    "source_commit": "6423998bc7b154da7f9fe726cfda9ace774dfa94",
+    "build_workflow_run": "https://github.com/bonecopreparado/vendor-r8q/actions/runs/41249309007",
+    "secilc_host_sha256": "690376e36fea2e53487823ad42ca7c26d57edcf5ff20c072ea1e1973dcde3960",
+    "cap_checker_sha256": "dc297be9fe5af9c4cad22ec56c4b3a2c9c99f2f5433137086286df93f98d4ac3"
+  },
+  "genfs_selection": "Absent vendor marker; default 202404, without optional dated genfs files. OEM init selection remains unexecuted.",
+  "removed_odm_precompiled_files_verified_absent": [
+    "/etc/selinux/precompiled_sepolicy",
+    "/etc/selinux/precompiled_sepolicy.plat_sepolicy_and_mapping.sha256",
+    "/etc/selinux/precompiled_sepolicy.system_ext_sepolicy_and_mapping.sha256",
+    "/etc/selinux/precompiled_sepolicy.product_sepolicy_and_mapping.sha256"
+  ],
+  "compile": {
+    "argv": [
+      "/workspace/hyperos-space/tools/selinux-modern/secilc-host",
+      "-m",
+      "-M",
+      "true",
+      "-G",
+      "-c",
+      "30",
+      "-N",
+      "-o",
+      "/workspace/hyperos-space/reports/p1/policy-final/compiled.policy",
+      "-f",
+      "/workspace/hyperos-space/reports/p1/policy-final/compiled.file_contexts",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/system_plat_sepolicy.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/system_mapping_30.0.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/system_mapping_30.0.compat.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/system_ext_system_ext_sepolicy.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/system_ext_mapping_30.0.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/system_ext_mapping_30.0.compat.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/product_product_sepolicy.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/product_mapping_30.0.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/vendor_plat_pub_versioned.cil",
+      "/workspace/hyperos-space/reports/p1/policy-final/cils/vendor_vendor_sepolicy.cil"
+    ],
+    "exit": 0,
+    "neverallow_assertions_disabled_like_init": true
+  },
+  "compiled_policy": {
+    "bytes": 1975722,
+    "sha256": "70278111389ef8affecddf0eee346f4d3cba4b72fe7bc907e512f7c610d769ad",
+    "version": 30,
+    "preserved_capabilities": [
+      "network_peer_controls",
+      "open_perms",
+      "extended_socket_class",
+      "nnp_nosuid_transition",
+      "netlink_xperm",
+      "functionfs_seclabel"
+    ],
+    "cap_check_exit": 0
+  },
+  "contexts": {
+    "unique": 2879,
+    "source_files": 27,
+    "actual_init_files": 272,
+    "binary_checked": true,
+    "checker_sha256": "d05f5928eaff5d8ea502852c11e49e5e1a2740076651dbba266c20d68954d7c5",
+    "valid": 2879,
+    "invalid": []
+  }
+}

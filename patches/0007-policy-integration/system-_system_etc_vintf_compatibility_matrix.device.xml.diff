@@ -1,0 +1,10 @@
+--- original/system/system/etc/vintf/compatibility_matrix.device.xml
++++ candidate/system/system/etc/vintf/compatibility_matrix.device.xml
+@@ -2961,6 +2961,7 @@
+     </hal>
+     <sepolicy>
+         <kernel-sepolicy-version>30</kernel-sepolicy-version>
++        <sepolicy-version>30.0</sepolicy-version>
+         <sepolicy-version>31.0</sepolicy-version>
+         <sepolicy-version>32.0</sepolicy-version>
+         <sepolicy-version>33.0</sepolicy-version>

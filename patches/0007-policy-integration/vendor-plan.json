@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source_image_sha256": "18e48f734c31f263f330786ffea841738a733784da05b5b6d86b5e5217d82d5f",
+  "operations": [
+    {
+      "op": "replace",
+      "path": "/etc/selinux/vendor_seapp_contexts",
+      "old_sha256": "277a1b6bd188077be9e398f6cdf8cdd8aabbddfa8cb6678aab68c8ddf47e2848",
+      "source": "candidate/vendor/etc/selinux/vendor_seapp_contexts",
+      "sha256": "d609023e7ab6df17f7687f6624fc45bf2d034fd7e2950ef11bbfdee1e01d3e61"
+    },
+    {
+      "op": "replace",
+      "path": "/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+      "old_sha256": "df893bbe3b600fcc01a939443d6dfeebb8692ccc5db4b251a8fcf2eb3e4a101c",
+      "source": "candidate/vendor/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+      "sha256": "8897b100b8fb7feef9b5d32bf3045736387745c86a709e4818e460ead9c02393"
+    },
+    {
+      "op": "delete",
+      "path": "/etc/init/nxp.android.hardware.nfc@1.2-service.rc",
+      "old_sha256": "c7d546b6ee6d3e6662e88f774efa41629dcc857952d8e0ebd9281418438b75f8"
+    },
+    {
+      "op": "replace",
+      "path": "/etc/init/hw/init.qcom.rc",
+      "old_sha256": "f99ed349e998bf2e313fdbc6eb4b298be29730060f102e75d9e8d2f724ff9028",
+      "source": "candidate/vendor/etc/init/hw/init.qcom.rc",
+      "sha256": "9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea"
+    }
+  ]
+}

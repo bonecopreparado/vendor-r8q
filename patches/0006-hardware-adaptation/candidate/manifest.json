@@ -1,0 +1,31 @@
+{
+  "name": "Samsung NFC init service consolidation",
+  "status": "ISOLATED_CONFIG_FIX_NOT_APPLIED_NOT_NFC_RUNTIME_VALIDATED",
+  "scope": "Fix duplicate init service and retain its four interface bindings; do not hide Oplus missing-library issue.",
+  "files": [
+    {
+      "path": "vendor/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+      "action": "replace",
+      "old_sha256": "df893bbe3b600fcc01a939443d6dfeebb8692ccc5db4b251a8fcf2eb3e4a101c",
+      "new_sha256": "8897b100b8fb7feef9b5d32bf3045736387745c86a709e4818e460ead9c02393",
+      "bytes": 832,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0644",
+      "selinux": "u:object_r:vendor_configs_file:s0"
+    },
+    {
+      "path": "vendor/etc/init/nxp.android.hardware.nfc@1.2-service.rc",
+      "action": "delete",
+      "old_sha256": "c7d546b6ee6d3e6662e88f774efa41629dcc857952d8e0ebd9281418438b75f8"
+    }
+  ],
+  "preserved": [
+    "Both Samsung executable paths, disabled flags, class/user/group and all four original hardware-selector triggers.",
+    "All ODM Oplus/NXP binaries, service declarations and VINTF manifests remain untouched."
+  ],
+  "limits": [
+    "AOSP init semantics checked statically; host_init_verifier and phone runtime still required.",
+    "This does not repair the absent Oplus libpnscr2_aidl.so or establish which NFC chip is present."
+  ]
+}

@@ -1,0 +1,18 @@
+--- original/system_ext/etc/selinux/system_ext_sepolicy.cil
++++ candidate/system_ext/etc/selinux/system_ext_sepolicy.cil
+@@ -682,7 +682,6 @@
+ (roletype object_r fbo_file)
+ (type nativehang_file)
+ (roletype object_r nativehang_file)
+-(type sysfs_battery_supply)
+ (roletype object_r sysfs_battery_supply)
+ (type mistack_pid)
+ (roletype object_r mistack_pid)
+@@ -1148,7 +1147,6 @@
+ (roletype object_r sysfs_mi_memory_monitor)
+ (type data_log_keyguard_file)
+ (roletype object_r data_log_keyguard_file)
+-(type sysfs_memory)
+ (roletype object_r sysfs_memory)
+ (type sysfs_fs_erofs)
+ (roletype object_r sysfs_fs_erofs)

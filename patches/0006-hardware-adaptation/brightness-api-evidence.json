@@ -1,0 +1,15 @@
+{
+  "path": "/system/framework/services.jar",
+  "bytes": 39864824,
+  "sha256": "0749bf9ef6b076bfdbcb77fddf9688f8456c72a0c5e43ed88afa6c2e978f66a5",
+  "dex": [
+    {
+      "dex": "classes2.dex",
+      "bytes": 9936964,
+      "sha256": "d0e603c69a89139ad64449486f11e46f3f6533dcf702169fc65aad9051175fc4",
+      "has_display_shell_class": true,
+      "has_no_display_id_error": false
+    }
+  ],
+  "limits": "Strings/class presence plus AOSP reference; method implementation/runtime invocation not executed."
+}

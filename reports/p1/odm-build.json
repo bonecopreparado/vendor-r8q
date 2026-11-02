@@ -1,0 +1,196 @@
+{
+  "status": "OFFLINE_EXT4_CANDIDATE_VALIDATED_NOT_BOOT_TESTED",
+  "source": "extracted/r8q/odm.img",
+  "source_sha256": "644d2a8741e840c6b2f126177616b27e5087e0c22ece310dcd3674e7e9a00bbd",
+  "output": "candidates/p1/odm.img",
+  "output_sha256": "addb89433e775b5cb6ceb6b5703f66329bdb0ecc4f28c2f22e1cf3bc9ce357be",
+  "bytes": 19640320,
+  "plan_sha256": "5186270ba0d1f5fef9520ac71f3c6e5cf359ea0cfcb1afcc5da807b3634a2156",
+  "source_e2fsck": {
+    "exit": 0,
+    "stdout": "Pass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\nodm: 217/224 files (0.0% non-contiguous), 4685/4795 blocks\n",
+    "stderr": "e2fsck 1.47.2 (1-Jan-2025)\n"
+  },
+  "candidate_e2fsck": {
+    "exit": 0,
+    "stdout": "Pass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\nodm: 213/224 files (0.0% non-contiguous), 4405/4795 blocks\n",
+    "stderr": "e2fsck 1.47.2 (1-Jan-2025)\n"
+  },
+  "staging_e2fsck_preen": {
+    "exit": 0,
+    "stdout": "odm: 213/224 files (0.0% non-contiguous), 4405/4795 blocks\n",
+    "stderr": ""
+  },
+  "changes": [
+    {
+      "path": "/etc/selinux/precompiled_sepolicy",
+      "op": "delete",
+      "old_sha256": "adfda692b2533f91b130c120d8b879ca293a207ee2000ca501c9003cf47760fc",
+      "sha256": null,
+      "metadata": {
+        "inode": 81,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 1131536,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769973729,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a7365706f6c6963795f66696c653a733000"
+        }
+      }
+    },
+    {
+      "path": "/etc/selinux/precompiled_sepolicy.plat_sepolicy_and_mapping.sha256",
+      "op": "delete",
+      "old_sha256": "e10082c7c4ae66db21b93c901bd2dcda69a7abdeef9c18dde4e74920b989b755",
+      "sha256": null,
+      "metadata": {
+        "inode": 82,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 65,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769973729,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    },
+    {
+      "path": "/etc/selinux/precompiled_sepolicy.system_ext_sepolicy_and_mapping.sha256",
+      "op": "delete",
+      "old_sha256": "08d5544d7916e1b00614431c1b0b3d8b97f31fcc65648157602ff3b221fc11f4",
+      "sha256": null,
+      "metadata": {
+        "inode": 84,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 65,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769973729,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    },
+    {
+      "path": "/etc/selinux/precompiled_sepolicy.product_sepolicy_and_mapping.sha256",
+      "op": "delete",
+      "old_sha256": "99ca6e7615dab47960b7a036cedcb65f1ad530519709aada04f2af41b4fcee67",
+      "sha256": null,
+      "metadata": {
+        "inode": 83,
+        "type": "regular",
+        "mode": 420,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 0,
+        "project": 0,
+        "size": 65,
+        "links": 1,
+        "generation": 0,
+        "version_hi": 0,
+        "version_lo": 0,
+        "times": {
+          "ctime": [
+            1230768000,
+            0
+          ],
+          "atime": [
+            1230768000,
+            0
+          ],
+          "mtime": [
+            1230768000,
+            0
+          ],
+          "crtime": [
+            1769973729,
+            0
+          ]
+        },
+        "xattrs": {
+          "security.selinux": "753a6f626a6563745f723a76656e646f725f636f6e666967735f66696c653a733000"
+        }
+      }
+    }
+  ],
+  "preserved_parent_metadata": [
+    "/",
+    "/etc",
+    "/etc/selinux"
+  ],
+  "boot_confirmed": false
+}

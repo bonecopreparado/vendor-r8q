@@ -1,0 +1,154 @@
+{
+  "status": "P1_SUPER_FS_CHANGES_APPLIED_NOT_BOOT_TESTED",
+  "bytes": 10292822016,
+  "sha256": "b05fa49fa8db78ace925669d738cd693bd27a696f9bbf1477945e3407e712659",
+  "logical_bytes": 6809722880,
+  "group_limit": 10288627712,
+  "layout": {
+    "geometry_max_size": 65536,
+    "metadata_slots": 2,
+    "super_bytes": 10292822016,
+    "metadata_major_version": 10,
+    "metadata_minor_version": 0,
+    "header_size": 128,
+    "block_device_alignment": 524288,
+    "block_device_alignment_offset": 0,
+    "first_logical_sector": 2048,
+    "groups": [
+      {
+        "name": "default",
+        "flags": 0,
+        "maximum_size": 0
+      },
+      {
+        "name": "qti_dynamic_partitions",
+        "flags": 0,
+        "maximum_size": 10288627712
+      }
+    ],
+    "partitions": [
+      {
+        "name": "system",
+        "bytes": 1126187008,
+        "attributes": 1,
+        "group": "qti_dynamic_partitions",
+        "extents": [
+          {
+            "bytes": 1126187008,
+            "type": 0,
+            "target_sector": 2048,
+            "source": 0
+          }
+        ]
+      },
+      {
+        "name": "vendor",
+        "bytes": 1647726592,
+        "attributes": 1,
+        "group": "qti_dynamic_partitions",
+        "extents": [
+          {
+            "bytes": 1647726592,
+            "type": 0,
+            "target_sector": 2202624,
+            "source": 0
+          }
+        ]
+      },
+      {
+        "name": "product",
+        "bytes": 3181572096,
+        "attributes": 1,
+        "group": "qti_dynamic_partitions",
+        "extents": [
+          {
+            "bytes": 3181572096,
+            "type": 0,
+            "target_sector": 5421056,
+            "source": 0
+          }
+        ]
+      },
+      {
+        "name": "odm",
+        "bytes": 19640320,
+        "attributes": 1,
+        "group": "qti_dynamic_partitions",
+        "extents": [
+          {
+            "bytes": 19640320,
+            "type": 0,
+            "target_sector": 11635712,
+            "source": 0
+          }
+        ]
+      },
+      {
+        "name": "system_ext",
+        "bytes": 834596864,
+        "attributes": 1,
+        "group": "qti_dynamic_partitions",
+        "extents": [
+          {
+            "bytes": 834596864,
+            "type": 0,
+            "target_sector": 11674624,
+            "source": 0
+          }
+        ]
+      }
+    ],
+    "validation": "Primary slot-0 geometry/header/tables SHA-256 verified; geometry backup matches."
+  },
+  "embedded_sources": [
+    {
+      "name": "system",
+      "file": "candidates/p1/system.img",
+      "bytes": 1126187008,
+      "physical_offset": 1048576,
+      "sha256": "c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72"
+    },
+    {
+      "name": "vendor",
+      "file": "candidates/p1/vendor.img",
+      "bytes": 1647726592,
+      "physical_offset": 1127743488,
+      "sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9"
+    },
+    {
+      "name": "product",
+      "file": "extracted/hyperos/product.img",
+      "bytes": 3181572096,
+      "physical_offset": 2775580672,
+      "sha256": "c848c1d270df7149e22b1bb259d8eab086b6853dc20db78aa94a9bd66cf24813"
+    },
+    {
+      "name": "odm",
+      "file": "candidates/p1/odm.img",
+      "bytes": 19640320,
+      "physical_offset": 5957484544,
+      "sha256": "addb89433e775b5cb6ceb6b5703f66329bdb0ecc4f28c2f22e1cf3bc9ce357be"
+    },
+    {
+      "name": "system_ext",
+      "file": "candidates/p1/system_ext.img",
+      "bytes": 834596864,
+      "physical_offset": 5977407488,
+      "sha256": "16e3571a1eb02df3c3b9c6e1c539237226ad69124438b41ff52348622c0820b4"
+    }
+  ],
+  "reserved_prefix_policy": "Original Samsung first4KiB retained verbatim; no firmware signature validity inferred.",
+  "checks": [
+    "source image hashes",
+    "geometry/prefix preserved",
+    "all primary+backup slots identical",
+    "LP header/table hashes",
+    "physical bounds/alignment/non-overlap",
+    "group limit",
+    "every embedded partition re-read and SHA256 matched",
+    "Independent LineageOS LP parser enumerates/extracts all partitions with matching hashes"
+  ],
+  "pending": [
+    "runtime mount/boot/framework/HAL tests"
+  ]
+}

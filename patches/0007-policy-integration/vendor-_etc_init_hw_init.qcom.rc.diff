@@ -1,0 +1,20 @@
+--- original/vendor/etc/init/hw/init.qcom.rc
++++ candidate/vendor/etc/init/hw/init.qcom.rc
+@@ -992,16 +992,7 @@
+     stop vendor.qti.hardware.display.composer
+     start vendor.qti.hardware.display.composer
+ 
+-# Logcat dump daemon, dumps logs to logdump partition
+-service logdumpd /system/bin/logcat -b all -v threadtime -D -w /dev/block/bootdevice/by-name/logdump
+-    class core
+-    writepid /dev/cpuset/system-background/tasks
+-    seclabel u:r:logdumpd:s0
+-    disabled
+-
+-# Logdumpd is enabled only for userdebug non-perf build
+-on property:ro.logdumpd.enabled=1
+-    start logdumpd
++# Unsupported Samsung block-partition debug logger omitted in this port.
+ 
+ #service time_daemon /vendor/bin/time_daemon
+ #    class main

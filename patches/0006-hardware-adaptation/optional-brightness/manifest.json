@@ -1,0 +1,26 @@
+{
+  "status": "OPTIONAL_UNAPPLIED_REQUIRES_DONOR_RUNTIME_API_TEST",
+  "files": [
+    {
+      "path": "vendor/bin/brightness_sync.sh",
+      "action": "replace",
+      "old_sha256": "d0c866839ad58b46dd5fb277065f2d4d8ab8fa2ff9aadedba426ba8e1a375dfc",
+      "new_sha256": "725ea02dc807ad00ad1629c0bcd0a5a1f1fd4de48506da765cfb5b5e6da53946",
+      "bytes": 1366,
+      "metadata": {
+        "inode": 50,
+        "mode": 33261,
+        "size": 533,
+        "flags": 524288,
+        "uid": 0,
+        "gid": 2000,
+        "blocks": 8,
+        "file_acl": 0
+      }
+    }
+  ],
+  "limits": [
+    "Conversion tests prove bounded mathematical behavior only. No phone sysfs or display service was invoked.",
+    "Confirm normalized framework command and actual hardware luminance behavior before enabling this optional patch."
+  ]
+}

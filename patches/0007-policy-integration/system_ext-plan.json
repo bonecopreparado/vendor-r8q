@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "source_image_sha256": "c805fa6ef27930f8f7ff3abb00d311b2c2f3ab73df9de83daa3e8add0755f0fb",
+  "operations": [
+    {
+      "op": "replace",
+      "path": "/etc/selinux/system_ext_sepolicy.cil",
+      "old_sha256": "4bd7dea8c506a79755e47fc43c7290925538599e894d9cba489ae616def0b851",
+      "source": "candidate/system_ext/etc/selinux/system_ext_sepolicy.cil",
+      "sha256": "708f7ed4e8741c6b1e3345fba8318a6aeecbe3a8605f4e2dc8df4661ce96f791"
+    },
+    {
+      "op": "replace",
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "old_sha256": "942fdc251849354d2b238c64c2e1a894220de5a650fa621c39d451641a3c57b0",
+      "source": "candidate/system_ext/etc/selinux/mapping/30.0.cil",
+      "sha256": "e84ce1941c3a66ff289b610fd575b1fc05de9bc0b4cd02872b310ae26d302c01"
+    },
+    {
+      "op": "replace",
+      "path": "/etc/selinux/system_ext_seapp_contexts",
+      "old_sha256": "0740721ec93810e4c3efd5549a4362a754ad9778d4ba3e8f97e7579b49972a64",
+      "source": "candidate/system_ext/etc/selinux/system_ext_seapp_contexts",
+      "sha256": "5944f8010feca834ee46a99fdd2941b4e142be5af66f9ce2d30c719b9fd8743c"
+    },
+    {
+      "op": "add",
+      "path": "/etc/vintf/manifest/r8q-vndk30.xml",
+      "source": "candidate/system_ext/etc/vintf/manifest/r8q-vndk30.xml",
+      "sha256": "d2b35ccfbc92368a37a770a267188e014e3784bc92c4af5dbbb8e119df4f08d9",
+      "metadata_from": "/etc/vintf/manifest.xml"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Consolidate duplicate Oplus charger init declarations",
+  "status": "OPTIONAL_ISOLATED_CONFIG_FIX_NOT_APPLIED_NOT_CHARGING_VALIDATED",
+  "files": [
+    {
+      "path": "odm/etc/init/vendor.oplus.hardware.charger@1.0-service.rc",
+      "action": "delete",
+      "old_sha256": "57cee4d7c34b53cd8b131603642c9c8dec8df3e85a315a2438b9919f799755e2"
+    }
+  ],
+  "required_retained_files": [
+    {
+      "path": "odm/etc/init/vendor.oplus.hardware.charger-V3-service.rc",
+      "sha256": "986d49f4a531125790fdf9d8d9949993ea5ce3c56b9e08e78a5ec1f1ef0ed78a"
+    },
+    {
+      "path": "odm/bin/hw/vendor.oplus.hardware.charger-V3-service",
+      "bytes": 309872,
+      "sha256": "1c5ad4715da8faa46de26249a58a13fb824c55b80d191144da2fd3a7cb80f672"
+    }
+  ],
+  "required_interface": "vendor.oplus.hardware.charger.ICharger/default AIDL version 3",
+  "reason": "The V3 RC sorts before the legacy RC and already defines all three same-named services. The later RC has no override, repeats the same actions and contributes no distinct action.",
+  "limits": [
+    "Verify whole-tree init imports and host_init_verifier before applying.",
+    "This preserves the selected V3 implementation; its compatibility with Samsung charging hardware remains unproven.",
+    "No charger binary, VINTF declaration, sysfs path, permission or runtime state is modified by this generator."
+  ]
+}

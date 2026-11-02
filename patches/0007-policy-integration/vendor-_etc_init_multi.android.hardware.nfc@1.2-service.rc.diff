@@ -1,0 +1,11 @@
+--- original/vendor/etc/init/multi.android.hardware.nfc@1.2-service.rc
++++ candidate/vendor/etc/init/multi.android.hardware.nfc@1.2-service.rc
+@@ -1,4 +1,8 @@
+ service vendor.nfc_hal_service /vendor/bin/hw/nxp.android.hardware.nfc@1.2-service
++    interface android.hardware.nfc@1.0::INfc default
++    interface android.hardware.nfc@1.1::INfc default
++    interface android.hardware.nfc@1.2::INfc default
++    interface vendor.samsung.hardware.nfc@2.0::ISehNfc default
+     disabled
+     class hal
+     user nfc

@@ -1,0 +1,52 @@
+[
+  {
+    "Package": "e2fsprogs",
+    "Version": "1.47.2-3+b12",
+    "Architecture": "amd64",
+    "Pre-Depends": "libblkid1 (>= 2.36), libc6 (>= 2.38), libcom-err2 (>= 1.43.9), libext2fs2t64 (= 1.47.2-3+b12), libss2 (>= 1.38), libuuid1 (>= 2.16)",
+    "Depends": "logsave",
+    "Filename": "pool/main/e/e2fsprogs/e2fsprogs_1.47.2-3+b12_amd64.deb",
+    "Size": "591288",
+    "SHA256": "e9e638eb3e22b5f14d01ce0b28aa512a5a22fcc0e70d1c733444579b67ea236b"
+  },
+  {
+    "Package": "libcom-err2",
+    "Version": "1.47.2-3+b12",
+    "Architecture": "amd64",
+    "Pre-Depends": null,
+    "Depends": "libc6 (>= 2.38)",
+    "Filename": "pool/main/e/e2fsprogs/libcom-err2_1.47.2-3+b12_amd64.deb",
+    "Size": "25036",
+    "SHA256": "bd43e020b8fed399db3eebf098111f10fba4c436fff99ccad72cc7e27c9764ec"
+  },
+  {
+    "Package": "libext2fs2t64",
+    "Version": "1.47.2-3+b12",
+    "Architecture": "amd64",
+    "Pre-Depends": null,
+    "Depends": "libc6 (>= 2.38)",
+    "Filename": "pool/main/e/e2fsprogs/libext2fs2t64_1.47.2-3+b12_amd64.deb",
+    "Size": "212664",
+    "SHA256": "9f5783fa48239e42260d41846fbc6c8b19c233251063524456096195660eaa09"
+  },
+  {
+    "Package": "libss2",
+    "Version": "1.47.2-3+b12",
+    "Architecture": "amd64",
+    "Pre-Depends": null,
+    "Depends": "libcom-err2, libc6 (>= 2.34)",
+    "Filename": "pool/main/e/e2fsprogs/libss2_1.47.2-3+b12_amd64.deb",
+    "Size": "29724",
+    "SHA256": "c5d38d71984c1bf774c1254238636e605fc4e0dc24d853f709921eb740327f4a"
+  },
+  {
+    "Package": "erofs-utils",
+    "Version": "1.8.6-1",
+    "Architecture": "amd64",
+    "Pre-Depends": null,
+    "Depends": "libc6 (>= 2.38), libdeflate0 (>= 1.0), liblz4-1 (>= 1.9.1), liblzma5 (>= 5.4.0), libselinux1 (>= 3.1~), libuuid1 (>= 2.16), libxxhash0 (>= 0.6.5), libzstd1 (>= 1.5.5), zlib1g (>= 1:1.1.4)",
+    "Filename": "pool/main/e/erofs-utils/erofs-utils_1.8.6-1_amd64.deb",
+    "Size": "138944",
+    "SHA256": "81042b8c0c3eb63699aa7d0763dceedc675a747d9f5cfebf914b4160233f411e"
+  }
+]

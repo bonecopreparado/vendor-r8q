@@ -1,0 +1,89 @@
+{
+  "status": "P1_FS_PLANS_NOT_YET_APPLIED",
+  "boot_confirmed": false,
+  "all_original_images_preserved": true,
+  "changes": [
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_sepolicy.cil",
+      "reason": "Resolve duplicate donor types through existing Samsung aliases and declare an already-used mapping attribute; no allow/capability deletion",
+      "operation": "replace"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/mapping/30.0.cil",
+      "reason": "Resolve duplicate donor types through existing Samsung aliases and declare an already-used mapping attribute; no allow/capability deletion",
+      "operation": "replace"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/selinux/system_ext_seapp_contexts",
+      "reason": "Apply APK/certificate-inventory-guarded seapp cleanup and retain coherent Qualcomm domains",
+      "operation": "replace"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/selinux/vendor_seapp_contexts",
+      "reason": "Apply APK/certificate-inventory-guarded seapp cleanup and retain coherent Qualcomm domains",
+      "operation": "replace"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/multi.android.hardware.nfc@1.2-service.rc",
+      "reason": "Consolidate the Samsung NFC service with its existing HIDL interface bindings",
+      "operation": "replace"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/nxp.android.hardware.nfc@1.2-service.rc",
+      "reason": "Consolidate the Samsung NFC service with its existing HIDL interface bindings",
+      "operation": "delete"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/init/hw/init.qcom.rc",
+      "reason": "Remove unsupported disabled block-partition debug logger and its only trigger; ordinary logcat remains available",
+      "operation": "replace"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/selinux/precompiled_sepolicy",
+      "reason": "Remove stale ColorOS compiled-policy cache and its companions; normal init CIL compilation is required",
+      "operation": "delete"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/selinux/precompiled_sepolicy.plat_sepolicy_and_mapping.sha256",
+      "reason": "Remove stale ColorOS compiled-policy cache and its companions; normal init CIL compilation is required",
+      "operation": "delete"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/selinux/precompiled_sepolicy.system_ext_sepolicy_and_mapping.sha256",
+      "reason": "Remove stale ColorOS compiled-policy cache and its companions; normal init CIL compilation is required",
+      "operation": "delete"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/selinux/precompiled_sepolicy.product_sepolicy_and_mapping.sha256",
+      "reason": "Remove stale ColorOS compiled-policy cache and its companions; normal init CIL compilation is required",
+      "operation": "delete"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.device.xml",
+      "reason": "Advertise real 30.0 compatibility mappings only as part of the coherently compiled candidate",
+      "operation": "replace"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/r8q-vndk30.xml",
+      "reason": "Advertise actual factory VNDK30 APEX providers while preserving VNDK34",
+      "operation": "add"
+    }
+  ],
+  "limits": [
+    "Legacy FCM4 deprecation and unused-HAL host checks remain unresolved.",
+    "No policy permissions or runtime checks are bypassed."
+  ]
+}

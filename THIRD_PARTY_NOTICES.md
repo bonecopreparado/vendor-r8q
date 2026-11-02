@@ -65,3 +65,13 @@ The baseline vendor archive and external ROM/vendor releases are not licensed
 under the project's MIT license. Obtain external images from their maintainers
 and observe their applicable distribution terms. A source/tooling release is
 separate from a complete ROM distribution.
+
+## LineageOS LP reader and AOSP compatibility reference
+
+`tools/lineage-reference/lp.py` and `utils.py` retain the LineageOS Project
+copyright and Apache-2.0 SPDX headers. The pinned LP reader provenance is in
+`tools/lineage-reference/lp-source.json`. They are used unchanged for an
+independent readback of the candidate super, outside the image builder.
+The complete Apache-2.0 text is retained at
+`patches/0005-vintf-adaptation/reference/NOTICE`, alongside the pinned AOSP
+FCM4 diagnostic-only reference and its source provenance.

@@ -1,0 +1,476 @@
+{
+  "status": "ACTUAL_P1_VINTF_HOST_CHECK_COMPLETE_NOT_BOOT_TESTED",
+  "boot_confirmed": false,
+  "host_compatible": false,
+  "images": [
+    {
+      "partition": "system",
+      "path": "candidates/p1/system.img",
+      "sha256": "c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72"
+    },
+    {
+      "partition": "system_ext",
+      "path": "candidates/p1/system_ext.img",
+      "sha256": "16e3571a1eb02df3c3b9c6e1c539237226ad69124438b41ff52348622c0820b4"
+    },
+    {
+      "partition": "product",
+      "path": "extracted/hyperos/product.img",
+      "sha256": "c848c1d270df7149e22b1bb259d8eab086b6853dc20db78aa94a9bd66cf24813"
+    },
+    {
+      "partition": "vendor",
+      "path": "candidates/p1/vendor.img",
+      "sha256": "36d0e703b073869851c90b62ffffa4ef3f12b7fc9c1a031513ae42b0c7f7d7a9"
+    },
+    {
+      "partition": "odm",
+      "path": "candidates/p1/odm.img",
+      "sha256": "addb89433e775b5cb6ceb6b5703f66329bdb0ecc4f28c2f22e1cf3bc9ce357be"
+    }
+  ],
+  "actual_xml_files": [
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.202404.xml",
+      "sha256": "9373d231207920dec970ecaac611817af723313e94c32bbf54cf0c5715645b2a"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.202504.xml",
+      "sha256": "a21eba5d7ccf35458f3ca2e8205ea0be5105c4206537b4c95eb32ec4ca10d3c8"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.202604.xml",
+      "sha256": "2ce785af96e3a04b7b06f74c5a8461618a01dae15588d84db47119fccd67fb13"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.7.xml",
+      "sha256": "e268a08dd96b5d1198a4c4948d7f3a9c96727cc4395a8bb3a1da4707530826ff"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.8.xml",
+      "sha256": "d33b5d56e3d630bc9416427f3296db1cdbf457e840e939f63fb7bde85e692259"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/compatibility_matrix.device.xml",
+      "sha256": "0e9a5e24c3e3a06474918e692139d2bee2530f42ef913f82cf4e6742cc87a480"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest.xml",
+      "sha256": "b9a2ee3ab7e2edcf3dc20737336cb838e7aa2a401f842e36d3a6402fecd0e433"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/android.frameworks.stats-service.xml",
+      "sha256": "0a8c3597585cf9af2c7bdbb63307fe8b166eb353a1f61e29441d4a44c83ebacc"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/android.system.keystore2-service.xml",
+      "sha256": "297270541e7c2d576df080fca26b0208fcc5be095a971cda7a2c15ccc52b3430"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/android.system.mieed-service.xml",
+      "sha256": "3f150bbd7c50a00ad59e21febcaaf4754ddefd9811b7900b068cebaea2e204e7"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/android.system.net.netd-service.xml",
+      "sha256": "341b514fec4eba4685925ac4e6734bae6061f2a4f9d0254b88ae39ee004f218f"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/android.system.suspend-service.xml",
+      "sha256": "7eff4e114e33d1275dd99b0c1a5c91a04ef6f2ba84a7d1af32ad3635735371cb"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/android.system.vold-service.xml",
+      "sha256": "a211b21a679093c11afde045b54113268af6135edfa0d70ecb806a93e5fddd93"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/app_launcher_service.xml",
+      "sha256": "188994fa0b1cfb8265d04c097da26b2fd5853300bf2827ec7e6f5456915c0d02"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/manifest_android.frameworks.cameraservice.service.xml",
+      "sha256": "997a729b5836499a0d4e6387a6019916070264fcf85645035e3b426b7a344d56"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/manifest_media_c2_software.xml",
+      "sha256": "efef93595686a610c379538578a5f42b70e27717d8d2ae3a9a4c47fb408a6cec"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/manifest_services_android.frameworks.devicestate.xml",
+      "sha256": "cc09de50d211dfc2e707ffc9148c85bb854f350c212b94ab8fb0972d254ad898"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/manifest_services_android.frameworks.location.xml",
+      "sha256": "fd47c69a3f5298243fcfc21ff33dbf6cc24a68cd28eb219ddf75c3123323ece9"
+    },
+    {
+      "partition": "system",
+      "path": "/system/etc/vintf/manifest/manifest_services_android.frameworks.vibrator.xml",
+      "sha256": "7cb3d23f37270e284f3979bb8c39316e4b3d58518cfd337d3fe5dd4718fdae85"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest.xml",
+      "sha256": "14bf5e9ace4504695d6fe0067547d8ea7f51be335cdda37316641ff7083def9b"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/android.hidl.allocator@1.0-service.xml",
+      "sha256": "b0444198fcfedc428719034c6fcb926a66fa00e866ce5b857c1e2a0de47751f4"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/com.xiaomi.pms.deferredcameraservice-service.xml",
+      "sha256": "2cde4ff26c99de24f04001760ba42697ff97680f866e949771f18d6193e192a7"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/com.xiaomi.pms.videoplayprocservice-service.xml",
+      "sha256": "31bb5190ccc2c140d574825b98e246265d865f8e2b946629ea9249b7f509fa90"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/manifest_hypsys_system.xml",
+      "sha256": "0a340d63e498f47acd83187c367e8491a5d7bc84d4adec42d197b31eb8bb98fc"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/r8q-vndk30.xml",
+      "sha256": "d2b35ccfbc92368a37a770a267188e014e3784bc92c4af5dbbb8e119df4f08d9"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/vendor.qti.hardware.sigma_miracast.xml",
+      "sha256": "77cfd4787e87a394fa178cb343b47954b42289a23bc7aa2bf5591cc94f64260d"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/vendor.qti.hardware.sigma_miracast_aidl.xml",
+      "sha256": "2753999b5d500f0362544ee07021cb7ac2b44901a9528cf71507dd9bbfe07873"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/vendor.qti.hardware.systemhelperaidl.xml",
+      "sha256": "d33cb0b6c0f208eb30f633dd61691e24f1bbda26dcd874bf8bdf5f1e0c2a31ae"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/vendor.qti.qccsyshal_aidl-service.xml",
+      "sha256": "05251536915bb7727df26541eda2a75b6a5c3e147c373afad622e1b3024a81de"
+    },
+    {
+      "partition": "system_ext",
+      "path": "/etc/vintf/manifest/vendor.qti.qesdsys.service.xml",
+      "sha256": "f85d88ae972197fae6796a899baaf2572bc899e179d628d6ffac9cb5675e6127"
+    },
+    {
+      "partition": "product",
+      "path": "/etc/vintf/compatibility_matrix.xml",
+      "sha256": "35a7e8983400324e41ec9408e16dc70c0dd6f5401d81d678854b43a9c5256acb"
+    },
+    {
+      "partition": "product",
+      "path": "/etc/vintf/touch_framework_compatibility_matrix.xml",
+      "sha256": "6f0ce5932bb6db336bd25735f1b657455f498165098a098d1c48f9f41c6fc9cc"
+    },
+    {
+      "partition": "product",
+      "path": "/etc/vintf/manifest/vendor.qti.qvirt-service.xml",
+      "sha256": "c6c3a1e1c491453e5b86d63b9d51a99aee85ef6270a6076031a034a6d97f30fa"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/compatibility_matrix.xml",
+      "sha256": "58068c6fd161efdb2d51c6122fb8aa2d9dfb79b12e9d49ca91f5af3f056c5752"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest.xml",
+      "sha256": "5649288b789a3646cdaa8c00be2d86a239a65a0128051b751885537d2af845c7"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.atrace@1.0-service.xml",
+      "sha256": "49e4a804e77b653064e7cb8fc5dc6c6b4aeea2ae4a2a62dab0ff52e0c463ee01"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.cas@1.2-service-lazy.xml",
+      "sha256": "9357fb5a7b17fe81638ec82f79d06007bb35c19016e676104fa55449b5f0f0d2"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.dumpstate@1.1-service-lazy.xml",
+      "sha256": "388b9e7b24adf678fccf59dacc79b948093688bc34c40124c2563c2c3809747d"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.gnss@2.1-service-qti.xml",
+      "sha256": "b12c00daff67f15983eaf9952d0ded199b2868ad1b9fb512fcab5f6bf813773d"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.graphics.mapper-impl-qti-display.xml",
+      "sha256": "00105bbff83fa177fff8c10776678fddcf99179464d866bd688a1bf61ee563b4"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.health@2.1-samsung.xml",
+      "sha256": "2ad8126c3afd2d52ac9d7e022e3d7716d17e03178bc11d1f7ad7a0aa585b5c28"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.neuralnetworks@1.3-service-qti-hta.xml",
+      "sha256": "7f64773bee106cd0fd1e7328490376951f3d95eb35bb2876a1da4eca598f8695"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.neuralnetworks@1.3-service-qti.xml",
+      "sha256": "1fe231b6b3fd8ec56d0d4063ec9e547be4248da930b9c471212ff9cc9f4afc99"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.sensors@2.0-multihal.xml",
+      "sha256": "5915f6e142726b3b608379a2e03c2b23478c393b310b024ac7687f73458a630e"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.usb@1.3-service.coral.xml",
+      "sha256": "d4bcbe0ab5e91f002fc1285309db0450c4e93470de91bd72f65e92cc67330c53"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.wifi.hostapd.xml",
+      "sha256": "d42266c7638aacf0918164dff0ed50df0a8d50d3085a6d03dc2127718fc86f17"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/android.hardware.wifi@1.0-service.xml",
+      "sha256": "5b785b5e6f63baab071ca757ec3e5bf0ee7a877186c17e2b36ce5bc63112756e"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/deviceManifest.xml",
+      "sha256": "25e3002a0830b7506321f4771d5c0c95b6a999965a5a92591b35197ef31ca9c8"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/engmode_manifest.xml",
+      "sha256": "29fd4d47a7e04224b708d95eb046118001e407aaa700978add8eb460d897b3e5"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/hyper-default-sec.xml",
+      "sha256": "bc7ab5cdae05b9a81b1d6e5466ec216e388cefe86822e4deec83e2d0de53ccb3"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/lights-default-sec.xml",
+      "sha256": "570ac710477a2e70c8c983e4eea18ddd398907af0502ac95557f4293e9f85cc9"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/manifest.xml",
+      "sha256": "e39163b460c1cc9eb4a245cf1083d62ecc777d8ae58daaff51ddaaea5c211a7e"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.clearkey.xml",
+      "sha256": "4b9a9214df27df7f546dcd7b27efac3803f8d172548671c8d94903ef1d804aef"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/manifest_android.hardware.drm@1.3-service.widevine.xml",
+      "sha256": "61cee1f6a061cf5348ca82f5326bd09cedda6bf2eea016c9ad3374f2cd03df7a"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/manifest_vendor.samsung.hardware.security.widevine.keyprov@1.0-service.xml",
+      "sha256": "b5b7830f004444ded3cc27852f1c4f384764476832e812b2812299b9a25f7a1c"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/mppserver.xml",
+      "sha256": "978e900049c6e65adea0a9f7ca519785d79ad229cff9d35a1bf0656bacdf7d12"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/nxp.android.hardware.nfc@1.2-service.xml",
+      "sha256": "54e9bb3e89ecdfdd2c73c13dc5dd6743fb3f1327c1cdb397524940d1bd24c420"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/power-samsung.xml",
+      "sha256": "faef8be2fdef7c56908853ee8256e5052d8e2f617351f0c306a5bfc365ab5892"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/sec_c2_manifest_default.xml",
+      "sha256": "81fc4e0018250141678c6f9c4ffd159c16cd80873f2bf066bc734bc1515a3b1b"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vaultkeeper_manifest.xml",
+      "sha256": "a1afd66714d0dc4c5083a2a4f33d2ae7f1dde9d56adbd4c4c8b563143f709a52"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.qti.hardware.display.allocator-service.xml",
+      "sha256": "7a916b6ca645ff92e2f1df462ae44e8e7316ffe339d384cbfc352a8e395ae3f5"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.qti.hardware.display.composer-service.xml",
+      "sha256": "944b74f6eba32f03cf63d5e3b956dc3f270bce4244b6babf441816c7e3b286b9"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.qti.hardware.servicetracker@1.2-service.xml",
+      "sha256": "f57b12f5747dc5ba00186e1254dabebd071561c72ce3ae866cf8f9ce0ef901e0"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.authfw@1.0-manifest.xml",
+      "sha256": "9299155d677d0355f5f309328f715bac74631a64d9cc5c849cd7c04c42bc065d"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.hqm@1.0-manifest.xml",
+      "sha256": "963dd41e15b0c5b3ec8cac45abe2a9c845dff83eda529a2b77e8594c1d3008c2"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.thermal@1.0-manifest.xml",
+      "sha256": "3f5b1c78f8a06eb25ae5b4e873a010802ec8bd6546091095c5fdee22b45e1566"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.tlc.ddar@1.0-manifest.xml",
+      "sha256": "6b77b96f1cb4c36fcc8fd9a898e5539fa9ce43f52785bc3b8d3f467a555702b3"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.tlc.hdm@1.1-manifest.xml",
+      "sha256": "143fddf8fdda6ace43df6d8ed84168d90ca5d1dbfdd1b89092839c2e6a15f896"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.tlc.iccc@1.0-manifest.xml",
+      "sha256": "36ff251646f672e18f55d740f669c88394f466c1c457ea4052047112f361c0cb"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.tlc.snap@1.0-manifest.xml",
+      "sha256": "f4d44bdd2840ca31559d52ada2cf400a4b0e22517c776eb23908c9b8489e683b"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.vibrator-default.xml",
+      "sha256": "d53ff90be9aa2bdb162eb593ad21998dbede710294b4bedb2b995a7eda7e73c3"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.wifi.hostapd.xml",
+      "sha256": "39a43b18dc72af926510af3ef013d57ea7dbad4557a0476a6c06250cba274c72"
+    },
+    {
+      "partition": "vendor",
+      "path": "/etc/vintf/manifest/vendor.samsung.hardware.wifi@2.0-service.xml",
+      "sha256": "6a0d60cc3e67348aded789f1dc34a3aa910de9cf38066de1b810f4c6dbb1597c"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest.xml",
+      "sha256": "bc495a357d774c8aa5856f0022f0297f564c36b97311984dc10cc0f5cae2fc71"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_nfc_sn100t.xml",
+      "sha256": "fee506f782b7c66519459fc359c8285cd3c8a85a1e36ecfd9caf77da4862069a"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_oplus_charger.xml",
+      "sha256": "faf077df53c9500dd20e0001a687c44e51c8ab135d26449d6d71fc0250a3575c"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_oplus_charger_aidl.xml",
+      "sha256": "aa7d0d744596a998ae9a3c53426909a9f0c5b6a5bfe049f254191b06c4e57a15"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_oplus_nfcExtns.xml",
+      "sha256": "616d4747f9f8bdeadcc80df2eaabcf656518e4c10b2c4f84b70b2639c15d80a7"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_oplus_nfc_aidl.xml",
+      "sha256": "29cb7951a231e6518a09a4dd815a85ce54d3833dd013281ef02e3aa949a6f434"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_oplus_stability_project_aidl.xml",
+      "sha256": "c4149e857061e3094bd9b2947b83d8b016181095bebfd04ffebd57ba64fe810e"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_oplus_thermalmntcfg.xml",
+      "sha256": "d2fe264a1e2adf87172cab986953eb92716fb622f47724143d6cce0f1d78903b"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_performance_aidl.xml",
+      "sha256": "191e8d0ea41a9234f2b2513fb4a15e86d2e1fce3e64bc5b502589be7486d9ec2"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/manifest_powermonitor_aidl.xml",
+      "sha256": "80ffc78074bca14418a9b776a4a9850f1367d759566ccf25867b95d09d210f68"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/ormsHalService-default.xml",
+      "sha256": "51672e9c55e39b7aa316129ba080e706c41cb2a64670f69169227437cbe87d5f"
+    },
+    {
+      "partition": "odm",
+      "path": "/etc/vintf/manifest/vendor.oplus.hardware.olc2_aidl.xml",
+      "sha256": "ced76d3fa75a1ac50b8192ae64116c8a27262adc6b8415515f1e6437edb18443"
+    }
+  ],
+  "source_apex_kernel_bundle_sha256": "f17ddd9728493043147ab5506a4123e1c613e0570943962904e789ce08030432",
+  "tool_sha256": "6f7601b9409ac5db70d8b05bc98d117fe68456464e710eb2e2964c7edf1325db",
+  "runs": [
+    {
+      "name": "actual-p1-no-kernel",
+      "exit": 70
+    },
+    {
+      "name": "actual-p1-with-kernel",
+      "exit": 65
+    }
+  ],
+  "limits": [
+    "Factory APEX activation model and kernel configuration from the unchanged pinned P0 boot are retained.",
+    "Full EROFS logical comparison proves factory APEX bytes did not change; actual APEX activation remains a runtime assumption.",
+    "No vendor versions, target FCM, kernel requirements or HAL declarations were removed or spoofed."
+  ]
+}
