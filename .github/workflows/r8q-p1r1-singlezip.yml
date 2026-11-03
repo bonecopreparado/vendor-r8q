@@ -57,6 +57,7 @@ jobs:
           qemu-aarch64 build/r8q-zipread --version
       - name: Verify source tests and real ZIP64 / mksh fixtures
         run: |
+          /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread --emulator /usr/bin/qemu-aarch64 --report reports/p1/reader-runtime/arm64.json
           /usr/bin/python3 -m unittest discover -s ci-r8q/tests -v
           /usr/bin/python3 ci-r8q/regression/rebuild_erofs_fixture.py
           /usr/bin/python3 ci-r8q/regression/single_zip_installer_tests.py
@@ -127,6 +128,7 @@ jobs:
             output/*.sha256
             reports/p1/ci-build/**/*.json
             reports/p1/ci-build/**/*.log
+            reports/p1/reader-runtime/*.json
             ci-vintf/gate.json
           if-no-files-found: warn
           retention-days: 30

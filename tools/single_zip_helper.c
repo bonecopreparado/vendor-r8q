@@ -76,14 +76,27 @@ static struct entry lookup(const char *wanted,uint64_t *central_start) {
     const unsigned char *e=tail+pos;
     if(u16(e+4)||u16(e+6)||u16(e+8)!=u16(e+10))die("multi-disk ZIP unsupported");
     uint64_t count=u16(e+10),length=u32(e+12),start=u32(e+16),eocd=tail_offset+pos;
-    if(count==UINT16_MAX || length==UINT32_MAX || start==UINT32_MAX) {
-        unsigned char locator[20],z[56];
+    int need_zip64=count==UINT16_MAX || length==UINT32_MAX || start==UINT32_MAX;
+    unsigned char locator[20];int has_zip64=need_zip64;
+    /* Writers may emit ZIP64 before any classic field overflows (Python does
+     * so above 2 GiB). Its locator is still authoritative when present between
+     * the central directory and EOCD. Do not mistake central comment bytes in
+     * an otherwise ordinary ZIP for an optional locator. */
+    if(!need_zip64 && eocd>=20 && (start>eocd || length!=eocd-start)) {
+        read_at(eocd-20,locator,sizeof(locator));
+        has_zip64=u32(locator)==UINT32_C(0x07064b50);
+    }
+    if(has_zip64) {
+        unsigned char z[56];
         if(eocd<20)die("ZIP64 locator missing");
         read_at(eocd-20,locator,20);
         if(u32(locator)!=UINT32_C(0x07064b50)||u32(locator+4)||u32(locator+16)!=1)die("invalid ZIP64 locator");
         uint64_t zpos=u64(locator+8);read_at(zpos,z,56);
         if(u32(z)!=UINT32_C(0x06064b50)||u64(z+4)!=44||u32(z+16)||u32(z+20)||u64(z+24)!=u64(z+32))die("invalid ZIP64 EOCD");
         if(zpos>eocd-20 || 56!=eocd-20-zpos)die("ZIP64 EOCD bounds differ");
+        if((count!=UINT16_MAX && count!=u64(z+32)) ||
+           (length!=UINT32_MAX && length!=u64(z+40)) ||
+           (start!=UINT32_MAX && start!=u64(z+48)))die("classic/ZIP64 EOCD values differ");
         count=u64(z+32);length=u64(z+40);start=u64(z+48);eocd=zpos;
     }
     free(tail);
@@ -114,7 +127,7 @@ static struct entry lookup(const char *wanted,uint64_t *central_start) {
 }
 int main(int argc,char **argv) {
     int size_only=argc==4 && !strcmp(argv[1],"--size");
-    if(argc==2 && !strcmp(argv[1],"--version")){puts("r8q-zipread 1 ZIP64 stored, 64-bit pread, CRC32");return 0;}
+    if(argc==2 && !strcmp(argv[1],"--version")){puts("r8q-zipread 2 ZIP64 stored, 64-bit pread, CRC32");return 0;}
     if((!size_only&&argc!=3)||(size_only&&argc!=4))die("usage: r8q-zipread [--size] ZIP MEMBER");
     const char *path=argv[size_only?2:1],*wanted=argv[size_only?3:2];
     if(strncmp(wanted,"payloads/",9) || !wanted[9] || strchr(wanted+9,'/') || strstr(wanted,".."))die("only named payload members may be streamed");
@@ -141,7 +154,13 @@ int main(int argc,char **argv) {
         while(done<n){ssize_t w=write(STDOUT_FILENO,buffer+done,n-done);if(w<0&&errno==EINTR)continue;if(w<=0)die("output write failed");done+=(size_t)w;}
         offset+=n;remaining-=n;
     }
-    if((crc^UINT32_MAX)!=entry.crc)die("member CRC32 mismatch");
+    if((crc^UINT32_MAX)!=entry.crc) {
+        fprintf(stderr,"r8q-zipread: member CRC32 mismatch: member=%s data_offset=%" PRIu64
+                " member_bytes=%" PRIu64 " archive_bytes=%" PRIu64
+                " expected=%08" PRIx32 " observed=%08" PRIx32 "\n",
+                wanted,offset-entry.size,entry.size,archive_size,entry.crc,crc^UINT32_MAX);
+        exit(2);
+    }
     if(close(fd))die("archive close failed");
     return 0;
 }

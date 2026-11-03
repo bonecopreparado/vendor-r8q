@@ -1,6 +1,6 @@
 """Bounded native ZIP64 and package tests; no devices or physical writes."""
 from pathlib import Path
-import gzip,hashlib,importlib.util,json,os,shutil,struct,subprocess,sys,tempfile,unittest,warnings,zipfile
+import gzip,hashlib,importlib.util,json,os,shutil,struct,subprocess,sys,tempfile,unittest,warnings,zipfile,zlib
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools'))
@@ -34,6 +34,28 @@ class NativeTests(unittest.TestCase):
         p,data=self.archive(prefix=5*1024**3+4096)
         self.assertLess(p.stat().st_blocks*512,1024**2)
         self.assertEqual(self.read(p).stdout,data);self.assertEqual(self.read(p).returncode,0)
+    def test_zip64_eocd_without_classic_sentinel_above_two_gib(self):
+        p,data=self.archive(prefix=2**31+4096)
+        self.assertLess(p.stat().st_blocks*512,1024**2)
+        with p.open('rb') as f:
+            f.seek(-42,2);tail=f.read()
+        self.assertEqual(tail[:4],b'PK\x06\x07')
+        self.assertLess(struct.unpack_from('<I',tail,36)[0],2**32-1)
+        r=self.read(p);self.assertEqual((r.returncode,r.stdout),(0,data))
+        self.assertEqual(self.read(p,'--size').stdout.strip(),str(len(data)).encode())
+    def test_conflicting_classic_and_zip64_eocd_is_rejected(self):
+        p,_=self.archive(prefix=2**31+4096)
+        with p.open('r+b') as f:
+            f.seek(-6,2);old=struct.unpack('<I',f.read(4))[0]
+            f.seek(-6,2);f.write(struct.pack('<I',old+1))
+        r=self.read(p);self.assertEqual(r.returncode,2);self.assertEqual(r.stdout,b'')
+        self.assertIn(b'classic/ZIP64 EOCD values differ',r.stderr)
+    def test_locator_signature_in_ordinary_central_comment_is_not_zip64(self):
+        p=self.folder/'ordinary.zip';data=b'ordinary payload'
+        info=zipfile.ZipInfo('payloads/super-000.gz')
+        info.comment=struct.pack('<IIQI',0x07064b50,0,0,1)
+        with zipfile.ZipFile(p,'w') as z:z.writestr(info,data)
+        r=self.read(p);self.assertEqual((r.returncode,r.stdout),(0,data))
     def test_resolved_zip64_local_offset_exactly_uint32_max_is_valid(self):
         p,data=self.archive(prefix=2**32-1)
         self.assertLess(p.stat().st_blocks*512,1024**2)
@@ -48,6 +70,10 @@ class NativeTests(unittest.TestCase):
             f.seek(offset);h=f.read(30);start=offset+30+struct.unpack_from('<H',h,26)[0]+struct.unpack_from('<H',h,28)[0]
             f.seek(start+len(data)//2);b=f.read(1);f.seek(start+len(data)//2);f.write(bytes([b[0]^1]))
         r=self.read(p);self.assertNotEqual(r.returncode,0);self.assertIn(b'CRC32 mismatch',r.stderr)
+        for detail in ('member=payloads/super-000.gz',f'data_offset={start}',
+                       f'member_bytes={len(data)}',f'archive_bytes={p.stat().st_size}',
+                       f'expected={zlib.crc32(data):08x}',f'observed={zlib.crc32(r.stdout):08x}'):
+            self.assertIn(detail.encode(),r.stderr)
     def test_local_central_crc_mismatch_stops_before_output(self):
         p,_=self.archive()
         with p.open('r+b') as f:f.seek(14);b=f.read(1);f.seek(14);f.write(bytes([b[0]^1]))

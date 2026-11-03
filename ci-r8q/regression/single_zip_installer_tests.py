@@ -32,6 +32,9 @@ with tempfile.TemporaryDirectory(prefix='r8q-single-harness-') as td:
         exec(compile('\n'.join(prefix),'<battery-fixture-setup>','exec'),settings)
     finally:os.environ.clear();os.environ.update(original)
     fixture=settings['fixture_text']
+    needle="ready_layout='adjacent'):"
+    assert fixture.count(needle)==1
+    fixture=fixture.replace(needle,"ready_layout='adjacent',zip_mutation=''):")
     # Gzip now reads stdin. Preserve the injected failure-counter semantics by
     # exporting the current member name inside the fixture-only inflate wrapper.
     fixture=fixture.replace("name=Path(args[-1]).name if args else 'stdin'", "name=os.environ.get('R8Q_CURRENT_PAYLOAD') or (Path(args[-1]).name if args else 'stdin')")
@@ -50,6 +53,25 @@ with tempfile.TemporaryDirectory(prefix='r8q-single-harness-') as td:
     if payload_file.name.endswith('.gz'):
      info=zipfile.ZipInfo('payloads/'+payload_file.name)
      with archive.open(info,'w',force_zip64=True) as output:output.write(payload_file.read_bytes())
+  if zip_mutation=='payload_crc':
+   # Damage the already-packaged member without updating either the manifest
+   # or ZIP metadata. This exercises the native reader's nonzero exit even
+   # when the downstream sha256sum process itself succeeds.
+   with zipfile.ZipFile(zip_path) as archive:
+    entry=archive.getinfo('payloads/super-001.gz')
+   with zip_path.open('r+b') as output:
+    output.seek(entry.header_offset+26)
+    namesize,extrasize=struct.unpack('<HH',output.read(4))
+    position=entry.header_offset+30+namesize+extrasize+entry.compress_size//2
+    output.seek(position);old=output.read(1)
+    output.seek(position);output.write(bytes([old[0]^1]))
+  elif zip_mutation=='truncated_zip':
+   with zip_path.open('r+b') as output:output.truncate(zip_path.stat().st_size-22)
+  elif zip_mutation=='helper_changed':
+   with zip_path.open('r+b') as output:
+    output.seek(4096);old=output.read(1)
+    output.seek(4096);output.write(bytes([old[0]^1]))
+  elif zip_mutation:raise ValueError(zip_mutation)
 '''
     assert fixture.count(needle)==1;fixture=fixture.replace(needle,setup+needle)
     module=ast.parse(fixture);nodes=[]
@@ -90,7 +112,18 @@ with tempfile.TemporaryDirectory(prefix='r8q-single-harness-') as td:
         r=namespace['run_case'](name,**kw);results.append(r)
         assert r['exit']!=0 and r['changed']==['super'] and r['prefix_preserved'],r
         print(name,'PASS',flush=True)
+    for mutation in ['payload_crc','truncated_zip','helper_changed']:
+        name='outer_zip_'+mutation
+        r=namespace['run_case'](name,zip_mutation=mutation);results.append(r)
+        assert r['exit']!=0 and not r['changed'] and r['prefix_preserved'],r
+        assert 'Gravando super' not in r['stdout'],r
+        if mutation=='payload_crc':
+            assert 'member CRC32 mismatch' in r['stderr'],r
+            assert 'CRC/SHA256' in r['stdout'] and 'ZIP completo' in r['stdout'],r
+        elif mutation=='helper_changed':
+            assert 'Native helper hash differs' in r['stdout'],r
+        print(name,'PASS',flush=True)
     (REPORT/'single-installer-results.json').write_text(json.dumps(results,indent=2)+'\n')
     (REPORT/'single-test-summary.json').write_text(json.dumps(dict(passed=len(results),shell=SHELL,
         fixture='real single ZIP with native 64-bit reader; bounded mock partitions',physical_writes=False,boot_test=False),indent=2)+'\n')
-    print('Single-ZIP mksh scenarios:',len(results),'PASS')
+    print('Single-ZIP shell scenarios:',len(results),'PASS; shell:',SHELL)

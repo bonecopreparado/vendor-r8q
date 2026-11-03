@@ -1,0 +1,67 @@
+name: R8Q ZIP64 ARM64 and installer integrity checks
+on:
+  push:
+    branches: [r8q-storage-audit-20261102]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/single_zip_helper.c'
+      - 'tools/p1_single_template.py'
+      - 'tools/package_p1_single.py'
+      - 'ci-r8q/tests/**'
+      - 'ci-r8q/regression/**'
+      - '.github/workflows/r8q-storage-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reader-and-installer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Prepare host and Android runtime fixture tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential e2fsprogs mksh python3-brotli python3-zstandard qemu-user libdeflate0 liblz4-1 liblzma5 libselinux1 libuuid1 libxxhash0 libzstd1
+          curl -fsSL --max-time 120 https://deb.debian.org/debian/pool/main/e/erofs-utils/erofs-utils_1.8.6-1_amd64.deb -o /tmp/erofs-utils.deb
+          printf '%s  %s\n' 81042b8c0c3eb63699aa7d0763dceedc675a747d9f5cfebf914b4160233f411e /tmp/erofs-utils.deb | sha256sum -c -
+          dpkg-deb -x /tmp/erofs-utils.deb tools/image-tools/root
+          mkdir -p tools/image-tools/bin build ci-results/storage
+          for tool in dump.erofs fsck.erofs; do ln -s ../root/usr/bin/$tool tools/image-tools/bin/$tool; done
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -x "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" ]; then
+            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          fi
+          "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -D_FILE_OFFSET_BITS=64 -static -Os -s -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread-arm64
+          curl -fsSL --max-time 60 https://raw.githubusercontent.com/bonecopreparado/vendor-r8q/dcbcce1b4e55d66ca7e50f398c0cbbbeef3533a1/tools/single_zip_helper.c -o build/published-p1r1-reader.c
+          printf '%s  %s\n' 62df1c97b80fd2ea64f8b0091537cdb79f7c2186e4d0b0ccd4de1845ed9bfc9e build/published-p1r1-reader.c | sha256sum -c -
+          "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -D_FILE_OFFSET_BITS=64 -static -Os -s -Wall -Wextra -Werror build/published-p1r1-reader.c -o build/r8q-zipread-published
+          cc -D_FILE_OFFSET_BITS=64 -O2 -Wall -Wextra -Werror -fsanitize=undefined -fno-sanitize-recover=all tools/single_zip_helper.c -o build/r8q-zipread-ubsan
+      - name: Verify the exact published P1r1 ARM64 helper and record its known 2 GiB bug
+        run: |
+          /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread-published --emulator /usr/bin/qemu-aarch64 --legacy-two-gib-rejection --expected-padded-sha 877b06bb156e635046b876dd12d4e5a2f97b66f9c81bfc5a3259cef29d8fa229 --report ci-results/storage/published-p1r1-arm64.json
+      - name: Run Android ARM64 extraction and CRC checks under QEMU
+        run: |
+          /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread-arm64 --emulator /usr/bin/qemu-aarch64 --report ci-results/storage/arm64.json
+      - name: Run the same boundary and corruption checks with host UBSAN
+        run: |
+          /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread-ubsan --report ci-results/storage/host-ubsan.json
+      - name: Test sources, real mksh installer aborts, and EROFS preservation
+        run: |
+          set -o pipefail
+          /usr/bin/python3 -m unittest discover -s ci-r8q/tests -v 2>&1 | tee ci-results/storage/unit-tests.txt
+          /usr/bin/python3 ci-r8q/regression/single_zip_installer_tests.py 2>&1 | tee ci-results/storage/mksh-tests.txt
+          /usr/bin/python3 ci-r8q/regression/rebuild_erofs_fixture.py 2>&1 | tee ci-results/storage/erofs-tests.txt
+      - name: Save test evidence only; no ROM is generated or published
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: STORAGE-CHECKS-NOT-FLASHABLE
+          path: ci-results/storage
+          if-no-files-found: error
+          retention-days: 30

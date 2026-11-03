@@ -142,7 +142,13 @@ def variant_metadata(manifest):
 def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk_notices=(),build_label='P1',omitted_optional_mappings=()):
     output=Path(output);root=Path(root)
     build_label,omitted=variant_metadata(dict(build_label=build_label,omitted_optional_mappings=list(omitted_optional_mappings)))
-    if output.exists() or output.is_symlink():raise ValueError('Output must be a new file')
+    staged=output.with_name(output.name+'.partial')
+    checksum_path=output.with_suffix(output.suffix+'.sha256')
+    instructions_path=output.with_name('P1-TESTER-ENGLISH.txt')
+    report_path=output.with_name('P1-SINGLE-build-report.json')
+    destinations=(output,staged,checksum_path,instructions_path,report_path)
+    if any(p.exists() or p.is_symlink() for p in destinations):
+        raise ValueError('Output and success sidecars must be new files; use a fresh packaging directory')
     output.parent.mkdir(parents=True,exist_ok=True)
     blob=helper_blob(helper,require_arm64)
     if require_arm64 and not ndk_notices:raise ValueError('Static Android helper requires corresponding NDK notices')
@@ -176,27 +182,32 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
                   helper=dict(member=HELPER_NAME,bytes=len(blob),sha256=SHA(blob),data_offset=4096),
                   installer_sha256=SHA(script.encode()),external_payloads_required=False,
                   target_super_prefix_policy='Preserve the actual target first 4096 bytes; first super readback hash excludes them')
+    metadata={HELPER_NAME:blob,INSTALLER:script.encode(),
+              'META-INF/com/google/android/updater-script':b'# Native ZIP64-backed shell installer\n',
+              'P1-MANIFEST.json':(json.dumps(manifest,indent=2)+'\n').encode(),
+              'README-TESTER.txt':instructions.encode(),'LICENSE.txt':license_data,
+              'THIRD-PARTY-NOTICES.txt':notice_data}
+    created_sidecars=[];staged_created=False
     try:
-        with zipfile.ZipFile(output,'x',allowZip64=True) as archive:
+        # An interrupted/failed build cannot look like a finished flashable ZIP.
+        with zipfile.ZipFile(staged,'x',allowZip64=True) as archive:
+            staged_created=True
             first=info(HELPER_NAME,True);padding=4096-30-len(HELPER_NAME.encode())
             first.extra=struct.pack('<HH',0xA11E,padding-4)+b'\0'*(padding-4)
-            archive.writestr(first,blob)
-            archive.writestr(info(INSTALLER,True),script.encode())
-            archive.writestr(info('META-INF/com/google/android/updater-script'),b'# Native ZIP64-backed shell installer\n')
-            archive.writestr(info('P1-MANIFEST.json'),(json.dumps(manifest,indent=2)+'\n').encode())
-            archive.writestr(info('README-TESTER.txt'),instructions.encode())
-            archive.writestr(info('LICENSE.txt'),license_data)
-            archive.writestr(info('THIRD-PARTY-NOTICES.txt'),notice_data)
+            for name,data in metadata.items():
+                archive.writestr(first if name==HELPER_NAME else info(name,name==INSTALLER),data)
             image_chunks(images,archive=archive,expected=rows)
-        with output.open('rb') as f:
+        with staged.open('rb') as f:
             header=f.read(30);data_offset=30+struct.unpack_from('<H',header,26)[0]+struct.unpack_from('<H',header,28)[0]
             if data_offset!=4096:raise ValueError('Bootstrap helper offset differs')
             f.seek(4096)
             if f.read(len(blob))!=blob:raise ValueError('Bootstrap helper bytes differ')
-        with zipfile.ZipFile(output) as archive:
-            expected={HELPER_NAME,INSTALLER,'META-INF/com/google/android/updater-script','P1-MANIFEST.json','README-TESTER.txt','LICENSE.txt','THIRD-PARTY-NOTICES.txt'}|{'payloads/'+r['name']for r in rows}
+        with zipfile.ZipFile(staged) as archive:
+            expected=set(metadata)|{'payloads/'+r['name']for r in rows}
             if len(archive.infolist())!=len(expected) or set(archive.namelist())!=expected:raise ValueError('Final ZIP member set differs')
-            if archive.read(INSTALLER)!=script.encode() or archive.getinfo(INSTALLER).external_attr>>16!=0o100755:raise ValueError('Updater content/mode differs')
+            for name,data in metadata.items():
+                if archive.read(name)!=data:raise ValueError('Final metadata content differs: '+name)
+            if archive.getinfo(INSTALLER).external_attr>>16!=0o100755:raise ValueError('Updater executable mode differs')
             for row in rows:
                 name='payloads/'+row['name'];member=archive.getinfo(name)
                 if member.compress_type!=zipfile.ZIP_STORED or member.file_size!=row['compressed_bytes']:raise ValueError('Payload member format differs')
@@ -212,25 +223,32 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
                         raw.update(data)
                 if count!=row['bytes'] or raw.hexdigest()!=row['sha256']:raise ValueError('Final raw payload hash differs')
                 if host_helper:
-                    with subprocess.Popen([str(Path(host_helper).resolve()),str(output.resolve()),name],stdout=subprocess.PIPE,stderr=subprocess.PIPE) as process:
+                    with subprocess.Popen([str(Path(host_helper).resolve()),str(staged.resolve()),name],stdout=subprocess.PIPE,stderr=subprocess.PIPE) as process:
                         digest=hashlib.sha256();n=0
                         while data:=process.stdout.read(BUFFER):digest.update(data);n+=len(data)
                         error=process.stderr.read();rc=process.wait()
                     if rc or n!=row['compressed_bytes'] or digest.hexdigest()!=row['compressed_sha256']:
                         raise ValueError('Native host ZIP64 readback failed: '+error.decode(errors='replace'))
-        with output.open('rb') as stream:digest=hashlib.file_digest(stream,'sha256').hexdigest()
+        with staged.open('rb') as stream:digest=hashlib.file_digest(stream,'sha256').hexdigest()
+        report=dict(status='SINGLE_ZIP_PACKAGED_AND_READ_BACK_NOT_BOOT_TESTED',file=output.name,bytes=staged.stat().st_size,
+                    sha256=digest,boot_confirmed=False,external_payloads_required=False,zip64=True,
+                    members=len(expected),payload_chunks=len(rows),native_host_readback=bool(host_helper),
+                    installer_sha256=manifest['installer_sha256'],helper_sha256=SHA(blob),images=manifest['images'],
+                    build_label=build_label,omitted_optional_mappings=omitted,
+                    checks=['source image capacities/hashes','two-pass compressed identities','ZIP CRCs','gzip CRCs','raw chunk hashes','early helper offset/bytes','updater executable mode','all members read back'])
+        for path,data in ((checksum_path,digest+'  '+output.name+'\n'),
+                          (instructions_path,instructions),(report_path,json.dumps(report,indent=2)+'\n')):
+            with path.open('x') as stream:
+                created_sidecars.append(path)
+                stream.write(data)
+        if output.exists() or output.is_symlink():raise ValueError('Final output appeared during packaging')
+        staged.rename(output)
     except Exception:
-        # Incomplete output is never given a checksum or success report.
+        # Remove only outputs created by this invocation. A killed process can
+        # leave .partial, which the next build refuses instead of publishing.
+        for path in created_sidecars:path.unlink(missing_ok=True)
+        if staged_created:staged.unlink(missing_ok=True)
         raise
-    output.with_suffix(output.suffix+'.sha256').write_text(digest+'  '+output.name+'\n')
-    output.with_name('P1-TESTER-ENGLISH.txt').write_text(instructions)
-    report=dict(status='SINGLE_ZIP_PACKAGED_AND_READ_BACK_NOT_BOOT_TESTED',file=output.name,bytes=output.stat().st_size,
-                sha256=digest,boot_confirmed=False,external_payloads_required=False,zip64=True,
-                members=len(expected),payload_chunks=len(rows),native_host_readback=bool(host_helper),
-                installer_sha256=manifest['installer_sha256'],helper_sha256=SHA(blob),images=manifest['images'],
-                build_label=build_label,omitted_optional_mappings=omitted,
-                checks=['source image capacities/hashes','two-pass compressed identities','ZIP CRCs','gzip CRCs','raw chunk hashes','early helper offset/bytes','updater executable mode','all members read back'])
-    output.with_name('P1-SINGLE-build-report.json').write_text(json.dumps(report,indent=2)+'\n')
     return report
 
 def main():

@@ -57,6 +57,8 @@ ui_print "Single ZIP: native 64-bit stored-member reader is ready."
 ''')
     s=replace_once(s,'compressed="$(hash_stream < "$file")"',
                    'compressed="$(zip_part "$name" | hash_stream)"')
+    s=replace_once(s,'Falha de SHA256 do arquivo $name. Nada foi gravado.',
+                   'Falha ao ler/verificar $name no ZIP (CRC/SHA256). Confira o SHA256 do ZIP completo e copie novamente se diferente. Nada foi gravado.')
     start=s.index('while read -r part name rawbytes rawsha cbytes csha offset readbacksha; do\n    R8Q_ZIP_REAL="$PAYLOAD_DIR/$name"')
     end=s.index('# Named mounts are unmounted below.',start)
     s=s[:start]+'# All member data resides in the local ZIP protected by the mount guard above.\n'+s[end:]
