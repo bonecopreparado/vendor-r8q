@@ -1,12 +1,32 @@
 # HyperOS R8Q port research and tooling
 
+## Current build: P1r2 (experimental, boot unconfirmed)
+
+The latest distributed build is **P1r2**, from commit
+[`a036e2ed34f82eab1cf6bea34b8ae8c81b6a0fa8`](https://github.com/bonecopreparado/vendor-r8q/tree/a036e2ed34f82eab1cf6bea34b8ae8c81b6a0fa8).
+The tools below on `main` are the historical P0 baseline. Reviewing only that
+baseline does not establish the contents of the published P1r2 images.
+
+- [Current status and unresolved issues](STATUS.md)
+- [P1r2 release, full ZIP link and SHA256](https://github.com/bonecopreparado/vendor-r8q/releases/tag/p1r2-single-experimental-1-1)
+- [P1r2 build and verification](https://github.com/bonecopreparado/vendor-r8q/actions/runs/41570865668)
+- [Comparison with the external P0 review](reports/review-20261103/RESULTADO.md)
+
+The specific duplicate SELinux declaration and nine invalid context references
+reported for P0 were corrected in the P1 composition. The actual P1r2 CIL
+compiled on the host with all six capabilities; 2,879 contexts passed.
+This does not prove policy loading or Android boot on a phone. BPF and the
+known VINTF/kernel/HAL issues still need runtime evidence.
+
+## Historical P0 baseline documentation
+
 This repository contains the installer source, audit tools, pinned input
 identities and validation evidence for an experimental HyperOS port to the
 Samsung Galaxy S20 FE Snapdragon: **SM-G781B and SM-G780G (`r8q`)**. It does
 not contain a complete ROM, a complete vendor tree, or a confirmed working port.
 It does not support the Exynos SM-G780F.
 
-**Current status: compatibility work in progress; boot is unconfirmed. Do not
+**Historical P0 status: compatibility work in progress; boot is unconfirmed. Do not
 start another flash test from the historical P0 downloads while the current
 SELinux, VINTF and kernel checks remain unresolved.** A passing installer test
 or CI job is not approval of the ROM composition for a device test.
@@ -22,7 +42,7 @@ comparison. It cannot replace the complete vendor image.
 | Check | What a pass demonstrates | What still needs evidence |
 | --- | --- | --- |
 | Payload SHA256, gzip integrity and raw image SHA256 | Input bytes match the pinned images | Framework/vendor compatibility |
-| Flash readback | The written region matches those bytes | Kernel boot and Android startup |
+| Flash readback | Bytes read through the block interface match after checked fsync/sync; reads may use kernel cache | Independent cache-bypassing verification, power-loss durability, kernel boot and Android startup |
 | Installer regression tests | Covered cases behave as expected in mock partitions | The actual recovery and device runtime |
 | SELinux compile and assertion baseline | The recorded candidate compiles and has no new baseline findings | Correct labels, access decisions and kernel policy load |
 | VINTF host checks | The provided composition satisfies the particular checks reported | OEM runtime behavior, hardware services and boot |
@@ -46,8 +66,9 @@ actual P0 metadata and its embedded 4.19.325 kernel configuration. The full
 checks returned **INCOMPATIBLE** with and without the kernel. See the
 [recorded result](reports/audit-20261101/checkvintf/RESULTADO.md) and
 [reviewed tool lock](ci-r8q/pins/official-otatools.json). The exact policy
-context checker also rejected nine references. These findings remain open;
-recording their baseline does not repair the ROM or authorize device testing.
+context checker also rejected nine references in P0. Those nine were corrected
+in P1/P1r2; the P0 files and reports below remain historical. VINTF/kernel/HAL
+findings are still unresolved in the current build. See STATUS.md for scope.
 
 ## Repository layout
 
