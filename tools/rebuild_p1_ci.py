@@ -33,6 +33,15 @@ def write_json(path, data):
     path.write_text(json.dumps(data, indent=2)+'\n')
 
 
+def select_build_label(requested, omit_optional_mappings):
+    label=requested or ('P1r1' if omit_optional_mappings else 'P1')
+    if label not in ('P1','P1r1','P1r2'):
+        raise ValueError('Unsupported build label')
+    if (label!='P1') != bool(omit_optional_mappings):
+        raise ValueError('Build label does not match optional mapping policy')
+    return label
+
+
 def run(script, *arguments):
     print('STEP:', script, flush=True)
     subprocess.run([sys.executable, str(ROOT/script)]+list(map(str, arguments)),
@@ -137,7 +146,10 @@ def main():
     ap.add_argument('--minimum-free-gib',type=int,default=32)
     ap.add_argument('--omit-optional-mappings',action='store_true',
                     help='P1r1 experiment: remove only system_ext/product SELinux mapping files')
+    ap.add_argument('--build-label',choices=('P1','P1r1','P1r2'),
+                    help='Package revision; must agree with the selected mapping policy')
     args=ap.parse_args()
+    build_label=select_build_label(args.build_label,args.omit_optional_mappings)
     for path in (ROOT/'extracted/r8q',ROOT/'extracted/hyperos',ROOT/'candidates/p0',ROOT/'candidates/p1',WORK,ROOT/'tools/selinux-modern'):
         if path.exists() or path.is_symlink():
             raise ValueError('Use a clean checkout; preserving prior work: '+str(path))
@@ -211,7 +223,6 @@ def main():
         if row['partition']=='product' and not args.omit_optional_mappings:continue
         image=out/(row['partition']+'.img')
         row.update(file=str(image.relative_to(ROOT)),bytes=image.stat().st_size,sha256=digest(image),source='P1 reconstructed current build')
-    build_label='P1r1' if args.omit_optional_mappings else 'P1'
     omitted=[]
     if args.omit_optional_mappings:
         for part in ('system_ext','product'):

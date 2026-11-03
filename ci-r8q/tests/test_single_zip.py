@@ -142,11 +142,41 @@ class NativeTests(unittest.TestCase):
             for guard in ('check_battery before-write','verify_written super','Conferindo o vbmeta'):
                 self.assertIn(guard,script)
 
+    def test_p1r2_archive_variant_and_instructions_match_every_published_sidecar(self):
+        images=[]
+        for part,length in [('super',32768),('boot',8192),('dtbo',4096)]:
+            data=(part.encode()*length)[:length];path=self.folder/(part+'.img');path.write_bytes(data)
+            images.append(dict(partition=part,file=str(path),bytes=len(data),sha256=hashlib.sha256(data).hexdigest()))
+        omitted=[dict(partition=p,path='/etc/selinux/mapping/30.0.cil',old_sha256='a'*64)for p in ('system_ext','product')]
+        output=self.folder/'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip'
+        report=package.build(output,self.helper,images,require_arm64=False,host_helper=self.helper,
+                             build_label='P1r2',omitted_optional_mappings=omitted)
+        self.assertFalse(output.with_name(output.name+'.partial').exists())
+        self.assertEqual(report,json.loads(output.with_name('P1-SINGLE-build-report.json').read_text()))
+        self.assertEqual(report['build_label'],'P1r2');self.assertFalse(report['boot_confirmed'])
+        self.assertEqual(report['omitted_optional_mappings'],omitted)
+        self.assertEqual(report['sha256'],hashlib.sha256(output.read_bytes()).hexdigest())
+        self.assertEqual(output.with_suffix('.zip.sha256').read_text(),report['sha256']+'  '+output.name+'\n')
+        with zipfile.ZipFile(output) as z:
+            manifest=json.loads(z.read('P1-MANIFEST.json'));script=z.read(package.INSTALLER).decode()
+            notes=z.read('README-TESTER.txt').decode()
+            self.assertEqual(manifest['build_label'],'P1r2');self.assertFalse(manifest['boot_confirmed'])
+            self.assertEqual(manifest['omitted_optional_mappings'],omitted)
+            self.assertEqual(notes,output.with_name('P1-TESTER-ENGLISH.txt').read_text())
+            self.assertIn(output.name,notes);self.assertIn('P1r2 retains the P1r1',notes)
+            self.assertIn('confirm a boot fix',notes);self.assertIn('IMPORTANT: boot is not confirmed.',notes)
+            self.assertIn('P1r2 SINGLE ZIP EXPERIMENTAL',script)
+            self.assertIn('P1r2 written;',script)
+            for guard in ('check_battery before-write','verify_written super','Conferindo o vbmeta','CRC/SHA256'):
+                self.assertIn(guard,script)
+
 class VariantMetadataTests(unittest.TestCase):
     def test_variant_rejects_platform_removal_or_missing_partition_evidence(self):
         rows=[dict(partition=p,path='/etc/selinux/mapping/30.0.cil',old_sha256='a'*64)for p in ('system_ext','product')]
-        self.assertEqual(package.variant_metadata({'build_label':'P1r1','omitted_optional_mappings':rows})[0],'P1r1')
-        for invalid in ([],rows[:1],[dict(rows[0],partition='system'),rows[1]],[dict(rows[0],path='/etc/selinux/mapping/..'),rows[1]]):
-            with self.assertRaises(ValueError):package.variant_metadata({'build_label':'P1r1','omitted_optional_mappings':invalid})
+        for label in ('P1r1','P1r2'):
+            with self.subTest(label=label):
+                self.assertEqual(package.variant_metadata({'build_label':label,'omitted_optional_mappings':rows})[0],label)
+                for invalid in ([],rows[:1],[dict(rows[0],partition='system'),rows[1]],[dict(rows[0],path='/etc/selinux/mapping/..'),rows[1]]):
+                    with self.assertRaises(ValueError):package.variant_metadata({'build_label':label,'omitted_optional_mappings':invalid})
 
 if __name__=='__main__':unittest.main()

@@ -124,9 +124,9 @@ all compressed hashes, gzip CRCs, raw hashes and partition readbacks remain.
 
 def variant_metadata(manifest):
     label=manifest.get('build_label','P1');omitted=manifest.get('omitted_optional_mappings',[])
-    if label not in ('P1','P1r1') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
+    if label not in ('P1','P1r1','P1r2') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
     if label=='P1' and omitted:raise ValueError('Baseline cannot omit mappings')
-    if label=='P1r1':
+    if label in ('P1r1','P1r2'):
         seen=set()
         for row in omitted:
             if not isinstance(row,dict):raise ValueError('Optional mapping evidence is not an object')
@@ -172,6 +172,14 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
             'from the P1 composition. System/platform mappings, policy CIL files,\n'
             'kernel, boot and dtbo are retained. This tests the donor developer\'s\n'
             'mapping advice; the cause of the previous bootloop remains unconfirmed.\n\n'
+            'IMPORTANT: boot is not confirmed.')
+    elif build_label=='P1r2':
+        instructions=instructions.replace('IMPORTANT: boot is not confirmed.',
+            'P1r2 retains the P1r1 system_ext/product SELinux mapping omission.\n'
+            'System/platform mappings, policy CIL files, kernel, boot and dtbo\n'
+            'are retained. This revision improves ZIP64 reading, CRC diagnostics\n'
+            'and package publication/verification. It does not establish the\n'
+            'cause of the previous bootloop or confirm a boot fix.\n\n'
             'IMPORTANT: boot is not confirmed.')
     manifest=dict(name='HyperOS4-R8Q-'+build_label+'-SINGLE-EXPERIMENTAL',status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,
                   build_label=build_label,omitted_optional_mappings=omitted,

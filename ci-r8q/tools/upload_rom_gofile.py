@@ -3,10 +3,11 @@ from pathlib import Path
 import argparse,hashlib,json,os,re,subprocess,tempfile,urllib.parse
 
 ROM_NAMES=frozenset(('HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip',
-                     'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip'))
+                     'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip',
+                     'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip'))
 
 def validate_name(name):
-    if name not in ROM_NAMES:raise ValueError('Only a reviewed P1/P1r1 ROM ZIP name is accepted')
+    if name not in ROM_NAMES:raise ValueError('Only a reviewed P1/P1r1/P1r2 ROM ZIP name is accepted')
 
 def identities(path):
     sha=hashlib.sha256();md5=hashlib.md5(usedforsecurity=False);size=0

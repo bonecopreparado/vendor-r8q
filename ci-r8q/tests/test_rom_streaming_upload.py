@@ -20,7 +20,8 @@ upload = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(upload)
 
 NAMES = ('HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip',
-         'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip')
+         'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip',
+         'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip')
 
 
 class StreamingRomUploadTests(unittest.TestCase):
@@ -68,7 +69,7 @@ class StreamingRomUploadTests(unittest.TestCase):
             return types.SimpleNamespace(returncode=0, stdout=b'', stderr=b'')
         return fake_curl
 
-    def test_both_p1_and_p1r1_complete_real_cli_and_verify_local_identity(self):
+    def test_all_reviewed_variants_complete_real_cli_and_verify_local_identity(self):
         for name in NAMES:
             with self.subTest(name=name):
                 path = self.archive(name)
@@ -93,7 +94,7 @@ class StreamingRomUploadTests(unittest.TestCase):
                 self.assertFalse(private_configs[0][0].exists())
 
     def test_unrelated_or_future_rom_name_rejected_before_file_hash_or_network(self):
-        for name in ('unrelated.zip', 'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip'):
+        for name in ('unrelated.zip', 'HyperOS4-R8Q-P1r3-SINGLE-EXPERIMENTAL.zip'):
             path = self.archive(name)
             with self.subTest(name=name), patch.object(upload, 'identities') as identities, \
                     patch.object(upload.subprocess, 'run') as run, \
@@ -112,14 +113,16 @@ class StreamingRomUploadTests(unittest.TestCase):
             self.assertFalse(result.exists())
             self.assertNotIn('PRIVATE-RESPONSE-TOKEN', str(error.exception))
 
-    def test_preflight_accepts_nonexistent_p1r1_without_hash_or_transport(self):
-        path = self.root / NAMES[1]
-        self.assertFalse(path.exists())
-        with patch.object(upload, 'identities') as identities:
-            stdout, _, run = self.invoke([path, '--check-name-only'])
-        identities.assert_not_called()
-        run.assert_not_called()
-        self.assertIn(NAMES[1], stdout)
+    def test_preflight_accepts_all_reviewed_names_without_hash_or_transport(self):
+        for name in NAMES:
+            with self.subTest(name=name):
+                path = self.root / name
+                self.assertFalse(path.exists())
+                with patch.object(upload, 'identities') as identities:
+                    stdout, _, run = self.invoke([path, '--check-name-only'])
+                identities.assert_not_called()
+                run.assert_not_called()
+                self.assertIn(name, stdout)
 
     def test_preflight_rejects_unrecognized_name_without_hash_or_transport(self):
         with patch.object(upload, 'identities') as identities, \
