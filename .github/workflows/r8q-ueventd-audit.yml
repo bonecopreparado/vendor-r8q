@@ -1,0 +1,49 @@
+name: Inspect pinned r8q ueventd and hardware-service configuration
+on:
+  push:
+    branches: [r8q-ueventd-audit-20261107]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Read public baseline configuration only
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,re,zipfile
+          from pathlib import Path
+          p=Path('ci-r8q/vendor_audit/data/baseline-vendor.zip')
+          b=p.read_bytes()
+          assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()=='fdc31fc698221d679670a82cc213509d0bfb6d80'
+          output={}
+          with zipfile.ZipFile(p) as z:
+              for n in z.namelist():
+                  if not n.endswith('/'):
+                      low=n.lower()
+                      if ('ueventd' in low or low.endswith('build.prop') or
+                          ('/init/' in low and any(s in low for s in ['keymaster','qseecom','sec_nvm','spdaemon','sscrpc','gatekeeper']))):
+                          data=z.read(n)
+                          assert len(data)<1000000
+                          output[n]={'sha256':hashlib.sha256(data).hexdigest(),'content':data.decode()}
+              print('Archive entries:',len(z.namelist()))
+              print('ueventd paths:',[n for n in z.namelist() if 'ueventd' in n])
+          for n,d in output.items():
+              print('FILE',n,d['sha256'])
+              if 'ueventd' in n:
+                  print('\n'.join(l for l in d['content'].splitlines() if re.search(r'^import |qseecom|spcom|/dev/ion|fastrpc|adsprpc',l)))
+              elif n.endswith('build.prop'):
+                  print('\n'.join(l for l in d['content'].splitlines() if re.search(r'first_api_level|api_level|sdk=|ro.product.device',l)))
+              else: print(d['content'])
+          Path('ueventd-public-baseline.json').write_text(json.dumps(output,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-UEVENTD-PUBLIC-BASELINE
+          path: ueventd-public-baseline.json
+          retention-days: 14
