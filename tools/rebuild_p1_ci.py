@@ -137,6 +137,7 @@ def independent_super(image_path, report_path):
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--legacy-kernel-symlinks',action='store_true')
     ap.add_argument('--discard-downloads',action='store_true',
                     help='CI only: delete the two verified downloaded archives after source image verification')
     ap.add_argument('--host-tools',type=Path,
@@ -196,10 +197,23 @@ def main():
     run('tools/prepare_p1_plans.py',*variant_args)
     plans=ROOT/'patches/0007-policy-integration';out=ROOT/'candidates/p1';out.mkdir()
     erofs_parts=('system','system_ext','product') if args.omit_optional_mappings else ('system','system_ext')
+    # Recreate the exact previously shipped system with the stock writer once,
+    # bind the logged NID to a path, then discard only this derived baseline.
+    if args.legacy_kernel_symlinks:
+        baseline=ROOT/'candidates/system-stock-baseline.img'
+        baseline_report=WORK/'system-stock-baseline.json'
+        run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos/system.img',
+            '--plan',plans/'system-plan.json','--output',baseline,'--report',baseline_report)
+        verify_named_file(baseline,'c591be3f417b43c6b9734c3385ceea507c11ba2c27e0a5d5e853ef8a22addc72')
+        old=json.loads(baseline_report.read_text())
+        if not any(row['nid']==32610047 for row in old['legacy_symlink_issues']):
+            raise ValueError('Logged symlink NID was not reproduced in the exact P1r2 system')
+        print('EXACT P1r2 LEGACY SYMLINK FAILURE:',json.dumps(old['legacy_symlink_issues']),flush=True)
+        baseline.unlink()
     for part in erofs_parts:
         run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos'/(part+'.img'),
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),
-            '--report',WORK/(part+'-build.json'))
+            '--report',WORK/(part+'-build.json'),*(['--legacy-kernel-symlinks'] if args.legacy_kernel_symlinks else []))
     for part in ('vendor','odm'):
         report=WORK/(part+'-build.json')
         run('tools/patch_ext4_candidate.py','--source',ROOT/'extracted/r8q'/(part+'.img'),

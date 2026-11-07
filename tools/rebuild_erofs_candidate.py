@@ -75,6 +75,8 @@ class Image:
                 while position<start+extent:position+=xentry(position)
                 if position!=start+extent:raise ValueError('Inline xattr bounds')
         return dict(nid=nid,layout=layout,size=size,mode=mode,uid=uid,gid=gid,
+                    inode_offset=(self.meta*self.block+nid*32)%self.block,inode_isize=isize,
+                    xattr_isize=(12+(icount-1)*4 if icount else 0),
                     mtime=sec,mtime_ns=ns,nlink=nlink,xattrs={k.decode():base64.b64encode(v).decode() for k,v in attrs.items()})
     def inventory(self):
         queue=['/'];rows={}
@@ -90,6 +92,15 @@ class Image:
             else:raise ValueError('Unexpected special inode: '+path)
             if len(rows)>100000:raise ValueError('Unexpected tree size')
         return rows
+
+
+def legacy_symlink_issues(entries,block):
+    """Model the old erofs_fill_symlink bounds check, not modern fsck alone."""
+    return [dict(path=path,nid=meta['nid'],inode_offset=meta['inode_offset'],
+                 inode_isize=meta['inode_isize'],xattr_isize=meta['xattr_isize'],size=meta['size'])
+            for path,meta in entries.items()
+            if stat.S_ISLNK(meta['mode']) and meta['layout']==2 and 0<=meta['size']<block
+            and meta['inode_offset']+meta['inode_isize']+meta['xattr_isize']+meta['size']>block]
 
 def stream_tar(image,entries,patches,process):
     hardlinks={}
@@ -115,7 +126,7 @@ def stream_tar(image,entries,patches,process):
             else:raise ValueError('Unsupported inode')
             archive.addfile(info,io.BytesIO(body))
 
-def build(root,spec,plan_dir=None):
+def build(root,spec,plan_dir=None,legacy_kernel_symlinks=False):
     root=Path(root).resolve();tools=root/'tools/image-tools/root/usr/bin'
     if spec.get('schema_version',1)!=1:raise ValueError('Unsupported plan schema')
     source=rooted(root,spec['source_image']);dest=rooted(root,spec['output_image'])
@@ -157,7 +168,9 @@ def build(root,spec,plan_dir=None):
         expected[path]['size']=len(data);expected[path]['sha256']=sha(data)
     dest.parent.mkdir(parents=True,exist_ok=True)
     work=dest.parent/(dest.name+'.work');work.mkdir(exist_ok=False)
-    command=[tools/'mkfs.erofs','--tar=f','-b',str(image.block),'-z','lz4hc','--preserve-mtime',
+    mkfs=(root/'tools/erofs-legacy/bin/mkfs.erofs') if legacy_kernel_symlinks else tools/'mkfs.erofs'
+    if not mkfs.is_file():raise ValueError('Missing requested EROFS writer')
+    command=[mkfs,'--tar=f','-b',str(image.block),'-z','lz4hc','--preserve-mtime',
              '-T',str(image.buildtime),'--mkfs-time','-U',image.uuid,dest]
     with (work/'mkfs.log').open('wb') as log:
         process=subprocess.Popen(list(map(str,command)),stdin=subprocess.PIPE,stdout=log,stderr=log)
@@ -171,6 +184,9 @@ def build(root,spec,plan_dir=None):
         raise ValueError('New filesystem incompat features: '+hex(image.features)+' -> '+hex(candidate.features))
     run([tools/'fsck.erofs','--extract',dest])
     print('Comparing every target file and inode...',flush=True);after=candidate.inventory()
+    issues=legacy_symlink_issues(after,candidate.block)
+    if legacy_kernel_symlinks and (issues or any(stat.S_ISLNK(v['mode']) and v['layout']!=0 for v in after.values())):
+        raise ValueError('Legacy kernel symlink layout guard failed: '+json.dumps(issues))
     if set(expected)!=set(after):raise ValueError('Unexpected filesystem path changes')
     changes=[]
     for path,old in expected.items():
@@ -190,7 +206,8 @@ def build(root,spec,plan_dir=None):
                 image_sha256=file_sha(dest),bytes=dest.stat().st_size,entries_verified=len(expected),changes=changes,
                 deleted=sorted(deletions),source_incompat_features=image.features,candidate_incompat_features=candidate.features,
                 no_new_incompat_features=True,metadata_preserved=True,original_unchanged=True,
-                mkfs_sha256=file_sha(tools/'mkfs.erofs'),dump_sha256=file_sha(tools/'dump.erofs'),
+                mkfs_sha256=file_sha(mkfs),legacy_kernel_symlinks=legacy_kernel_symlinks,
+                legacy_symlink_issues=issues,symlink_count=sum(stat.S_ISLNK(v['mode']) for v in after.values()),dump_sha256=file_sha(tools/'dump.erofs'),
                 fsck_sha256=file_sha(tools/'fsck.erofs'),
                 limitation='Full PAX rebuild and logical readback do not replace kernel mount/boot tests.')
     (work/'result.json').write_text(json.dumps(report,indent=2)+'\n')
@@ -200,6 +217,7 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--plan',type=Path,required=True)
     parser.add_argument('--source',type=Path);parser.add_argument('--output',type=Path);parser.add_argument('--report',type=Path)
     parser.add_argument('--project-root',type=Path,default=DEFAULT_ROOT)
+    parser.add_argument('--legacy-kernel-symlinks',action='store_true')
     args=parser.parse_args();spec=json.loads(args.plan.read_text())
     if args.source:spec['source_image']=str(args.source.resolve())
     if args.output:spec['output_image']=str(args.output.resolve())
@@ -207,6 +225,6 @@ if __name__=='__main__':
         report_path=args.report.resolve()
         protected={args.plan.resolve(),rooted(args.project_root.resolve(),spec['source_image']),rooted(args.project_root.resolve(),spec['output_image'])}
         if report_path in protected or report_path.exists():raise ValueError('Use a new report path distinct from all image/plan inputs')
-    result=build(args.project_root,spec,args.plan.resolve().parent)
+    result=build(args.project_root,spec,args.plan.resolve().parent,args.legacy_kernel_symlinks)
     if args.report:args.report.parent.mkdir(parents=True,exist_ok=True);args.report.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))

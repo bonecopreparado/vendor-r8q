@@ -44,6 +44,32 @@ class Tests(unittest.TestCase):
         self.assertEqual(image.read('/link'),b'etc/policy.cil')
         self.assertEqual(image.entry('/keep')['uid'],65536)
         self.assertEqual(m.base64.b64decode(image.entry('/keep')['xattrs']['security.capability']),b'\x01\x00\x00\x02\x80\xff\x00\x00\x00\x00')
+    @unittest.skipUnless((ROOT/'tools/erofs-legacy/bin/mkfs.erofs').exists(),'Compatibility writer required')
+    def test_legacy_writer_keeps_symlink_metadata_target_and_hardlinks(self):
+        root,plan=self.fixture()
+        (root/'tools/erofs-legacy').mkdir()
+        (root/'tools/erofs-legacy/bin').symlink_to(ROOT/'tools/erofs-legacy/bin')
+        before=m.Image(root/'base.img',ROOT/'tools/image-tools/root/usr/bin').entry('/link')
+        report=m.build(root,plan,legacy_kernel_symlinks=True)
+        image=m.Image(root/'new.img',ROOT/'tools/image-tools/root/usr/bin')
+        after=image.entry('/link')
+        self.assertEqual(after['layout'],0)
+        self.assertEqual(image.read('/link'),b'etc/policy.cil')
+        for key in ('mode','uid','gid','mtime','mtime_ns','nlink','xattrs'):
+            self.assertEqual(before[key],after[key],key)
+        self.assertEqual(image.entry('/keep')['nid'],image.entry('/hardlink')['nid'])
+        self.assertEqual(report['legacy_symlink_issues'],[])
+
+    def test_old_kernel_boundary_guard_distinguishes_inline_and_plain(self):
+        row=dict(nid=127,mode=0o120777,layout=2,inode_offset=4064,inode_isize=32,xattr_isize=0,size=12)
+        self.assertEqual(m.legacy_symlink_issues({'/link':row},4096)[0]['nid'],127)
+        row['layout']=0
+        self.assertEqual(m.legacy_symlink_issues({'/link':row},4096),[])
+        row.update(layout=2,inode_offset=4032)
+        self.assertEqual(m.legacy_symlink_issues({'/link':row},4096),[])
+        row['xattr_isize']=24;row['size']=9
+        self.assertEqual(len(m.legacy_symlink_issues({'/link':row},4096)),1)
+
     def test_generic_add_delete_plan_preserves_unmodified_files(self):
         root,old=self.fixture();replacement=root/'replacement.cil'
         plan=dict(schema_version=1,source_image='base.img',source_image_sha256=old['source_sha256'],output_image='new.img',operations=[

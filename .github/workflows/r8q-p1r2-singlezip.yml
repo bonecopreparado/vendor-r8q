@@ -1,12 +1,12 @@
-name: Build P1r2 temp-directory fix single recovery ZIP
+name: Build P1r2 EROFS legacy symlink compatibility candidate
 on:
   push:
-    branches: [r8q-tmpdir-fix-20261107]
+    branches: [r8q-erofs-compat-20261107]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: r8q-tmpdir-fix
+  group: r8q-erofs-compat
   cancel-in-progress: true
 jobs:
   build:
@@ -33,7 +33,7 @@ jobs:
       - name: Prepare reviewed filesystem and native build tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends build-essential flex e2fsprogs mksh python3-brotli python3-zstandard qemu-user libdeflate0 liblz4-1 liblzma5 libselinux1 libuuid1 libxxhash0 libzstd1
+          sudo apt-get install -y --no-install-recommends build-essential flex autoconf automake libtool pkg-config liblz4-dev uuid-dev e2fsprogs mksh python3-brotli python3-zstandard qemu-user libdeflate0 liblz4-1 liblzma5 libselinux1 libuuid1 libxxhash0 libzstd1
           curl -fsSL --max-time 120 https://deb.debian.org/debian/pool/main/e/erofs-utils/erofs-utils_1.8.6-1_amd64.deb -o /tmp/erofs-utils.deb
           printf '%s  %s\n' 81042b8c0c3eb63699aa7d0763dceedc675a747d9f5cfebf914b4160233f411e /tmp/erofs-utils.deb | sha256sum -c -
           dpkg-deb -x /tmp/erofs-utils.deb tools/image-tools/root
@@ -55,6 +55,8 @@ jobs:
           PY
           cc -D_FILE_OFFSET_BITS=64 -O2 -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread-host
           qemu-aarch64 build/r8q-zipread --version
+      - name: Build pinned EROFS writer with plain symlink targets for the old kernel
+        run: /usr/bin/python3 ci-r8q/tools/build_legacy_erofs.py
       - name: Verify source tests and real ZIP64 / mksh fixtures
         run: |
           /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread --emulator /usr/bin/qemu-aarch64 --report reports/p1/reader-runtime/arm64.json
@@ -69,7 +71,7 @@ jobs:
       - name: Fetch reviewed official VINTF host tool and record known baseline
         run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
       - name: Rebuild P1r2 retaining the P1r1 optional-mapping experiment
-        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r2
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r2 --legacy-kernel-symlinks
       - name: Build one complete ZIP and verify every stored member and image
         id: package
         run: |
@@ -104,7 +106,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
           ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
-          RELEASE_TAG: p1r2-tmpfix-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r2-erofs-experimental-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
           /usr/bin/python3 - <<'PY'
@@ -112,7 +114,7 @@ jobs:
           from pathlib import Path
           r=json.loads(Path('output/gofile-rom.json').read_text())
           notes=('P1r2 installer revision for S20 FE Snapdragon r8q G781B/G780G. Boot and hardware remain unconfirmed.\n\n'
-                 'Retains the P1r2 images and optional-mapping experiment. Fixes mksh temporary-file creation when the inherited TMPDIR is missing or invalid, observed during ADB sideload. The installer pins TMPDIR to its validated private /tmp directory and writes the payload table with printf, removing the failing here-document step. No new causal Android boot fix has been established. Boot/kernel/dtbo are unchanged.\n\n'
+                 'Retains the TMPFIX installer and optional-mapping experiment. Reproduces the exact previous system SHA and logged symlink NID, then rebuilds system/system_ext/product with symlink targets in existing plain data blocks to avoid the old kernel fast-symlink boundary error seen before boringssl-self-check-failed. Target bytes, xattrs and ownership are verified. BoringSSL tests and their failure action remain enabled. Kernel/boot/dtbo are unchanged. This is a new boot candidate; on-device success is NOT established.\n\n'
                  '[Download the ONE complete recovery ZIP]('+r['download_page']+')\n\n'
                  'Size: '+str(r['size'])+' bytes. SHA256: `'+r['sha256']+'`.\n\n'
                  'No payload folder, PC or installer generation is needed. Keep the ZIP compressed; use internal storage or exFAT because it exceeds 4 GiB.\n\n'
@@ -122,7 +124,7 @@ jobs:
           Path('output/P1-RELEASE-NOTES.md').write_text(notes)
           PY
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r2 TMPFIX complete ZIP — temporary directory fix, boot unconfirmed' --notes-file output/P1-RELEASE-NOTES.md \
+            --title 'P1r2 EROFS-COMPAT complete ZIP — boot test candidate' --notes-file output/P1-RELEASE-NOTES.md \
             "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json output/gofile-rom.json output/P1-SINGLE.intoto.jsonl output/P1r2-ARM64-readback.json
       - name: Save small current-build evidence only
         if: always()
@@ -137,6 +139,7 @@ jobs:
             reports/p1/ci-build/**/*.json
             reports/p1/ci-build/**/*.log
             reports/p1/reader-runtime/*.json
+            tools/erofs-legacy/PROVENANCE.json
             ci-vintf/gate.json
           if-no-files-found: warn
           retention-days: 30

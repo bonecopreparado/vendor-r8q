@@ -14,6 +14,9 @@ def template(root=ROOT,build_label='P1'):
     parent=(root/'delivery/Ready-P0r8/installer-template-ready.sh').read_bytes()
     if hashlib.sha256(parent).hexdigest()!=PARENT_SHA:raise ValueError('P0r8 template identity changed')
     s=parent.decode()
+    s=s.replace('ui_print "Conferindo o vbmeta atual antes de qualquer escrita..."',
+                'ui_print "EROFS-COMPAT revision: plain symlink targets; boot test pending."\n'
+                'ui_print "Conferindo o vbmeta atual antes de qualquer escrita..."')
     # mksh may use a missing inherited TMPDIR for here-document backing files.
     # WORK was created and validated under /tmp; pin the shell's temporary
     # directory before it encounters the payload-table here-document.
