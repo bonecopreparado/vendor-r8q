@@ -14,6 +14,10 @@ def template(root=ROOT,build_label='P1'):
     parent=(root/'delivery/Ready-P0r8/installer-template-ready.sh').read_bytes()
     if hashlib.sha256(parent).hexdigest()!=PARENT_SHA:raise ValueError('P0r8 template identity changed')
     s=parent.decode()
+    # mksh may use a missing inherited TMPDIR for here-document backing files.
+    # WORK was created and validated under /tmp; pin the shell's temporary
+    # directory before it encounters the payload-table here-document.
+    s=replace_once(s,'DD_FSYNC=0\n','TMPDIR="$WORK"\nexport TMPDIR\nDD_FSYNC=0\n')
     s=s.replace('mktemp rm rmdir sync;','mktemp rm rmdir sync chmod;')
     s=s.replace('HyperOS4 -> R8Q P0r8 EXPERIMENTAL / boot not confirmed',
                 'HyperOS4 -> R8Q '+build_label+' SINGLE ZIP EXPERIMENTAL / boot not confirmed')

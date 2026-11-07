@@ -34,7 +34,11 @@ with tempfile.TemporaryDirectory(prefix='r8q-single-harness-') as td:
     fixture=settings['fixture_text']
     needle="ready_layout='adjacent'):"
     assert fixture.count(needle)==1
-    fixture=fixture.replace(needle,"ready_layout='adjacent',zip_mutation=''):")
+    fixture=fixture.replace(needle,"ready_layout='adjacent',zip_mutation='',temporary_directory=''):")
+    # Exercise the actual inherited environment seen by mksh at launch.
+    needle="SYNC_FAILURE=str(int(sync_failure))"
+    assert fixture.count(needle)==1
+    fixture=fixture.replace(needle,needle+",TMPDIR=temporary_directory or os.environ.get('TMPDIR','/tmp')")
     # Gzip now reads stdin. Preserve the injected failure-counter semantics by
     # exporting the current member name inside the fixture-only inflate wrapper.
     fixture=fixture.replace("name=Path(args[-1]).name if args else 'stdin'", "name=os.environ.get('R8Q_CURRENT_PAYLOAD') or (Path(args[-1]).name if args else 'stdin')")
@@ -123,6 +127,10 @@ with tempfile.TemporaryDirectory(prefix='r8q-single-harness-') as td:
         elif mutation=='helper_changed':
             assert 'Native helper hash differs' in r['stdout'],r
         print(name,'PASS',flush=True)
+    for label,directory in [('missing_tmpdir',work/'nonexistent'/'tmp'),('tmpdir_is_file',helper),('tmpdir_with_spaces',work/'missing temp directory')]:
+        r=namespace['run_case'](label,temporary_directory=str(directory));results.append(r)
+        assert r['exit']==0 and len(r['changed'])==3 and r['prefix_preserved'] and r['super_body_matches'],r
+        print(label,'PASS',flush=True)
     (REPORT/'single-installer-results.json').write_text(json.dumps(results,indent=2)+'\n')
     (REPORT/'single-test-summary.json').write_text(json.dumps(dict(passed=len(results),shell=SHELL,
         fixture='real single ZIP with native 64-bit reader; bounded mock partitions',physical_writes=False,boot_test=False),indent=2)+'\n')
