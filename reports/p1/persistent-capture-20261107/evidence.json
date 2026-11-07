@@ -1,0 +1,43 @@
+{
+  "inputs": [
+    {
+      "file": "recovery.log",
+      "bytes": 54102,
+      "sha256": "0d768aca7c96d587b9729b7b4c97f6cc4d0e99f8d85e179148c3e33c9295593d"
+    },
+    {
+      "file": "dmesg-recovery.txt",
+      "bytes": 395920,
+      "sha256": "b74fbc6031c96a37eac212a6c9e7cf1586b058a7492ebbaff88bb4503ba03b54"
+    },
+    {
+      "file": "logcat-recovery.txt",
+      "bytes": 777875,
+      "sha256": "731b407df95e6aeb21c118ab7888f75f31ad86a5a44f9ee44d834b7c25b20273"
+    },
+    {
+      "file": "last_kmsg",
+      "bytes": 2097136,
+      "sha256": "d7cab39b46260174b009079d80bced810c51f9a8de4118a9c649071eece47b15"
+    }
+  ],
+  "raw_logs_published": false,
+  "latest_android_segment": {
+    "starts_at_line": 17302,
+    "max_kernel_uptime_seconds": 301.173212,
+    "r8qboot_marker_count": 0,
+    "erofs_inline_boundary_errors": 0,
+    "boringssl_failed_reboot_count": 0,
+    "shell_exec_seen": true,
+    "userdata_mounted": true
+  },
+  "known_mounts": {
+    "metadata_device": "sda28",
+    "metadata_android_mount_uptime_seconds": 2.55978,
+    "metadata_fs": "ext4",
+    "cache_device": "sda32",
+    "cache_seen_mounted_in_latest_android_segment": false
+  },
+  "diagnosis": "Android userspace hang remains unresolved. A shell starts at 6.078581 s, consistent with the early-init diagnostic service, but its identity and why markers are missing are not established by these logs. Recovery-only logcat cannot identify the blocked Android vdc subcommand.",
+  "next_capture": "Bootdiag v3 writes bounded private files on already-mounted metadata, independently of dev/kmsg preservation."
+}

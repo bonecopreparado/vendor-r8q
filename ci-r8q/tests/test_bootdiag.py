@@ -47,7 +47,7 @@ class Tests(unittest.TestCase):
             p=root/'bin'/name;p.write_text(WRAPPER);p.chmod(0o755)
         return root
     def execute(self,root,mode='ENABLE',corrupt=False):
-        archive=self.out/('R8Q-BOOTDIAG-V2-'+mode+'.zip')
+        archive=self.out/('R8Q-BOOTDIAG-V3-'+mode+'.zip')
         with zipfile.ZipFile(archive) as z:script=z.read('META-INF/com/google/android/update-binary').decode()
         for old in ['/sys/class/block','/proc/mounts','/vendor','/tmp/r8q-bootdiag']:
             script=script.replace(old,'@FIX@'+old)
@@ -117,42 +117,87 @@ class Tests(unittest.TestCase):
         self.assertEqual(altered.read_text(),'user changes');self.assertEqual(len(self.active(r)),2)
     def test_packages_have_valid_crc_hash_and_no_partition_images(self):
         for mode in ['ENABLE','REMOVE']:
-            p=self.out/('R8Q-BOOTDIAG-V2-'+mode+'.zip')
+            p=self.out/('R8Q-BOOTDIAG-V3-'+mode+'.zip')
             self.assertEqual(p.with_name(p.name+'.sha256').read_text().split()[0],SHA(p.read_bytes()))
             with zipfile.ZipFile(p) as z:
                 self.assertIsNone(z.testzip());self.assertEqual(len(z.namelist()),6)
                 self.assertFalse(any(n.endswith('.img') for n in z.namelist()))
-    def test_logger_mirrors_filtered_userspace_without_kernel_feedback(self):
-        with tempfile.TemporaryDirectory() as temp:
-            r=Path(temp);(r/'logdr').touch();(r/'kmsg').touch();(r/'bin').mkdir()
-            logger=ROOT/'tools/bootdiag/bootdiag.sh'
-            script=logger.read_text().replace('KMSG=/dev/kmsg','KMSG='+str(r/'kmsg')).replace('[ -c "$KMSG" ]','[ -f "$KMSG" ]')
-            script=script.replace('/dev/socket/logdr',str(r/'logdr')).replace('[ ! -S ','[ ! -f ').replace('> "$KMSG"','>> "$KMSG"')
-            fake=r/'bin/logcat';fake.write_text("#!/bin/sh\nprintf '%s\\n' 'I vold: waiting for key service' '[R8QBOOT] feedback must be skipped' 'E keystore2: test failure'\nprintf '%s\\n' \"$*\" > '"+str(r/'args')+"'\n");fake.chmod(0o755)
-            timer=r/'bin/timeout';timer.write_text('#!/bin/sh\nshift\nexec \"$@\"\n');timer.chmod(0o755)
-            proc=r/'proc'
-            for pid,args in [('819',b'/system/bin/vdc\0cryptfs\0init_user0\0SECRET-ARGUMENT\0'),('820',b'/system/bin/vdc\0cryptfs\0checkpw\0PRIVATE-PASSWORD\0')]:
-                d=proc/pid;d.mkdir(parents=True)
-                (d/'comm').write_text('vdc\n');(d/'cmdline').write_bytes(args)
-                (d/'wchan').write_text('binder_thread_read\n');(d/'stack').write_text('[<0>] binder_thread_read\n')
-            sleeper=r/'bin/sleep';sleeper.write_text('#!/bin/sh\nexit 0\n');sleeper.chmod(0o755)
-            script=script.replace('/proc/',str(proc)+'/')
-            script=script.replace('/system/bin/logcat',str(fake));p=r/'logger.sh';p.write_text(script)
-            proc=subprocess.run([SHELL,str(p)],env=dict(os.environ,PATH=str(r/'bin')+':'+os.environ['PATH']),capture_output=True,text=True,timeout=10)
-            self.assertEqual(proc.returncode,0,proc.stderr)
-            data=(r/'kmsg').read_text();self.assertIn('I vold: waiting for key service',data);self.assertIn('E keystore2: test failure',data)
-            self.assertNotIn('feedback must be skipped',data);self.assertIn('lines=2',data)
-            self.assertIn('cmd=/system/bin/vdc cryptfs init_user0',data)
-            self.assertIn('wchan=binder_thread_read',data);self.assertIn('PROC snapshot begin',data)
-            self.assertNotIn('SECRET-ARGUMENT',data);self.assertNotIn('PRIVATE-PASSWORD',data)
-            args=(r/'args').read_text();self.assertNotIn('-b kernel',args);self.assertIn('-b main -b system -b crash',args)
-    def test_previous_version_requires_removal_and_v2_remove_handles_it(self):
+    def logger_fixture(self,fs='ext4',options='rw,relatime',mounted=True,correct_device=True,free=20000,owner=0,lines=None):
+        t=tempfile.TemporaryDirectory();self.addCleanup(t.cleanup);r=Path(t.name)
+        for name in ['metadata','proc','dev','bin']:(r/name).mkdir()
+        (r/'dev/metadata').touch();(r/'dev/wrong').touch();(r/'logdr').touch()
+        source=r/('dev/metadata' if correct_device else 'dev/wrong')
+        (r/'proc/mounts').write_text(f'{source} {r}/metadata {fs} {options} 0 0\n' if mounted else '')
+        for pid,args in [('819',b'/system/bin/vdc\0cryptfs\0init_user0\0SECRET-ARGUMENT\0'),('820',b'/system/bin/vdc\0cryptfs\0checkpw\0PRIVATE-PASSWORD\0')]:
+            d=r/'proc'/pid;d.mkdir()
+            (d/'comm').write_text('vdc\n');(d/'cmdline').write_bytes(args)
+            (d/'wchan').write_text('binder_thread_read\n');(d/'stack').write_text('[<0>] binder_thread_read\n')
+        content=lines or ['I vold: waiting for key service','[R8QBOOT] feedback must be skipped','E keystore2: test failure']
+        (r/'logcat-input').write_text('\n'.join(content)+'\n')
+        mocks={
+            'logcat':f'printf "%s\\n" "$*" > {r}/args\ncat {r}/logcat-input\n',
+            'timeout':'shift\nexec "$@"\n','sleep':'exit 0\n',
+            'df':f'printf "%s\\n" "Filesystem 1024-blocks Used Available Capacity Mounted" "fixture 24000 100 {free} 1% {r}/metadata"\n',
+            'stat':f'printf "{owner}:%s\\n" "$(/usr/bin/stat -c %a "$3")"\n',
+        }
+        for name,body in mocks.items():
+            p=r/'bin'/name;p.write_text('#!/bin/sh\n'+body);p.chmod(0o755)
+        script=(ROOT/'tools/bootdiag/bootdiag.sh').read_text()
+        # Bounded filesystem fixture: regular files stand in for block nodes.
+        script=script.replace('[ -b "$actual" ]','[ -f "$actual" ]')
+        # Replace absolute path tokens together, preserving replacements.
+        import re
+        paths={'/dev/block/platform/soc/1d84000.ufshc/by-name/metadata':str(r/'dev/metadata'),'/metadata':str(r/'metadata'),'/proc/':str(r/'proc')+'/', '/dev/socket/logdr':str(r/'logdr'),'/system/bin/logcat':str(r/'bin/logcat')}
+        script=re.sub('|'.join(re.escape(p) for p in sorted(paths,key=len,reverse=True)),lambda m:paths[m.group()],script)
+        script=script.replace('[ ! -S ','[ ! -f ')
+        p=r/'logger.sh';p.write_text(script)
+        return r
+    def run_logger(self,r):
+        return subprocess.run([SHELL,str(r/'logger.sh')],env=dict(os.environ,PATH=str(r/'bin')+':'+os.environ['PATH']),capture_output=True,text=True,timeout=30)
+    def test_logger_persists_filtered_messages_and_redacted_snapshots_without_kmsg(self):
+        r=self.logger_fixture();p=self.run_logger(r);self.assertEqual(p.returncode,0,p.stderr)
+        logs=list((r/'metadata/r8q-bootdiag-v3').glob('capture.*/boot.log'));self.assertEqual(len(logs),1)
+        data=logs[0].read_text();self.assertIn('I vold: waiting for key service',data);self.assertIn('E keystore2: test failure',data)
+        self.assertNotIn('feedback must be skipped',data);self.assertIn('lines=2',data)
+        self.assertIn('cmd=/system/bin/vdc cryptfs init_user0',data);self.assertIn('wchan=binder_thread_read',data)
+        self.assertEqual(data.count('PROC snapshot begin'),2)
+        self.assertNotIn('SECRET-ARGUMENT',data);self.assertNotIn('PRIVATE-PASSWORD',data)
+        self.assertEqual(logs[0].stat().st_mode&0o777,0o600);self.assertEqual(logs[0].parent.stat().st_mode&0o777,0o700)
+        args=(r/'args').read_text();self.assertNotIn('-b kernel',args);self.assertIn('-b main -b system -b crash',args)
+    def test_runtime_rejects_unmounted_wrong_type_readonly_wrong_device_and_low_space(self):
+        for opts in [dict(mounted=False),dict(fs='f2fs'),dict(options='ro,relatime'),dict(correct_device=False),dict(free=12287)]:
+            with self.subTest(opts=opts):
+                r=self.logger_fixture(**opts);key=r/'metadata/unchanged-key-fixture';key.write_text('untouched')
+                p=self.run_logger(r);self.assertNotEqual(p.returncode,0)
+                self.assertFalse((r/'metadata/r8q-bootdiag-v3').exists());self.assertEqual(key.read_text(),'untouched')
+    def test_runtime_refuses_symlinked_or_insecure_base_and_capture_limit(self):
+        for kind in ['symlink','mode','owner','unknown-entry','limit']:
+            with self.subTest(kind=kind):
+                r=self.logger_fixture(owner=1000 if kind=='owner' else 0);base=r/'metadata/r8q-bootdiag-v3'
+                if kind=='symlink':base.symlink_to(r/'proc',target_is_directory=True)
+                else:
+                    base.mkdir(mode=0o700)
+                    if kind=='mode':base.chmod(0o755)
+                    if kind=='unknown-entry':(base/'unexpected').touch()
+                    if kind=='limit':
+                        for i in range(4):(base/f'capture.{i:06}').mkdir(mode=0o700)
+                before=sorted(str(p) for p in r.rglob('*'));p=self.run_logger(r)
+                self.assertNotEqual(p.returncode,0);self.assertEqual(before,sorted(str(p) for p in r.rglob('*')))
+    def test_runtime_keeps_previous_capture_and_bounds_long_logcat_input(self):
+        r=self.logger_fixture(lines=['E test: '+'x'*1200]*1502)
+        self.assertEqual(self.run_logger(r).returncode,0)
+        base=r/'metadata/r8q-bootdiag-v3';old=next(base.glob('capture.*/boot.log'));before=old.read_bytes()
+        self.assertIn(b'lines=1500',before);self.assertLess(len(before),2*1024*1024)
+        self.assertTrue(all(len(line)<=912 for line in before.splitlines()))
+        self.assertEqual(self.run_logger(r).returncode,0);self.assertEqual(old.read_bytes(),before)
+        self.assertEqual(len(list(base.glob('capture.*/boot.log'))),2)
+    def test_previous_version_requires_removal_and_v3_remove_handles_it(self):
         r=self.fixture();old=ROOT/'tools/bootdiag/legacy-v1'
         rc=r/'vendor/etc/init/r8q-bootdiag.rc';sh=r/'vendor/bin/r8q-bootdiag.sh'
         rc.write_bytes((old/'init.rc').read_bytes());sh.write_bytes((old/'bootdiag.sh').read_bytes())
         previous={p:p.read_bytes() for p in [rc,sh]}
         p=self.execute(r);self.assertNotEqual(p.returncode,0)
-        self.assertIn('Install V2 REMOVE',p.stdout);self.assertEqual(previous,{p:p.read_bytes() for p in [rc,sh]})
+        self.assertIn('Install V3 REMOVE',p.stdout);self.assertEqual(previous,{p:p.read_bytes() for p in [rc,sh]})
         self.assertEqual(self.execute(r,'REMOVE').returncode,0)
         self.assertEqual(self.active(r),[])
         self.assertEqual(self.execute(r).returncode,0)
@@ -163,6 +208,17 @@ class Tests(unittest.TestCase):
         sh.write_bytes((ROOT/'tools/bootdiag/legacy-v1/bootdiag.sh').read_bytes())
         self.assertEqual(self.execute(r,'REMOVE').returncode,0);self.assertEqual(self.active(r),[])
         self.assertTrue((r/'vendor/bin/init.qti.qcv.sh').exists())
+
+    def test_v2_upgrade_requires_remove_and_preserves_legacy_hash_guards(self):
+        for partial in [False,True]:
+            with self.subTest(partial=partial):
+                r=self.fixture();old=ROOT/'tools/bootdiag/legacy-v2'
+                sh=r/'vendor/bin/r8q-bootdiag.sh';sh.write_bytes((old/'bootdiag.sh').read_bytes())
+                if not partial:(r/'vendor/etc/init/r8q-bootdiag.rc').write_bytes((old/'init.rc').read_bytes())
+                self.assertNotEqual(self.execute(r).returncode,0)
+                self.assertEqual(sh.read_bytes(),(old/'bootdiag.sh').read_bytes())
+                self.assertEqual(self.execute(r,'REMOVE').returncode,0);self.assertEqual(self.active(r),[])
+                self.assertEqual(self.execute(r).returncode,0)
 
     def test_documented_init_event_order_starts_capture_before_userdata_wait(self):
         # Bounded ordering model from AOSP init README; does not execute OEM init.

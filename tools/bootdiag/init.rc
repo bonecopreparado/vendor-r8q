@@ -1,4 +1,4 @@
-# v2: the init event precedes userdata waits and deferred property actions.
+# v3: the init event precedes userdata waits and deferred property actions.
 on init
     start vendor.r8q_bootdiag
 

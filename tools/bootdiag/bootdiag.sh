@@ -1,13 +1,52 @@
 #!/system/bin/sh
-# v2: start on init, independent of property actions deferred behind boot waits.
+# v3: bounded regular-file capture on the already-mounted metadata filesystem.
 set -u
-KMSG=/dev/kmsg
-[ -c "$KMSG" ] && [ -w "$KMSG" ] || exit 1
-mark() { printf '<6>[R8QBOOT] %s\n' "$*" > "$KMSG"; }
-mark "BEGIN filtered Android userspace capture v2 (init event)"
-for tool in timeout cut head tr awk dirname basename sleep; do
-    command -v "$tool" >/dev/null 2>&1 || { mark "Missing capture tool: $tool"; exit 0; }
+umask 077
+BASE=/metadata/r8q-bootdiag-v3
+for tool in timeout cut head tr awk dirname basename sleep readlink df stat mkdir mktemp chmod sync; do
+    command -v "$tool" >/dev/null 2>&1 || exit 1
 done
+# Never mount/remount/format metadata or touch existing Android key directories.
+metadata_ready() {
+    [ -d /metadata ] && [ ! -L /metadata ] || return 1
+    row="$(awk '$2=="/metadata" {print $1, $3, $4; n++} END {if(n!=1)exit 1}' /proc/mounts)" || return 1
+    set -- $row
+    [ "$2" = ext4 ] || return 1
+    case ",$3," in *,rw,*) ;; *) return 1;; esac
+    expected="$(readlink -f /dev/block/platform/soc/1d84000.ufshc/by-name/metadata)" || return 1
+    actual="$(readlink -f "$1")" || return 1
+    [ -b "$actual" ] && [ "$actual" = "$expected" ] || return 1
+    free="$(df -Pk /metadata | awk 'NR>1 {n++; v=$4} END {if(n!=1)exit 1; print v}')" || return 1
+    case "$free" in ''|*[!0-9]*) return 1;; esac
+    [ "$free" -ge 12288 ] || return 1
+}
+metadata_ready || exit 1
+if [ -e "$BASE" ] || [ -L "$BASE" ]; then
+    [ -d "$BASE" ] && [ ! -L "$BASE" ] || exit 1
+    [ "$(stat -c '%u:%a' "$BASE")" = 0:700 ] || exit 1
+else
+    mkdir -m 0700 "$BASE" || exit 1
+fi
+# At most four captures, under 2 MiB each; never delete previous evidence.
+captures=0
+for entry in "$BASE"/* "$BASE"/.[!.]* "$BASE"/..?*; do
+    [ -e "$entry" ] || [ -L "$entry" ] || continue
+    [ -d "$entry" ] && [ ! -L "$entry" ] || exit 1
+    case "${entry##*/}" in capture.??????) ;; *) exit 1;; esac
+    captures=$((captures+1))
+done
+[ "$captures" -lt 4 ] || exit 1
+CAPTURE="$(mktemp -d "$BASE/capture.XXXXXX")" || exit 1
+chmod 0700 "$CAPTURE" || exit 1
+LOGFILE=$CAPTURE/boot.log
+# The exclusive new directory prevents following pre-existing log symlinks.
+(set -C; : > "$LOGFILE") || exit 1
+chmod 0600 "$LOGFILE" || exit 1
+exec 9>> "$LOGFILE" || exit 1
+mark() { printf '[R8QBOOT] %s\n' "$*" >&9; }
+flush() { timeout 5 sync "$LOGFILE" >/dev/null 2>&1 || true; }
+mark "BEGIN filtered Android userspace capture v3 (init event; persistent file)"
+flush
 snapshot() {
     mark "PROC snapshot begin"
     count=0
@@ -37,6 +76,7 @@ snapshot() {
         [ "$count" -lt 16 ] || break
     done
     mark "PROC snapshot end" || true
+    flush
 }
 ( sleep 20; snapshot; sleep 40; snapshot ) &
 snapshot_pid=$!
@@ -46,6 +86,7 @@ while [ ! -S /dev/socket/logdr ]; do
     if [ "$attempt" -ge 20 ]; then
         mark "logdr socket unavailable after 20 seconds; retaining process snapshots"
         wait "$snapshot_pid" || true
+        flush
         exit 0
     fi
     sleep 1
@@ -64,5 +105,6 @@ timeout 120 /system/bin/logcat -b main -b system -b crash -v threadtime init:V v
     mark "END filtered capture; lines=$count" || true
 )
 wait "$snapshot_pid" || true
-mark "END capture v2" || true
+mark "END capture v3" || true
+flush
 exit 0

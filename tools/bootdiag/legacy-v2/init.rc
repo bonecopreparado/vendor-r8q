@@ -1,0 +1,11 @@
+# v2: the init event precedes userdata waits and deferred property actions.
+on init
+    start vendor.r8q_bootdiag
+
+service vendor.r8q_bootdiag /system/bin/sh /vendor/bin/r8q-bootdiag.sh
+    class core
+    disabled
+    oneshot
+    user root
+    group root log readproc
+    seclabel u:r:logd:s0

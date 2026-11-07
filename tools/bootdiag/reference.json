@@ -7,5 +7,9 @@
   "previous_payload_sha256": {
     "rc": "07c38bcf03b6abb8e0f8c85fd636143790602674c3b9d0faebf7f59500dd2a12",
     "sh": "aaaf5817917347fec288f0df3f91f8b534565db03f4b037824cddf37d1cb0e1d"
+  },
+  "v2_payload_sha256": {
+    "rc": "7e9ed44033002fd311e51b0647cad0ab68296d297512fb315a6710c2ceffd918",
+    "sh": "175deccca3df76165ce8560d884d8a243ef8909631d7ac6a7045eb827c6df2b8"
   }
 }

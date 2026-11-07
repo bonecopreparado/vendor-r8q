@@ -55,18 +55,18 @@ check_existing() {
     if [ -e "$1" ] || [ -L "$1" ]; then
         [ -f "$1" ] && [ ! -L "$1" ] || abort "Unexpected diagnostic path: $1"
         got="$(sha256sum "$1" | awk '{print $1}')"
-        [ "$got" = "$2" ] || [ "$got" = "$3" ] || abort "Existing file differs; refusing to overwrite/remove: $1"
+        [ "$got" = "$2" ] || [ "$got" = "$3" ] || [ "$got" = "$4" ] || abort "Existing file differs; refusing to overwrite/remove: $1"
     fi
 }
-check_existing "$RC" "@@RC_SHA@@" "@@OLD_RC_SHA@@"
-check_existing "$SH" "@@SH_SHA@@" "@@OLD_SH_SHA@@"
+check_existing "$RC" "@@RC_SHA@@" "@@OLD_RC_SHA@@" "@@V2_RC_SHA@@"
+check_existing "$SH" "@@SH_SHA@@" "@@OLD_SH_SHA@@" "@@V2_SH_SHA@@"
 if [ "$MODE" = enable ]; then
     if [ -f "$RC" ] && [ -f "$SH" ]; then
         if [ "$(sha256sum "$RC" | awk '{print $1}')" = "@@RC_SHA@@" ] &&
            [ "$(sha256sum "$SH" | awk '{print $1}')" = "@@SH_SHA@@" ]; then
-            ui "Boot diagnostics v2 already enabled."; exit 0
+            ui "Boot diagnostics v3 already enabled."; exit 0
         fi
-        abort "Older diagnostic version found. Install V2 REMOVE, then V2 ENABLE."
+        abort "Older diagnostic version found. Install V3 REMOVE, then V3 ENABLE."
     fi
     [ ! -e "$RC" ] && [ ! -e "$SH" ] || abort "Incomplete old diagnostic setup; run REMOVE first."
     WORK="$(mktemp -d /tmp/r8q-bootdiag.XXXXXX)" || abort "Cannot create private temporary directory."
@@ -95,12 +95,13 @@ if [ "$MODE" = enable ]; then
     mv "$STAGE_SH" "$SH"; STAGE_SH=; NEW_SH=1
     mv "$STAGE_RC" "$RC"; STAGE_RC=; NEW_RC=1
     sync || abort "Sync failed; remain in recovery and run REMOVE."
-    ui "R8Q diagnostic logging v2 enabled. This is not a boot fix."
-    ui "Boot System once; after about 3 minutes return to recovery and collect last_kmsg."
+    ui "R8Q diagnostic logging v3 enabled. This is not a boot fix."
+    ui "Boot System once; after 3 minutes return to recovery and collect /metadata/r8q-bootdiag-v3."
 else
     # Preflight above accepts only our exact bytes, including partial setups.
     rm -f "$RC" "$SH"
     sync || abort "Sync failed."
     ui "R8Q diagnostic logging removed."
+    ui "Saved /metadata/r8q-bootdiag-v3 logs were kept for collection."
 fi
 ui "No userdata formatting or partition-image flashing was performed."
