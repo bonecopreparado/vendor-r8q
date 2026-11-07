@@ -1,5 +1,5 @@
-# Temporary read-only Android log mirror; remove with the matching REMOVE ZIP.
-on property:init.svc.logd=running
+# v2: the init event precedes userdata waits and deferred property actions.
+on init
     start vendor.r8q_bootdiag
 
 service vendor.r8q_bootdiag /system/bin/sh /vendor/bin/r8q-bootdiag.sh

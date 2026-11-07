@@ -1,7 +1,7 @@
-name: Build temporary r8q Android boot diagnostic addon
+name: Build r8q Android boot diagnostics v2 with early init start
 on:
   push:
-    branches: [r8q-bootdiag-20261107]
+    branches: [r8q-bootdiag-v2-20261107]
   workflow_dispatch:
 permissions:
   contents: read
@@ -38,11 +38,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BUNDLE: ${{ steps.attest.outputs.bundle-path }}
-          RELEASE_TAG: r8q-bootdiag-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: r8q-bootdiag-v2-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$BUNDLE" delivery/Bootdiag/R8Q-BOOTDIAG.intoto.jsonl
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'R8Q temporary Android boot diagnostics — ENABLE and REMOVE' \
+            --title 'R8Q Android boot diagnostics v2 — early init capture' \
             --notes-file delivery/Bootdiag/README-ENGLISH.txt \
             delivery/Bootdiag/*.zip delivery/Bootdiag/*.sha256 \
             delivery/Bootdiag/README-ENGLISH.txt delivery/Bootdiag/R8Q-BOOTDIAG.intoto.jsonl
