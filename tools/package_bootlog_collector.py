@@ -7,7 +7,7 @@ import hashlib
 from pathlib import Path
 import zipfile
 
-README = """R8Q READ-ONLY PREVIOUS-BOOT LOG COLLECTOR
+README = """R8Q READ-ONLY PREVIOUS-BOOT LOG COLLECTOR v3
 
 This ZIP is a diagnostic tool, not a ROM or a bootloop fix. It does not flash
 partitions, format data, mount partitions, clear logs or change the ROM.
@@ -28,7 +28,9 @@ PHONE-ONLY INSTRUCTIONS
 previous-boot/ is persistent crash evidence if the kernel exposes it.
 current-recovery/ is the current OrangeFox session, not a capture of ROM boot.
 The collector bounds each input and documents missing/truncated files in
-INDEX.txt. Missing pstore/last_kmsg does not prove the previous boot succeeded.
+INDEX.txt. Persistent kernel records retain their last bytes when oversized.
+Command exit status and missing pstore mount are also recorded.
+Missing pstore/last_kmsg does not prove the previous boot succeeded.
 
 If OrangeFox cannot access the phone storage, mount your normal external
 SD/USB using OrangeFox first and run this ZIP again. This tool never mounts it.
@@ -52,7 +54,7 @@ def main() -> None:
             ("README-ENGLISH.txt", README.encode(), 0o644),
             ("LICENSE.txt", (root.parent / "LICENSE").read_bytes(), 0o644),
         ]:
-            info = zipfile.ZipInfo(name, (2026, 11, 2, 0, 0, 0))
+            info = zipfile.ZipInfo(name, (2026, 11, 7, 0, 0, 0))
             info.create_system = 3
             info.external_attr = (0o100000 | mode) << 16
             info.compress_type = zipfile.ZIP_DEFLATED

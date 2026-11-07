@@ -1,7 +1,7 @@
 name: R8Q phone-only previous-boot log collector
 on:
   push:
-    branches: [r8q-bootlog-20261102]
+    branches: [r8q-bootlog-20261102, r8q-audit-20261107]
     paths:
       - tools/bootlog_collector.sh
       - tools/package_bootlog_collector.py

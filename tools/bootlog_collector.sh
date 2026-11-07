@@ -1,5 +1,5 @@
 #!/sbin/sh
-# R8Q read-only previous-boot evidence collector; Android recovery API 3.
+# R8Q read-only previous-boot evidence collector v3; Android recovery API 3.
 # It writes only its output directory/archive. It never mounts or flashes devices.
 set -u
 umask 077
@@ -54,7 +54,8 @@ formats data or writes block devices. No userdata/persist/EFS content is copied.
 Run immediately after a failed boot, returning directly to recovery, before
 restoring another ROM, formatting, or performing another unnecessary reboot.
 Send the completed .tar.gz (or the whole folder if compression is unavailable).
-Each input is bounded; truncated records are explicitly noted below. The output
+Each input is bounded; persistent kernel records keep their LAST bytes so a
+recent crash at the end is retained. Truncated records are noted below. The output
 contains device/build/boot-reason properties, not the complete property list.
 
 EOF
@@ -63,14 +64,20 @@ copy_bounded() {
     source=$1
     destination=$2
     limit=$3
+    selection=${4:-first}
     printf 'INPUT %s -> %s (maximum %s bytes): ' "$source" "$destination" "$limit" >> "$INDEX"
     if [ ! -r "$source" ]; then
         printf 'missing or unreadable\n' >> "$INDEX"
         return
     fi
-    if head -c "$limit" "$source" > "$DIR/$destination" 2> "$DIR/read-error.tmp"; then
+    if [ "$selection" = last ]; then
+        reader=tail
+    else
+        reader=head
+    fi
+    if "$reader" -c "$limit" "$source" > "$DIR/$destination" 2> "$DIR/read-error.tmp"; then
         count=$(wc -c < "$DIR/$destination")
-        printf 'read %s bytes' "$count" >> "$INDEX"
+        printf 'read %s bytes (%s bytes retained)' "$count" "$selection" >> "$INDEX"
         if [ "$count" -ge "$limit" ]; then
             printf ' (limit reached; may be truncated)' >> "$INDEX"
         fi
@@ -82,6 +89,11 @@ copy_bounded() {
 }
 ui_print "R8Q read-only boot evidence collector"
 ui_print "Reading persistent records; ROM partitions are not changed."
+if is_mounted /sys/fs/pstore; then
+    printf 'PSTORE filesystem: mounted.\n' >> "$INDEX"
+else
+    printf 'PSTORE filesystem: not mounted at /sys/fs/pstore; this collector does not mount it. No records here cannot rule out a crash.\n' >> "$INDEX"
+fi
 n=0
 for record in /sys/fs/pstore/*; do
     [ -f "$record" ] || continue
@@ -90,10 +102,10 @@ for record in /sys/fs/pstore/*; do
         break
     fi
     n=$((n + 1))
-    copy_bounded "$record" "previous-boot/pstore-$n.log" 2097152
+    copy_bounded "$record" "previous-boot/pstore-$n.log" 2097152 last
 done
 printf 'PSTORE regular files selected: %s\n' "$n" >> "$INDEX"
-copy_bounded /proc/last_kmsg previous-boot/last_kmsg.log 4194304
+copy_bounded /proc/last_kmsg previous-boot/last_kmsg.log 4194304 last
 for name in reset_reason reset_reason_extra_info reset_reason_extra_info_B reset_reason_extra_info_C reset_reason_extra_info_M reset_reason_extra_info_P; do
     copy_bounded "/proc/$name" "previous-boot/$name.txt" 65536
 done
@@ -112,8 +124,30 @@ capture() {
     destination=$1
     shift
     if command -v timeout >/dev/null 2>&1; then
-        timeout 10 "$@" 2>&1 | head -c 1048576 > "$DIR/current-recovery/$destination"
-        printf 'CURRENT command: %s; bounded to 10 seconds / 1048576 bytes.\n' "$*" >> "$INDEX"
+        # The pipeline status alone is head's status, even when timeout or the
+        # command failed. Keep the producer status separately, with bounded data.
+        status_file=$DIR/current-recovery/$destination.status
+        (
+            timeout 10 "$@"
+            result=$?
+            printf '%s\n' "$result" > "$status_file"
+        ) 2>&1 | head -c 1048576 > "$DIR/current-recovery/$destination"
+        consumer_status=$?
+        if [ -s "$status_file" ]; then
+            producer_status=$(cat "$status_file")
+        else
+            producer_status=unavailable
+        fi
+        count=$(wc -c < "$DIR/current-recovery/$destination")
+        printf 'CURRENT command: %s; exit=%s; output-reader=%s; read=%s bytes; bounded to 10 seconds / 1048576 bytes.\n' "$*" "$producer_status" "$consumer_status" "$count" >> "$INDEX"
+        case "$producer_status" in
+            0) ;;
+            124|137) printf 'CURRENT command timed out or was killed; output may be partial.\n' >> "$INDEX" ;;
+            *) printf 'CURRENT command failed or output limit closed its pipe; output may be partial.\n' >> "$INDEX" ;;
+        esac
+        if [ "$count" -ge 1048576 ]; then
+            printf 'CURRENT command output limit reached; later bytes may be omitted.\n' >> "$INDEX"
+        fi
     else
         printf 'SKIPPED current command (timeout unavailable): %s\n' "$*" >> "$INDEX"
     fi

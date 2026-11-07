@@ -18,7 +18,7 @@ PACKAGER = ROOT / "tools/package_bootlog_collector.py"
 
 
 class CollectorTests(unittest.TestCase):
-    def run_fixture(self, base: Path, *, storage: str, large: bool = False, missing_tools: bool = False):
+    def run_fixture(self, base: Path, *, storage: str, large: bool = False, missing_tools: bool = False, commands: dict | None = None, pstore_mounted: bool = False):
         paths = ["external_sd", "usb_otg", "storage/sdcard1", "storage/usb", "data", "sdcard", "tmp", "proc", "sys/fs/pstore", "bin"]
         for path in paths:
             (base / path).mkdir(parents=True, exist_ok=True)
@@ -27,12 +27,14 @@ class CollectorTests(unittest.TestCase):
             mounts.append(f"/dev/fake {base}/external_sd exfat rw 0 0\n")
         elif storage == "internal":
             mounts.append(f"/dev/fake {base}/data f2fs rw 0 0\n")
+        if pstore_mounted:
+            mounts.append(f"pstore {base}/sys/fs/pstore pstore rw 0 0\n")
         (base / "proc/mounts").write_text("".join(mounts))
         for name in ["cmdline", "version", "uptime", "reset_reason"]:
             (base / "proc" / name).write_text(f"fixture-{name}\n")
-        (base / "proc/last_kmsg").write_bytes(b"K" * (4194404 if large else 15))
+        (base / "proc/last_kmsg").write_bytes(b"K" * (4194404 if large else 15) + b"LATEST KERNEL CRASH\n")
         for i in range(9):
-            (base / f"sys/fs/pstore/console-ramoops-{i}").write_bytes(b"P" * (2097252 if large and i == 0 else 30))
+            (base / f"sys/fs/pstore/console-ramoops-{i}").write_bytes(b"P" * (2097252 if large and i == 0 else 30) + b"LATEST PSTORE CRASH\n")
         (base / "tmp/recovery.log").write_text("CURRENT RECOVERY\n")
         protected = base / "block-target-do-not-change"
         protected.write_bytes(b"NOT A LOG: NEVER WRITE")
@@ -42,6 +44,7 @@ class CollectorTests(unittest.TestCase):
             "getprop": "printf 'fixture-property\\n'\n",
             "dmesg": "printf 'CURRENT RECOVERY KERNEL\\n'\n",
             "logcat": "printf 'CURRENT RECOVERY LOGCAT\\n'\n",
+            **(commands or {}),
         }.items():
             p = base / "bin" / name
             p.write_text("#!/bin/sh\n" + body)
@@ -85,6 +88,8 @@ class CollectorTests(unittest.TestCase):
                 entries = {m.name.split("/", 1)[1]: m for m in tar.getmembers() if "/" in m.name}
                 self.assertEqual(entries["previous-boot/last_kmsg.log"].size, 4194304)
                 self.assertEqual(entries["previous-boot/pstore-1.log"].size, 2097152)
+                self.assertTrue(tar.extractfile(entries["previous-boot/last_kmsg.log"]).read().endswith(b"LATEST KERNEL CRASH\n"))
+                self.assertTrue(tar.extractfile(entries["previous-boot/pstore-1.log"]).read().endswith(b"LATEST PSTORE CRASH\n"))
                 self.assertEqual(len([n for n in entries if "pstore-" in n]), 8)
                 index = tar.extractfile(entries["INDEX.txt"]).read().decode()
                 self.assertIn("may be truncated", index)
@@ -117,6 +122,36 @@ class CollectorTests(unittest.TestCase):
             self.assertIn("SKIPPED current command (timeout unavailable): logcat", index)
             self.assertTrue((folder / "previous-boot/last_kmsg.log").exists())
             self.assertFalse((folder / "current-recovery/dmesg.log").exists())
+
+    def test_failed_current_command_is_reported_without_discarding_previous_boot(self):
+        with tempfile.TemporaryDirectory() as temp:
+            archive, _ = self.run_fixture(Path(temp), storage="external", commands={"dmesg": "printf 'denied\\n'\nexit 7\n"})
+            with tarfile.open(archive, "r:gz") as tar:
+                entries = {m.name.split("/", 1)[1]: m for m in tar.getmembers() if "/" in m.name}
+                index = tar.extractfile(entries["INDEX.txt"]).read().decode()
+                self.assertIn("CURRENT command: dmesg; exit=7;", index)
+                self.assertIn("failed or output limit closed its pipe", index)
+                self.assertTrue(tar.extractfile(entries["previous-boot/last_kmsg.log"]).read().endswith(b"LATEST KERNEL CRASH\n"))
+
+    def test_timeout_exit_is_recorded_and_pstore_mount_is_identified(self):
+        with tempfile.TemporaryDirectory() as temp:
+            archive, _ = self.run_fixture(Path(temp), storage="external", commands={"timeout": "printf 'partial output\\n'\nexit 124\n"}, pstore_mounted=True)
+            with tarfile.open(archive, "r:gz") as tar:
+                index_entry = next(m for m in tar.getmembers() if m.name.endswith("/INDEX.txt"))
+                index = tar.extractfile(index_entry).read().decode()
+                self.assertIn("CURRENT command: dmesg; exit=124;", index)
+                self.assertIn("timed out or was killed", index)
+                self.assertIn("PSTORE filesystem: mounted.", index)
+
+    def test_oversized_current_output_is_bounded_and_recorded(self):
+        with tempfile.TemporaryDirectory() as temp:
+            archive, _ = self.run_fixture(Path(temp), storage="external", commands={"dmesg": "head -c 2097152 /dev/zero\n"})
+            with tarfile.open(archive, "r:gz") as tar:
+                entries = {m.name.split("/", 1)[1]: m for m in tar.getmembers() if "/" in m.name}
+                self.assertEqual(entries["current-recovery/dmesg.log"].size, 1048576)
+                index = tar.extractfile(entries["INDEX.txt"]).read().decode()
+                self.assertIn("CURRENT command output limit reached", index)
+                self.assertIn("PSTORE filesystem: not mounted", index)
 
     def test_recovery_zip_has_executable_entrypoint_and_no_rom_payload(self):
         with tempfile.TemporaryDirectory() as temp:
