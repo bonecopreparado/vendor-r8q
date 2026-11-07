@@ -1,0 +1,55 @@
+name: Build temporary r8q Android boot diagnostic addon
+on:
+  push:
+    branches: [r8q-bootdiag-20261107]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install real recovery-compatible shell
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+      - name: Verify guards, rollback, removal, labels and bounded log mirroring
+        run: |
+          /bin/mksh -n tools/bootdiag/installer.sh
+          /bin/mksh -n tools/bootdiag/bootdiag.sh
+          python3 -m unittest discover -s ci-r8q/tests -p test_bootdiag.py -v
+          python3 tools/package_bootdiag.py
+      - name: Attest both exact diagnostic ZIPs
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: delivery/Bootdiag/*.zip
+      - name: Publish ready diagnostic enable and remove ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          RELEASE_TAG: r8q-bootdiag-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$BUNDLE" delivery/Bootdiag/R8Q-BOOTDIAG.intoto.jsonl
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'R8Q temporary Android boot diagnostics — ENABLE and REMOVE' \
+            --notes-file delivery/Bootdiag/README-ENGLISH.txt \
+            delivery/Bootdiag/*.zip delivery/Bootdiag/*.sha256 \
+            delivery/Bootdiag/README-ENGLISH.txt delivery/Bootdiag/R8Q-BOOTDIAG.intoto.jsonl
+      - name: Retain small diagnostic build outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-BOOTDIAG-ADDON-BUILD
+          path: delivery/Bootdiag/
+          retention-days: 30

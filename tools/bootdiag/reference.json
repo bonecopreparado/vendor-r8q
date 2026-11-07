@@ -1,0 +1,7 @@
+{
+  "vendor_init_qcom_sha256": "9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea",
+  "source_run": 42413135313,
+  "source_report": "reports/p1/ci-build/vendor-build.json",
+  "path": "/etc/init/hw/init.qcom.rc",
+  "source_rom_sha256": "da979bf387771b09e103864548e090ccb40f1624fd038cf76a9317b96a221f80"
+}
