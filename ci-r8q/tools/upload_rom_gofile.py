@@ -60,8 +60,11 @@ def main():
         run=subprocess.run(['curl','--config',str(config),'--silent','--show-error','--fail',
                             '--connect-timeout','30','--max-time','2400','--speed-time','120',
                             '--retry','2','--retry-delay','5','--retry-max-time','2400',
-                            '--speed-limit','1024','--output',str(raw)],capture_output=True,timeout=2410)
-        if run.returncode:raise RuntimeError('Streaming GoFile upload failed (curl exit '+str(run.returncode)+')')
+                            '--speed-limit','1024','--write-out','%{http_code}','--output',str(raw)],capture_output=True,timeout=2410)
+        if run.returncode:
+            status=getattr(run,'stdout',b'').decode('ascii',errors='ignore').strip()
+            status=status if re.fullmatch(r'[0-9]{3}',status) else 'unknown'
+            raise RuntimeError('Streaming GoFile upload failed (curl exit '+str(run.returncode)+', HTTP '+status+')')
         if raw.stat().st_size>1024**2:raise ValueError('GoFile response exceeds the expected bound')
         result=public_result(json.loads(raw.read_text()),path,before)
     if identities(path)!=before:raise ValueError('The local ZIP changed during upload')

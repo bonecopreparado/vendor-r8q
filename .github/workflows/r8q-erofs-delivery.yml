@@ -1,0 +1,97 @@
+name: Deliver preserved EROFS-COMPAT ZIP without rebuilding
+on:
+  push:
+    branches: [r8q-erofs-delivery-20261107]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  deliver:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      SOURCE_RUN_ID: '42413135313'
+      EXPECTED_SHA256: da979bf387771b09e103864548e090ccb40f1624fd038cf76a9317b96a221f80
+      EXPECTED_BYTES: '5387781650'
+      ZIP_NAME: HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Test upload handling
+        run: python3 -m unittest discover -s ci-r8q/tests -p 'test_rom_*upload*.py' -v
+      - name: Recover the already verified ZIP from the original run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # One-time recovery while the original one-day artifact exists.
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name P1r2-VERIFIED-ROM-DELIVERY-RETRY-NOT-DIRECT-FLASH --dir input
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,shutil
+          found=list(Path('input').rglob(os.environ['ZIP_NAME']))
+          assert len(found)==1 and found[0].is_file() and not found[0].is_symlink()
+          p=found[0]
+          assert p.stat().st_size==int(os.environ['EXPECTED_BYTES'])
+          with p.open('rb') as f:sha=hashlib.file_digest(f,'sha256').hexdigest()
+          assert sha==os.environ['EXPECTED_SHA256']
+          reports=list(Path('input').rglob('P1-SINGLE-build-report.json'))
+          assert len(reports)==1
+          r=json.loads(reports[0].read_text())
+          assert r['sha256']==sha and r['bytes']==p.stat().st_size
+          assert r['native_host_readback'] and r['native_arm64_readback'] and not r['boot_confirmed']
+          out=Path('output');out.mkdir()
+          shutil.move(str(p),out/p.name)
+          for name in ('P1-SINGLE-build-report.json','P1-TESTER-ENGLISH.txt',os.environ['ZIP_NAME']+'.sha256'):
+              entries=list(Path('input').rglob(name));assert len(entries)==1
+              shutil.copy2(entries[0],out/name)
+          d=dict(source_run=os.environ['SOURCE_RUN_ID'],source_commit='eff9b377466d669e2edabba74be08690d2f8ad4f',
+                 bytes=r['bytes'],sha256=sha,rom_rebuilt=False,boot_confirmed=False,
+                 original_attestation='https://github.com/bonecopreparado/vendor-r8q/attestations/64920684')
+          (out/'delivery-provenance.json').write_text(json.dumps(d,indent=2)+'\n')
+          print('Preserved exact verified ZIP:',sha)
+          PY
+      - name: Upload recovered ZIP to GoFile
+        env:
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+        run: python3 ci-r8q/tools/upload_rom_gofile.py "output/$ZIP_NAME" --result output/gofile-rom.json
+      - name: Publish recovered delivery and original build evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: p1r2-erofs-experimental-delivery-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          r=json.loads(Path('output/gofile-rom.json').read_text())
+          text=('EROFS-COMPAT experimental candidate for r8q. Device boot remains unconfirmed.\n\n'
+                'Fixes the EROFS inline symlink boundary condition reproduced at /system/lib64/libc.so, '
+                'NID 32610047, before the observed boringssl-self-check-failed reboot. '
+                'The stock system SHA and offending inode were reproduced before rebuilding all three EROFS partitions '
+                'with plain symlink target blocks and verifying original target bytes/metadata. '
+                'BoringSSL tests remain enabled. Kernel, boot and dtbo are unchanged. Other boot blockers may remain.\n\n'
+                '[Download the ONE complete recovery ZIP]('+r['download_page']+')\n\n'
+                'Size: '+str(r['size'])+' bytes. SHA256: '+r['sha256']+'.\n\n'
+                'Installer banner: EROFS-COMPAT revision. The filename retains P1r2; use this digest/release to identify it.\n\n'
+                '[Original build and all readbacks](https://github.com/bonecopreparado/vendor-r8q/actions/runs/42413135313) · '
+                '[Original ZIP attestation](https://github.com/bonecopreparado/vendor-r8q/attestations/64920684)\n\n'
+                'This workflow only recovers and uploads the exact already verified ZIP after an HTTP upload failure. '
+                'It does not rebuild the ROM. Known host VINTF/kernel/FCM/HAL findings remain.\n\n'
+                +Path('output/P1-TESTER-ENGLISH.txt').read_text())
+          Path('output/RELEASE-NOTES.md').write_text(text)
+          PY
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'P1r2 EROFS-COMPAT — complete experimental recovery ZIP' --notes-file output/RELEASE-NOTES.md \
+            "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json output/gofile-rom.json output/delivery-provenance.json
+      - name: Save small delivery evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: EROFS-COMPAT-DELIVERY-METADATA-NOT-FLASHABLE
+          path: |
+            output/*.json
+            output/*.txt
+            output/*.sha256
+          if-no-files-found: warn
+          retention-days: 30
