@@ -1,0 +1,123 @@
+{
+  "status": "ALL_FINAL_PAYLOADS_RUNTIME_READ_BACK_NOT_BOOT_TESTED",
+  "file": "HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip",
+  "bytes": 5387781650,
+  "sha256": "da979bf387771b09e103864548e090ccb40f1624fd038cf76a9317b96a221f80",
+  "helper_sha256": "eb2f24cbb6ca3bf62170ac2b82b7e41e75e63c8bc5709d5b00c895809675d344",
+  "elf_machine": 183,
+  "emulator": true,
+  "chunks": [
+    {
+      "name": "super-000.gz",
+      "bytes": 490107898,
+      "sha256": "2d21b20530f5ce4956eb361c75466b808664ffebbf694868bb9f195aec07b01b"
+    },
+    {
+      "name": "super-001.gz",
+      "bytes": 418031056,
+      "sha256": "e722d46b2b47e391c0f3d2aaee6da6b1476a3b2bd2500ed1ebba0c834b956b07"
+    },
+    {
+      "name": "super-002.gz",
+      "bytes": 346078139,
+      "sha256": "745a0ee82d591843052f120951e02cf0513fba7848e1ad12c7acd617120528fd"
+    },
+    {
+      "name": "super-003.gz",
+      "bytes": 300938203,
+      "sha256": "bd58a9c4e072612df52ac8d6168d7ac74c159805f7532e659fc3426402bec4b9"
+    },
+    {
+      "name": "super-004.gz",
+      "bytes": 299977576,
+      "sha256": "dfd6aa146d70c32e11ced86b69f907fd9c3c9b362b44382c898ea8b5c9a830ce"
+    },
+    {
+      "name": "super-005.gz",
+      "bytes": 437237698,
+      "sha256": "2f3c214aaa9a1b0b33330157f34f7eccdc0e7fe1168a776a5ff3a40299517aa9"
+    },
+    {
+      "name": "super-006.gz",
+      "bytes": 462639248,
+      "sha256": "ced21cab7dd5de1ae94a1c640fcbd919f0e3eeec6986aa407b2ad5e586269f84"
+    },
+    {
+      "name": "super-007.gz",
+      "bytes": 472902272,
+      "sha256": "e8dc74676fe6c57a69ee2f0ea5e4ab53790ec5d36128dc11c00367c14147c437"
+    },
+    {
+      "name": "super-008.gz",
+      "bytes": 450511284,
+      "sha256": "c28f99396f4b6d61a31fd210f07873c4772ee9f2846b19d5710f59c0d4f64ee3"
+    },
+    {
+      "name": "super-009.gz",
+      "bytes": 491372268,
+      "sha256": "3def8cc6c3fca32a5a2f59e93b75a59470024b2ef1615c06c0bae5373f1c5ecb"
+    },
+    {
+      "name": "super-010.gz",
+      "bytes": 473065865,
+      "sha256": "1978fdac003ff08ec35a44975230f05c1ba7def516dea40f753a5889b95d125a"
+    },
+    {
+      "name": "super-011.gz",
+      "bytes": 410336845,
+      "sha256": "190754b80762f2345cc1583352fbfd8e99300c199da5f54b99e6feaaad07576b"
+    },
+    {
+      "name": "super-012.gz",
+      "bytes": 300416166,
+      "sha256": "68f1f061cbdeb936a5517bf09a850736c9ebdc09866eb1967f1ed984ca0da265"
+    },
+    {
+      "name": "super-013.gz",
+      "bytes": 2342754,
+      "sha256": "1aeeb5ab45375bccf7ad8a2c97b7fa23aecfb1457759d644e76ddfce1e52b444"
+    },
+    {
+      "name": "super-014.gz",
+      "bytes": 2342754,
+      "sha256": "1aeeb5ab45375bccf7ad8a2c97b7fa23aecfb1457759d644e76ddfce1e52b444"
+    },
+    {
+      "name": "super-015.gz",
+      "bytes": 2342754,
+      "sha256": "1aeeb5ab45375bccf7ad8a2c97b7fa23aecfb1457759d644e76ddfce1e52b444"
+    },
+    {
+      "name": "super-016.gz",
+      "bytes": 2342754,
+      "sha256": "1aeeb5ab45375bccf7ad8a2c97b7fa23aecfb1457759d644e76ddfce1e52b444"
+    },
+    {
+      "name": "super-017.gz",
+      "bytes": 2342754,
+      "sha256": "1aeeb5ab45375bccf7ad8a2c97b7fa23aecfb1457759d644e76ddfce1e52b444"
+    },
+    {
+      "name": "super-018.gz",
+      "bytes": 2342754,
+      "sha256": "1aeeb5ab45375bccf7ad8a2c97b7fa23aecfb1457759d644e76ddfce1e52b444"
+    },
+    {
+      "name": "super-019.gz",
+      "bytes": 402679,
+      "sha256": "e1e38657c08ffa4d64cca30e19a4ab2894dba4ada6a7ad4f8a754ae744a24e41"
+    },
+    {
+      "name": "boot-000.gz",
+      "bytes": 16750781,
+      "sha256": "afd70936f58d7e31d5ba198083ff6ce204219a1c218bd4f6ef0c3c8e09e2f154"
+    },
+    {
+      "name": "dtbo-000.gz",
+      "bytes": 1119703,
+      "sha256": "e34a7c4b18af445ac8d5877c1f956751354654b4aad730927ee56ca750f0acf0"
+    }
+  ],
+  "physical_writes": false,
+  "boot_confirmed": false
+}

@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/erofs/erofs-utils",
+  "commit": "3689cbc2349bff05807d2f939146e92eb1bfaea1",
+  "original_inode_sha256": "7423597551f0ad7e63d1fdd359aa44fffb29c63022c63dfde12fd39f54c5ffc0",
+  "patched_inode_sha256": "baca48fd845293c6c1a4f81d40e394e8f7e7c791433fcb8b1ea2516d1614e2a2",
+  "policy": "All symlinks use existing FLAT_PLAIN data blocks; no target/xattr/ownership changes",
+  "device_boot_test": false,
+  "mkfs_sha256": "bc912fd1f628ffd910f0a71c5738207cf63a4ae641c82d68c02f69d01690ba9b"
+}

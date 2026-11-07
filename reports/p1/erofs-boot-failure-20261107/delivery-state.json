@@ -1,0 +1,14 @@
+{
+  "name": "HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip",
+  "size": 5387781650,
+  "sha256": "da979bf387771b09e103864548e090ccb40f1624fd038cf76a9317b96a221f80",
+  "download_page": "https://gofile.io/d/VqaKUFUB",
+  "remote_size_checked": true,
+  "remote_md5_checked": true,
+  "status": "EXPERIMENTAL_P1_NOT_BOOT_CONFIRMED",
+  "source_run": 42413135313,
+  "delivery_run": 42415335939,
+  "source_commit": "eff9b377466d669e2edabba74be08690d2f8ad4f",
+  "release_url": "https://github.com/bonecopreparado/vendor-r8q/releases/tag/p1r2-erofs-experimental-delivery-1-1",
+  "boot_confirmed": false
+}
