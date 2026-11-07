@@ -112,7 +112,7 @@ jobs:
           from pathlib import Path
           r=json.loads(Path('output/gofile-rom.json').read_text())
           notes=('P1r2 installer revision for S20 FE Snapdragon r8q G781B/G780G. Boot and hardware remain unconfirmed.\n\n'
-                 'Retains the P1r2 images and optional-mapping experiment. Fixes mksh temporary-file creation when the inherited TMPDIR is missing or invalid, observed during ADB sideload. The installer pins TMPDIR to its validated private /tmp directory before here-documents. No new causal Android boot fix has been established. Boot/kernel/dtbo are unchanged.\n\n'
+                 'Retains the P1r2 images and optional-mapping experiment. Fixes mksh temporary-file creation when the inherited TMPDIR is missing or invalid, observed during ADB sideload. The installer pins TMPDIR to its validated private /tmp directory and writes the payload table with printf, removing the failing here-document step. No new causal Android boot fix has been established. Boot/kernel/dtbo are unchanged.\n\n'
                  '[Download the ONE complete recovery ZIP]('+r['download_page']+')\n\n'
                  'Size: '+str(r['size'])+' bytes. SHA256: `'+r['sha256']+'`.\n\n'
                  'No payload folder, PC or installer generation is needed. Keep the ZIP compressed; use internal storage or exFAT because it exceeds 4 GiB.\n\n'

@@ -68,6 +68,13 @@ ui_print "Single ZIP: native 64-bit stored-member reader is ready."
     s=s[:start]+'# All member data resides in the local ZIP protected by the mount guard above.\n'+s[end:]
     s=s.replace('ui_print "P0 gravada e hashes de retorno conferidos."',
                 'ui_print "'+build_label+' written; every readback hash matched. Boot remains unconfirmed."')
+    # Avoid mksh's here-document backing-file creation in recovery entirely.
+    # Payload rows are generated from validated canonical names/numbers/hashes.
+    s=replace_once(s,'''cat > "$WORK/payload.rows" <<'P0R7_PAYLOAD_ROWS'
+@@PAYLOAD_ROWS@@
+P0R7_PAYLOAD_ROWS
+''',"""printf '%s\\n' '@@PAYLOAD_ROWS@@' > "$WORK/payload.rows"
+""")
     if 'PAYLOAD_DIR' in s:raise ValueError('External payload dependency remains')
     return s
 
