@@ -1,0 +1,43 @@
+R8Q P1r2 — TODAY'S TEST AND FAILED-BOOT CAPTURE
+
+The current P1r2 flashes but has not booted in the reported device tests.
+The newly published small ZIP is a diagnostic collector, not a new ROM.
+
+IF THE PHONE HAS JUST FAILED TO BOOT:
+Skip installation/preparation and capture NOW, before restoring or formatting.
+
+CAPTURE
+1. Return directly to OrangeFox after one failed ROM boot. Avoid extra Android
+   boots or recovery restarts before capture.
+2. Download and run this ZIP in OrangeFox > Install:
+   https://github.com/bonecopreparado/vendor-r8q/releases/download/r8q-bootlog-collector-3-1/R8Q-BOOTLOG-COLLECTOR.zip
+3. Keep it compressed. Size: 5459 bytes.
+   SHA256: 72c8da73da080c24324eb755076ad2710ff4634fdb36650753893a3e03a034af
+   Verify against the .sha256 asset with a SHA256-capable phone file manager.
+4. Send the generated R8Q-BOOTLOGS-....tar.gz at the path printed on screen.
+   Do not send the collector ZIP itself.
+5. If output is in /tmp, copy it OUT before reboot. Copy internal-storage output
+   out before Format Data or restoration. If compression fails, send the folder.
+6. Also send model, recovery version, exact ROM filename, installation result,
+   whether recovery was restarted after flash, whether Format Data was done,
+   and the last visible screen/time until restart (short video if possible).
+
+PREPARING A NEW CLEAN ROM TEST
+- Confirm SM-G780G or SM-G781B Snapdragon and the exact OrangeFox build.
+  The latest submitted recovery log identifies R11.3, not R12.0_1.
+- Keep backups and a working restoration ROM OUTSIDE internal storage.
+  Format Data erases internal storage, including /sdcard/Fox/BACKUPS.
+- Use at least 50% battery and reliable storage. The ROM exceeds FAT32's
+  per-file limit; use supported internal/exFAT/USB storage.
+- Follow the P1r2 ROM instructions, verify the complete ROM ZIP SHA256, reboot
+  TO RECOVERY once after successful flash to refresh logical mappings, and
+  perform the documented clean-data preparation only with external backups.
+  Cache/Dalvik wipe is different from Format Data.
+- If flashing fails, save recovery.log and stop; do not boot a partial flash.
+- After a failed boot, use CAPTURE above before doing anything else.
+
+Current ROM release and original installation instructions:
+https://github.com/bonecopreparado/vendor-r8q/releases/tag/p1r2-single-experimental-1-1
+
+The archive may contain identifiers and log data; send it privately.
+Missing pstore/last_kmsg does not prove a successful boot.
