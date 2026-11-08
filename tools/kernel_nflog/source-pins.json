@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/Lazy-Encrypted/not_samsung.sm8250-4.19",
+  "commit": "a1182f3932cfefaa9f262135290ecf58bd19c6aa",
+  "observed_release": "4.19.325-st11-rc-not:A.06@a1182f39",
+  "files": {
+    "include/net/netfilter/nf_log.h": {
+      "sha256": "30cdbbc32819b02850ff2d758dcc7979a1cf915ad2f9534962bc5088ce5a4427",
+      "git_blob_sha1": "e4f26d179099528e49d4713ba9b6b1272e0774f7",
+      "bytes": 4321
+    },
+    "net/netfilter/Makefile": {
+      "sha256": "b1c08ea1e7249eef6d9aa9e5e3d065e6d6b02c01511a839d28f1a75bbe206d30",
+      "git_blob_sha1": "c6dda8bbef46431f76dbcf5807dae2fd5f9e8611",
+      "bytes": 9437
+    },
+    "net/netfilter/nf_internals.h": {
+      "sha256": "b21b460feb05fd86e1785087801fd61e8adba4160a4a69edbebbbb64199944fa",
+      "git_blob_sha1": "bb4e08c2d34bd45b37be7c9d4adee3c2cc6e80ab",
+      "bytes": 977
+    }
+  },
+  "toolchain_candidate": {
+    "official_repository": "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86",
+    "mirror_repository": "https://github.com/msft-mirror-aosp/platform.prebuilts.clang.host.linux-x86",
+    "commit": "5a1f5d58aa30f70047f18cf5fc077a3dd391589c",
+    "directory": "clang-r522817",
+    "android_build_id": "11889484",
+    "version": "18.0.1",
+    "clang_18_git_blob_sha1": "5f9bb95cd5b0c3c7ff9f7579af87b54ed4395190",
+    "clang_18_bytes": 135214616,
+    "executable_sha256": "NOT_MEASURED_DOWNLOAD_REQUIRED"
+  },
+  "required_builtin_config": [
+    "CONFIG_NETFILTER_NETLINK",
+    "CONFIG_NETFILTER_NETLINK_LOG",
+    "CONFIG_NETFILTER_XT_TARGET_NFLOG"
+  ],
+  "shipped_config_sha256": "ce4b98d368058f4d5fd2c5c3380d53813a10f57c72544838548c61759bceab4a",
+  "shipped_kernel_sha256": "d64c9c8856b7a30acb0fcc262d931f48a062a2077fcd9357a1974667aa37880e",
+  "shipped_boot_sha256": "4283ccbecbf3087bbd520dce1e50e5e449b1f70c4d959e8ee7f24b3ebfde9301",
+  "input_audit_run": 42430975057,
+  "reproducibility_status": "BLOCKED_MISSING_PINNED_KERNELSU_INTEGRATION",
+  "build_blockers": [
+    "The shipped kernel enables KernelSU/SUSFS, but the exact base commit and its supplied build recipes do not identify the external KernelSU source/setup commit. Do not remove these config options or use a moving branch."
+  ],
+  "observed_kernel_su": {
+    "version": 33333,
+    "branch": "susfs-rksu-master",
+    "susfs_version": "v2.0.0",
+    "exact_source_commit": "UNKNOWN"
+  }
+}

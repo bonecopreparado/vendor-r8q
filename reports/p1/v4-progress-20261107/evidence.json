@@ -1,0 +1,43 @@
+{
+  "private_inputs": [
+    {
+      "kind": "last_kmsg",
+      "bytes": 2097136,
+      "sha256": "6d848cb4c8156c12fd80912f3aee68aa7bced3039dcb2d8ec7f10ea6019f4b2d"
+    },
+    {
+      "kind": "ueventd-aplicado.rc",
+      "bytes": 150,
+      "sha256": "a62d17938582b2205610749a6ede6989b173aa08e6e995ebefc1ff7339ee21b8"
+    },
+    {
+      "kind": "recovery.log",
+      "bytes": 53155,
+      "sha256": "7e30e0e278512111e26aed2b0a7974b3ff2ea3756f8f0ad0429a71ff209a5077"
+    },
+    {
+      "kind": "capture.N9PDXU",
+      "bytes": 208424,
+      "sha256": "e220a0010d3c7da6f54685d9feaa827411dc84da47902bba7e5ac1827140ea0a"
+    },
+    {
+      "kind": "capture.wh7rSp",
+      "bytes": 150688,
+      "sha256": "b64a9abd3a23b73c0a1c478cf235ec39e26864ef430025fb0a4cb3c7f9d40215"
+    },
+    {
+      "kind": "capture.s9h2B9",
+      "bytes": 228984,
+      "sha256": "403144fd352d6aa303037c9006da54cd7d3585b5d32ed035e5e392219c3bb342"
+    }
+  ],
+  "raw_logs_published": false,
+  "bridge_matches_reviewed_payload": true,
+  "previous_keymaster_blocker_cleared": true,
+  "surfaceflinger_mode_abort_observed": true,
+  "netd_nflog_failure_observed": true,
+  "hardware_boot_confirmed": false,
+  "shipped_kernel_audit_run": 42430975057,
+  "kernel_build_ready": false,
+  "kernel_build_dependency": "Exact external KernelSU integration provenance; canonical repository newly supplied for inspection"
+}

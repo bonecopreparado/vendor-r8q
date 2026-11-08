@@ -1,0 +1,57 @@
+{
+  "status": "EXACT_SHIPPED_BOOT_REPRODUCED_IKCONFIG_EXTRACTED",
+  "source_zip_sha256": "d8db5aa65498718a00d55f01e8f7965a4a7918864452be69b483cc48d68674db",
+  "source_boot_sha256": "fcfa630fee3214fa3db41a3fc81588c8172376d5c74d765a8d6630e9fc0f7361",
+  "shipped_boot_sha256": "4283ccbecbf3087bbd520dce1e50e5e449b1f70c4d959e8ee7f24b3ebfde9301",
+  "boot_bytes": 67108864,
+  "kernel_bytes": 37652496,
+  "kernel_sha256": "d64c9c8856b7a30acb0fcc262d931f48a062a2077fcd9357a1974667aa37880e",
+  "kernel_prefix_hex": "00007e1400000000000008000000000000d02703000000000a00000000000000",
+  "config_encoding": "raw",
+  "config_offset": 28781592,
+  "config_sha256": "ce4b98d368058f4d5fd2c5c3380d53813a10f57c72544838548c61759bceab4a",
+  "selected_options": {
+    "CONFIG_LOCALVERSION": "\"-not:A.06\"",
+    "CONFIG_LOCALVERSION_AUTO": "y",
+    "CONFIG_LOCALVERSION_SHA": "y",
+    "CONFIG_IKCONFIG": "y",
+    "CONFIG_IKCONFIG_PROC": "y",
+    "CONFIG_MODULES_USE_ELF_RELA": "y",
+    "CONFIG_MODULES": "n",
+    "CONFIG_MODULES_TREE_LOOKUP": "y",
+    "CONFIG_NETFILTER_NETLINK": "y",
+    "CONFIG_NETFILTER_NETLINK_ACCT": "n",
+    "CONFIG_NETFILTER_NETLINK_QUEUE": "y",
+    "CONFIG_NETFILTER_NETLINK_LOG": "n",
+    "CONFIG_NETFILTER_NETLINK_OSF": "n",
+    "CONFIG_NETFILTER_NETLINK_GLUE_CT": "n",
+    "CONFIG_NETFILTER_XT_TARGET_NFLOG": "n",
+    "CONFIG_BRIDGE_EBT_NFLOG": "n",
+    "CONFIG_DEBUG_KERNEL": "n",
+    "CONFIG_HAVE_DYNAMIC_FTRACE": "y",
+    "CONFIG_HAVE_FTRACE_MCOUNT_RECORD": "y",
+    "CONFIG_FTRACE": "n"
+  },
+  "sections": {
+    "kernel": {
+      "bytes": 37652496,
+      "sha256": "d64c9c8856b7a30acb0fcc262d931f48a062a2077fcd9357a1974667aa37880e"
+    },
+    "ramdisk": {
+      "bytes": 1820124,
+      "sha256": "c3cc3e53711e8ae5e16147f9109f1f05972e461e103f5d52d6b6822096eca14c"
+    },
+    "dtb": {
+      "bytes": 1383146,
+      "sha256": "ad02c1e00007f88f5bf4b240cbb4cb526405ef5ec5d29adbe5798e73eef192b8"
+    },
+    "second": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery_dtbo": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+name: Build r8q display HAL and NFLOG diagnostic capture v4
+on:
+  push:
+    branches: [r8q-bootdiag-v4-20261107]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install recovery-compatible shell
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+      - name: Verify capture bounds, HAL selection, status reporting and atomic restoration
+        run: |
+          /bin/mksh -n tools/bootdiag_v4/runtime.sh
+          /bin/mksh -n tools/bootdiag_v4/upgrade.sh
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_bootdiag_v4*.py' -v
+          python3 tools/package_bootdiag_v4.py
+      - name: Verify offline NFLOG source plan and boot preservation helpers
+        run: |
+          python3 -m unittest discover -s ci-r8q/tests -p test_kernel_nflog_patch.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_nflog_boot_repack.py -v
+      - name: Attest exact ready diagnostic ZIPs
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: delivery/Bootdiag-V4/*.zip
+      - name: Publish diagnostic upgrade and exact v3 restoration
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          RELEASE_TAG: r8q-bootdiag-v4-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$BUNDLE" delivery/Bootdiag-V4/R8Q-BOOTDIAG-V4.intoto.jsonl
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'R8Q BOOTDIAG v4 — composer modes and Android kernel evidence' \
+            --notes-file delivery/Bootdiag-V4/README-ENGLISH.txt \
+            delivery/Bootdiag-V4/*.zip delivery/Bootdiag-V4/*.sha256 \
+            delivery/Bootdiag-V4/README-ENGLISH.txt delivery/Bootdiag-V4/R8Q-BOOTDIAG-V4.intoto.jsonl
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: R8Q-BOOTDIAG-V4-READY-ZIPS
+          path: delivery/Bootdiag-V4/
+          retention-days: 30
