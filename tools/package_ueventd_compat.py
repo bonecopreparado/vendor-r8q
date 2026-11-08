@@ -5,7 +5,13 @@ ROOT=Path(__file__).resolve().parents[1]
 LEGACY_SHA='8debe752a74eb73382de872638462e6869f50041d75bba9f66aa89e2e2530f12'
 VENDOR_SHA='9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea'
 SHA=lambda b:hashlib.sha256(b).hexdigest()
-README=r"""R8Q UEVENTD COMPATIBILITY BRIDGE - EXPERIMENTAL
+README=r"""R8Q UEVENTD COMPATIBILITY BRIDGE r2 - EXPERIMENTAL
+
+r2 fixes the recovery System path check. The original installer could reject
+an absolute system-as-root alias before writing anything. r2 checks the real
+filesystem identity of every selected configuration, permits aliases to the
+same verified System file, and skips unrelated recovery aliases. Different
+System files remain ambiguous and are refused. The import payload is unchanged.
 
 The latest private Android capture shows Keymaster unable to open /dev/qseecom,
 EACCES on /dev/spcom and /dev/ion, and vdc waiting in cryptfs encryptFstab.
@@ -23,8 +29,8 @@ or partition is reformatted/flashed by these small ZIPs.
 Use only with the current EROFS-COMPAT P1r2 ROM. Keep BOOTDIAG V3 enabled.
 1. Verify ZIP SHA256 against the release sidecar.
 2. In OrangeFox > Mount, select Vendor and System. System stays read-only.
-3. Install R8Q-UEVENTD-COMPAT-ENABLE.zip without extracting it.
-4. The installer must say R8Q ueventd compatibility bridge enabled.
+3. Install R8Q-UEVENTD-COMPAT-R2-ENABLE.zip without extracting it.
+4. The installer must say R8Q ueventd compatibility bridge r2 enabled.
    It checks that your ACTUAL mounted System imports the canonical Vendor
    configuration before changing any file. If it aborts, save recovery.log;
    do not bypass checks or Format Data.
@@ -49,7 +55,7 @@ def main():
     for mode in ('enable','remove'):
         script=base.replace('@@MODE@@',mode).replace('@@LEGACY_SHA@@',LEGACY_SHA).replace('@@VENDOR_SHA@@',VENDOR_SHA).replace('@@PAYLOAD_SHA@@',SHA(payload))
         assert '@@' not in script
-        path=args.output/('R8Q-UEVENTD-COMPAT-'+mode.upper()+'.zip')
+        path=args.output/('R8Q-UEVENTD-COMPAT-R2-'+mode.upper()+'.zip')
         with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
             for name,data,modebits in [('META-INF/com/google/android/update-binary',script.encode(),0o755),('META-INF/com/google/android/updater-script',b'# R8Q ueventd import bridge.\n',0o644),('payload/ueventd.rc',payload,0o644),('README-ENGLISH.txt',README.encode(),0o644),('LICENSE.txt',(ROOT/'LICENSE').read_bytes(),0o644)]:
                 info=zipfile.ZipInfo(name,(2026,11,7,0,0,0));info.create_system=3;info.external_attr=(0o100000|modebits)<<16;info.compress_type=zipfile.ZIP_DEFLATED;z.writestr(info,data)

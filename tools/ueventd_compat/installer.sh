@@ -24,7 +24,7 @@ cleanup() {
     [ -z "$WORK" ] || { rm -f "$WORK/bridge"; rmdir "$WORK" 2>/dev/null || true; }
 }
 trap cleanup EXIT
-for tool in getprop id awk cat basename readlink sha256sum mktemp mount unzip chmod chown chcon ls mv rm rmdir sync; do
+for tool in getprop id awk cat basename readlink stat sha256sum mktemp mount unzip chmod chown chcon ls mv rm rmdir sync; do
     command -v "$tool" >/dev/null 2>&1 || abort "Missing recovery tool: $tool"
 done
 [ "$(id -u)" = 0 ] || abort "Recovery root required."
@@ -49,6 +49,7 @@ fi
 if [ "$MODE" = enable ]; then
     # Read the actual mounted donor configuration; never infer it from AOSP.
     SYSTEM_CONFIG=
+    SYSTEM_FILE_ID=
     for mp in /system_root /system; do
         row="$(awk -v p="$mp" '$2==p {print $1,$3;n++} END {if(n!=1)exit 1}' /proc/mounts)" || continue
         set -- $row
@@ -56,21 +57,35 @@ if [ "$MODE" = enable ]; then
         node="$(basename "$(readlink -f "$1")")"
         [ "$(cat "/sys/class/block/$node/dm/name")" = system ] || continue
         mountroot="$(readlink -f "$mp")"
+        mountdev="$(stat -c '%d' "$mountroot")" || abort "Cannot identify mounted System filesystem."
+        case "$mountdev" in ''|*[!0-9]*) abort "Invalid System filesystem identity.";; esac
         for file in "$mp/system/etc/ueventd.rc" "$mp/etc/ueventd.rc"; do
-            [ -f "$file" ] && [ ! -L "$file" ] || continue
+            [ -f "$file" ] || continue
             actual="$(readlink -f "$file")"
-            case "$actual" in "$mountroot"/*) ;; *) abort "System configuration escapes its mounted filesystem.";; esac
-            if [ -n "$SYSTEM_CONFIG" ] && [ "$SYSTEM_CONFIG" != "$actual" ]; then
+            file_id="$(stat -c '%d:%i' "$actual")" || abort "Cannot identify candidate System configuration."
+            case "$file_id" in *:*) ;; *) abort "Invalid System file identity.";; esac
+            inode="${file_id#*:}"
+            case "$inode" in ''|*[!0-9]*) abort "Invalid System inode identity.";; esac
+            # Absolute SAR links and bind aliases can resolve outside mp's text
+            # prefix. Require the real file's filesystem to match verified
+            # logical System; a recovery/rootfs alias must never be selected.
+            if [ "${file_id%%:*}" != "$mountdev" ]; then
+                ui "Ignoring alias outside verified System filesystem: $file -> $actual (expected $mountdev; got $file_id)"
+                continue
+            fi
+            if [ -n "$SYSTEM_FILE_ID" ] && [ "$SYSTEM_FILE_ID" != "$file_id" ]; then
                 abort "Ambiguous System ueventd configuration. Nothing changed."
             fi
             SYSTEM_CONFIG=$actual
+            SYSTEM_FILE_ID=$file_id
         done
     done
     [ -n "$SYSTEM_CONFIG" ] || abort "Mount System (read-only) in OrangeFox, then retry."
     awk '$1=="import" && $2=="/vendor/etc/ueventd.rc" && (NF==2 || substr($3,1,1)=="#") {n++} END {exit(n!=1)}' "$SYSTEM_CONFIG" || abort "Donor does not import the canonical Vendor file. Nothing changed; send recovery.log."
-    ui "Donor System import verified; configuration SHA256:"
+    ui "Donor System import verified: $SYSTEM_CONFIG (filesystem:inode $SYSTEM_FILE_ID)"
+    ui "Configuration SHA256:"
     ui "$(sha256sum "$SYSTEM_CONFIG" | awk '{print $1}')"
-    if [ -f "$TARGET" ]; then ui "R8Q ueventd compatibility bridge already enabled."; exit 0; fi
+    if [ -f "$TARGET" ]; then ui "R8Q ueventd compatibility bridge r2 already enabled."; exit 0; fi
     WORK="$(mktemp -d /tmp/r8q-ueventd.XXXXXX)" || abort "Cannot create private temporary directory."
     TMPDIR=$WORK; export TMPDIR
     unzip -p "$ZIPFILE" payload/ueventd.rc > "$WORK/bridge" || abort "Cannot read payload."
@@ -90,7 +105,7 @@ if [ "$MODE" = enable ]; then
     [ "$(sha256sum "$STAGE" | awk '{print $1}')" = @@PAYLOAD_SHA@@ ] || abort "Staged bridge hash differs."
     mv "$STAGE" "$TARGET"; STAGE=
     sync || abort "Sync failed; remain in recovery and run REMOVE."
-    ui "R8Q ueventd compatibility bridge enabled. Experimental; boot is not confirmed."
+    ui "R8Q ueventd compatibility bridge r2 enabled. Experimental; boot is not confirmed."
     ui "Original hardware permissions are preserved. Keep BOOTDIAG V3 enabled for the next boot."
 else
     rm -f "$TARGET"

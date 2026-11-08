@@ -1,7 +1,7 @@
-name: Build reversible r8q ueventd compatibility bridge
+name: Build r8q ueventd compatibility bridge r2 with filesystem validation
 on:
   push:
-    branches: [r8q-ueventd-compat-20261107]
+    branches: [r8q-ueventd-compat-r2-20261107]
   workflow_dispatch:
 permissions:
   contents: read
@@ -43,11 +43,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BUNDLE: ${{ steps.attest.outputs.bundle-path }}
-          RELEASE_TAG: r8q-ueventd-compat-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: r8q-ueventd-compat-r2-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$BUNDLE" delivery/Ueventd-Compat/R8Q-UEVENTD-COMPAT.intoto.jsonl
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'R8Q ueventd compatibility bridge — experimental ENABLE and REMOVE' \
+            --title 'R8Q ueventd compatibility bridge r2 — experimental ENABLE and REMOVE' \
             --notes-file delivery/Ueventd-Compat/README-ENGLISH.txt \
             delivery/Ueventd-Compat/*.zip delivery/Ueventd-Compat/*.sha256 \
             delivery/Ueventd-Compat/README-ENGLISH.txt delivery/Ueventd-Compat/R8Q-UEVENTD-COMPAT.intoto.jsonl

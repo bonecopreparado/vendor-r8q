@@ -1,0 +1,17 @@
+{
+  "private_input": {
+    "file": "recovery.log",
+    "bytes": 59167,
+    "sha256": "d17b089102c42bfccfff97dc93f4ae4a96d62d63c55df5deac30f6530e3dd6c0"
+  },
+  "raw_logs_published": false,
+  "recorded_error": "System configuration escapes its mounted filesystem.",
+  "failed_attempts": 2,
+  "sideload_size": 5247,
+  "prewrite_abort_confirmed_by_script_order": true,
+  "exact_original_zip_reproduces_error_in_sar_fixture": true,
+  "r2_same_fixture_passed": true,
+  "actual_tester_resolved_path_unknown": true,
+  "bridge_payload_unchanged": true,
+  "hardware_boot_confirmed": false
+}

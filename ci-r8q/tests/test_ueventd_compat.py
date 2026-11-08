@@ -15,6 +15,15 @@ with (r/'events').open('a') as f:f.write(name+' '+json.dumps(args)+'\n')
 if name=='getprop':print('wrong' if flags.get('wrong_device') else 'r8q')
 elif name=='id':print('0')
 elif name=='ls':print('u:object_r:vendor_file:s0 '+args[-1])
+elif name=='stat':
+ if flags.get('stat_failure'):sys.exit(1)
+ if flags.get('native_stat'):os.execv('/usr/bin/stat',['stat']+args)
+ p=Path(args[-1]).resolve();system=r/'system_root'
+ dev=200 if p==system or system in p.parents or (flags.get('system_alias') and r/'system-alias' in p.parents) else 100
+ if flags.get('nested_foreign') and p.name=='ueventd.rc':dev=100
+ if args[-2]=='%d':print(dev)
+ elif args[-2]=='%d:%i':print(str(dev)+':'+('invalid' if flags.get('invalid_stat') else str(p.stat().st_ino)))
+ else:sys.exit(2)
 elif name in ('chown','chcon'):
  if flags.get(name):sys.exit(1)
 elif name=='mount':
@@ -43,11 +52,11 @@ class Tests(unittest.TestCase):
         mounts=f'{r}/dev/block/dm-vendor {r}/vendor {vendor_fs} ro,relatime 0 0\n'
         if system:mounts+=f'{r}/dev/block/dm-system {r}/system_root {system_fs} ro,relatime 0 0\n'
         (r/'proc/mounts').write_text(mounts);(r/'flags.json').write_text(json.dumps(flags or {}))
-        for name in ['getprop','id','ls','chown','chcon','mount','mv']:
+        for name in ['getprop','id','ls','stat','chown','chcon','mount','mv']:
             p=r/'bin'/name;p.write_text(MOCK);p.chmod(0o755)
         return r
     def execute(self,r,mode='ENABLE',corrupt=False):
-        archive=self.out/('R8Q-UEVENTD-COMPAT-'+mode+'.zip')
+        archive=self.out/('R8Q-UEVENTD-COMPAT-R2-'+mode+'.zip')
         with zipfile.ZipFile(archive) as z:script=z.read('META-INF/com/google/android/update-binary').decode()
         script=script.replace(LEGACY_SHA,SHA(b'/dev/qseecom 0660 system drmrpc\n/dev/ion 0664 system system\n/dev/spcom 0660 system system\n'))
         script=script.replace(VENDOR_SHA,SHA(b'# reviewed vendor fixture\n'))
@@ -91,6 +100,37 @@ class Tests(unittest.TestCase):
         self.assertNotEqual(self.execute(r).returncode,0)
         r=self.fixture();(r/'system_root/etc').mkdir();(r/'system_root/etc/ueventd.rc').write_text(f'import {r}/vendor/etc/ueventd.rc\n')
         self.assertNotEqual(self.execute(r).returncode,0);self.assertNotIn('mount ',(r/'events').read_text())
+    def test_unused_absolute_sar_alias_to_recovery_does_not_abort_valid_system_config(self):
+        r=self.fixture();recovery=r/'recovery-system/etc';recovery.mkdir(parents=True)
+        (recovery/'ueventd.rc').write_text('# Recovery configuration must not be selected\n')
+        (r/'system_root/etc').symlink_to(recovery,target_is_directory=True)
+        # Reproduces the old failure: existing fallback resolves outside mp.
+        self.assertFalse(str((r/'system_root/etc/ueventd.rc').resolve()).startswith(str(r/'system_root')+'/'))
+        p=self.execute(r);self.assertEqual(p.returncode,0,p.stdout+p.stderr)
+        self.assertIn('Ignoring alias outside verified System filesystem',p.stdout)
+        self.assertTrue((r/'vendor/etc/ueventd.rc').is_file())
+    def test_recovery_alias_alone_cannot_satisfy_system_preflight(self):
+        r=self.fixture();inside=r/'system_root/system/etc/ueventd.rc';outside=r/'recovery-system/etc'
+        outside.mkdir(parents=True);(outside/'ueventd.rc').write_bytes(inside.read_bytes());inside.unlink()
+        (r/'system_root/etc').symlink_to(outside,target_is_directory=True)
+        p=self.execute(r);self.assertNotEqual(p.returncode,0);self.assertNotIn('mount ',(r/'events').read_text())
+    def test_same_filesystem_alias_and_duplicate_inode_are_accepted(self):
+        for native in [False,True]:
+            with self.subTest(native=native):
+                r=self.fixture(flags={'system_alias':True,'native_stat':native})
+                alias=r/'system-alias/etc';alias.mkdir(parents=True)
+                os.link(r/'system_root/system/etc/ueventd.rc',alias/'ueventd.rc')
+                (r/'system_root/etc').symlink_to(alias,target_is_directory=True)
+                p=self.execute(r);self.assertEqual(p.returncode,0,p.stdout+p.stderr)
+                self.assertIn('Donor System import verified',p.stdout)
+    def test_same_filesystem_configuration_symlink_is_accepted(self):
+        r=self.fixture();p=r/'system_root/system/etc/ueventd.rc';target=p.with_name('actual-ueventd.rc')
+        p.rename(target);p.symlink_to(target.name)
+        result=self.execute(r);self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+    def test_nested_foreign_filesystem_and_failed_stat_do_not_allow_activation(self):
+        for flags in [{'nested_foreign':True},{'stat_failure':True},{'invalid_stat':True}]:
+            r=self.fixture(flags=flags);p=self.execute(r);self.assertNotEqual(p.returncode,0)
+            self.assertFalse((r/'vendor/etc/ueventd.rc').exists());self.assertNotIn('mount ',(r/'events').read_text())
     def test_payload_corruption_aborts_before_writable_remount(self):
         r=self.fixture();self.assertNotEqual(self.execute(r,corrupt=True).returncode,0)
         self.assertNotIn('mount ',(r/'events').read_text())
@@ -107,7 +147,7 @@ class Tests(unittest.TestCase):
     def test_packages_crc_digest_and_one_import_only(self):
         self.assertEqual((ROOT/'tools/ueventd_compat/ueventd.rc').read_text().splitlines()[-1],'import /vendor/ueventd.rc')
         for mode in ['ENABLE','REMOVE']:
-            p=self.out/('R8Q-UEVENTD-COMPAT-'+mode+'.zip')
+            p=self.out/('R8Q-UEVENTD-COMPAT-R2-'+mode+'.zip')
             self.assertEqual(p.with_name(p.name+'.sha256').read_text().split()[0],SHA(p.read_bytes()))
             with zipfile.ZipFile(p) as z:self.assertIsNone(z.testzip());self.assertEqual(len(z.namelist()),5)
     def test_real_baseline_pin_and_effective_node_permissions_under_legacy_and_modern_loading(self):
