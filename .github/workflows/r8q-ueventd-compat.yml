@@ -1,0 +1,59 @@
+name: Build reversible r8q ueventd compatibility bridge
+on:
+  push:
+    branches: [r8q-ueventd-compat-20261107]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install recovery-compatible shell
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+      - name: Verify original baseline identity and recovery guards
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          b=Path('ci-r8q/vendor_audit/data/baseline-vendor.zip').read_bytes()
+          assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()=='fdc31fc698221d679670a82cc213509d0bfb6d80'
+          PY
+          /bin/mksh -n tools/ueventd_compat/installer.sh
+          python3 -m unittest discover -s ci-r8q/tests -p test_ueventd_compat.py -v
+          python3 tools/package_ueventd_compat.py
+      - name: Attest both ready ZIPs
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: delivery/Ueventd-Compat/*.zip
+      - name: Publish reversible experimental bridge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          RELEASE_TAG: r8q-ueventd-compat-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$BUNDLE" delivery/Ueventd-Compat/R8Q-UEVENTD-COMPAT.intoto.jsonl
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'R8Q ueventd compatibility bridge — experimental ENABLE and REMOVE' \
+            --notes-file delivery/Ueventd-Compat/README-ENGLISH.txt \
+            delivery/Ueventd-Compat/*.zip delivery/Ueventd-Compat/*.sha256 \
+            delivery/Ueventd-Compat/README-ENGLISH.txt delivery/Ueventd-Compat/R8Q-UEVENTD-COMPAT.intoto.jsonl
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: R8Q-UEVENTD-COMPAT-READY-ZIPS
+          path: delivery/Ueventd-Compat/
+          retention-days: 30

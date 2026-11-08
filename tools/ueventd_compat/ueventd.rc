@@ -1,0 +1,3 @@
+# R8Q canonical ueventd compatibility bridge.
+# Preserve the reviewed original vendor rules and their original permissions.
+import /vendor/ueventd.rc

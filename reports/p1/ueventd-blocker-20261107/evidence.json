@@ -1,0 +1,26 @@
+{
+  "raw_logs_published": false,
+  "inputs": [
+    {
+      "kind": "last_kmsg",
+      "bytes": 2097136,
+      "sha256": "ee1d4bec66054f36c6b8174152dedf242c92835ec24f65a9b52577b440c22c42"
+    },
+    {
+      "kind": "recovery.log",
+      "bytes": 52136,
+      "sha256": "083623db5d532857215d41cd76b7217029fe1c9e73f18a0903bd2c749595020c"
+    },
+    {
+      "kind": "android_userspace",
+      "bytes": 208424,
+      "sha256": "e220a0010d3c7da6f54685d9feaa827411dc84da47902bba7e5ac1827140ea0a"
+    }
+  ],
+  "observed_blocked_command": "/system/bin/vdc cryptfs encryptFstab",
+  "snapshots_confirming_wait": 2,
+  "kernel_max_uptime_seconds": 421.493116,
+  "vendor_original_rules_sha256": "8debe752a74eb73382de872638462e6869f50041d75bba9f66aa89e2e2530f12",
+  "public_baseline_audit_run": 42427694467,
+  "boot_fix_confirmed": false
+}
