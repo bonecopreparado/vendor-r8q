@@ -1,0 +1,25 @@
+name: Audit exact shipped r8q boot and embedded kernel configuration
+on:
+  push:
+    branches: [r8q-kernel-input-audit-20261107]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Reproduce exact boot and extract bounded embedded configuration
+        run: python3 tools/audit_boot_kernel_input.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: R8Q-SHIPPED-KERNEL-CONFIG-AND-PROVENANCE
+          path: |
+            reports/nflog-input/
+            reports/boot-candidate-p0.json
+          retention-days: 14
