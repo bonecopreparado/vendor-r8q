@@ -1,0 +1,29 @@
+name: Audit pinned current r8q kernel config and NFLOG support
+on:
+  push:
+    branches: [r8q-current-kernel-audit-20261110]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  config-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install configuration host tools only
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex bison bc libssl-dev libelf-dev gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi git
+          df -h "$GITHUB_WORKSPACE"
+      - name: Audit pinned current source against exact shipped configuration
+        run: python3 tools/kernel_nflog/audit_current.py
+      - name: Retain config deltas, protected failures and input provenance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-CURRENT-KERNEL-CONFIG-AUDIT
+          path: reports/current-kernel-audit/
+          retention-days: 14
