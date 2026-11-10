@@ -1,0 +1,51 @@
+name: Publish Windows recovery collector v4 - static validation only
+on:
+  push:
+    branches: [r8q-pc-collector-v4-20261110]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check CMD format and package exact script bytes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          out=Path('delivery/PC-Collector-V4');out.mkdir(parents=True)
+          for name in ['Collect-R8Q-V4.cmd','Collect-R8Q-V4-README.txt']:
+              data=(Path('tools')/name).read_bytes()
+              data.decode('ascii')
+              assert b'\r\n' in data and b'\n' not in data.replace(b'\r\n',b'')
+              assert max(map(len,data.splitlines()))<8191
+              (out/name).write_bytes(data)
+              (out/(name+'.sha256')).write_text(hashlib.sha256(data).hexdigest()+'  '+name+'\n')
+          print('Static ASCII/CRLF/command-length checks passed. No Windows or phone runtime test was performed.')
+          PY
+      - name: Attest exact CMD script
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: delivery/PC-Collector-V4/*.cmd
+      - name: Publish collector script and documented runtime limitation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          RELEASE_TAG: r8q-pc-v4-collector-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$BUNDLE" delivery/PC-Collector-V4/Collect-R8Q-V4.intoto.jsonl
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'R8Q Windows recovery collector v4 — preview, static checks only' \
+            --notes-file delivery/PC-Collector-V4/Collect-R8Q-V4-README.txt \
+            delivery/PC-Collector-V4/*.cmd delivery/PC-Collector-V4/*.txt \
+            delivery/PC-Collector-V4/*.sha256 delivery/PC-Collector-V4/*.jsonl
