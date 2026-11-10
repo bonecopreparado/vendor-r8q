@@ -116,6 +116,7 @@ def compare_configs(baseline, generated):
 def run(argv, log, env, cwd=None, timeout=1200):
     log.parent.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
+    print('STEP ' + log.name, flush=True)
     with log.open('w') as out:
         out.write('ARGV ' + json.dumps([str(v) for v in argv]) + '\n')
         out.flush()
@@ -128,6 +129,7 @@ def run(argv, log, env, cwd=None, timeout=1200):
             out.write('\nAUDIT_COMMAND_TIMEOUT\n')
     record = {'argv': [str(v) for v in argv], 'exit_code': status,
               'seconds': round(time.monotonic() - started, 3), 'log': log.name}
+    print(('DONE ' if status == 0 else 'FAILED ') + log.name + ' ' + str(record['seconds']) + 's', flush=True)
     if status:
         raise RuntimeError(json.dumps(record))
     return record

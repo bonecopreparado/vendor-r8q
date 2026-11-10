@@ -18,11 +18,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import audit_current as audit
 
 LOCALVERSION = '-r8q-nflog-staging1'
-# RELR now selects LTO_CLANG; disable both deliberately rather than request an
-# ineffective LTO=n. Current Kconfig's non-user-selectable LTO marker may stay y.
+LTO_MAKE_ARGUMENT = 'LD_FLAGS_LTO_CLANG=-mllvm -import-instr-limit=5 --thinlto-jobs=2 --threads=2'
+# ARM64 RELOCATABLE selects ARCH_HAS_RELR. RELR is invisible/default-y with
+# this linker and selects LTO_CLANG, so use supported ThinLTO explicitly.
 REQUESTED = {
     **{key: 'y' for key in audit.NFLOG},
-    'CONFIG_RELR': 'n', 'CONFIG_LTO_CLANG': 'n', 'CONFIG_THINLTO': 'n',
+    'CONFIG_RELR': 'y', 'CONFIG_LTO_CLANG': 'y', 'CONFIG_THINLTO': 'y',
     'CONFIG_POLLY_CLANG': 'n', 'CONFIG_LLVM_POLLY': 'n',
     'CONFIG_BBG': 'n', 'CONFIG_NOMOUNT': 'n',
     'CONFIG_ZRAM_BACKEND_LZ4': 'y', 'CONFIG_ZRAM_DEF_COMP_LZ4': 'y',
@@ -164,10 +165,14 @@ def verify_toolchain(toolchain, env):
     version = audit.output(['clang', '--version'], env)
     if 'clang version 18.0.1' not in version or '11889484' not in version:
         raise ValueError('Pinned Android clang banner differs')
+    linker_help = audit.output(['ld.lld', '--help'], env)
+    if not all(option in linker_help for option in ('--thinlto-jobs', '--threads')):
+        raise ValueError('Pinned linker cannot enforce the reviewed ThinLTO worker limits')
     return {'repository': audit.CLANG_REPO, 'commit': audit.CLANG_COMMIT,
             'directory': audit.CLANG_DIRECTORY, 'clang_git_blob': audit.CLANG_BLOB,
             'clang_sha256': file_sha(binary), 'clang_version': version,
-            'ld_lld_version': audit.output(['ld.lld', '--version'], env)}
+            'ld_lld_version': audit.output(['ld.lld', '--version'], env),
+            'lto_make_argument': LTO_MAKE_ARGUMENT}
 
 
 def main():
@@ -192,7 +197,7 @@ def main():
               'requested_options': REQUESTED, 'commands': [],
               'reviewed_source_changes': [
                   'HZ600 was removed upstream; current HZ250 retained as an explicit scheduler change.',
-                  'RELR disabled because current Kconfig selects LTO_CLANG from RELR.',
+                  'Current ARM64 relocation support forces RELR and LTO_CLANG; ThinLTO is explicitly retained instead of full LTO.',
                   'Scheduler, RNG and root integration differ from A06; successful compilation proves no boot compatibility.',
                   'Current ARM64 Image uses text_offset=0; old shipped Image uses 0x80000. No header patch or boot repack is performed.',
                   'Clang18 is pinned to old compiler identity; upstream current build.sh instead downloads moving Neutron.'
@@ -224,7 +229,7 @@ def main():
         requested = request_config(baseline)
         (out / '.config').write_bytes(requested)
         (evidence / 'requested.config').write_bytes(requested)
-        make = ['make', '-C', source, 'O=' + str(out)] + list(audit.MAKE_FLAGS) + ['LOCALVERSION=' + LOCALVERSION]
+        make = ['make', '-C', source, 'O=' + str(out)] + list(audit.MAKE_FLAGS) + ['LOCALVERSION=' + LOCALVERSION, LTO_MAKE_ARGUMENT]
         report['commands'].append(audit.run(make + ['olddefconfig'], evidence / 'olddefconfig.log', env))
         generated = (out / '.config').read_bytes()
         (evidence / 'generated.config').write_bytes(generated)

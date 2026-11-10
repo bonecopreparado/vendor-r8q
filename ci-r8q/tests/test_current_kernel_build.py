@@ -34,7 +34,8 @@ class Tests(unittest.TestCase):
         self.assertLessEqual(changed, helper.REQUESTED.keys())
         self.assertEqual(requested['CONFIG_COMPAT'], before['CONFIG_COMPAT'])
         self.assertEqual(requested['CONFIG_KSU'], 'y')
-        self.assertEqual(requested['CONFIG_RELR'], 'n')
+        self.assertEqual(requested['CONFIG_RELR'], 'y')
+        self.assertEqual(requested['CONFIG_THINLTO'], 'y')
         self.assertEqual(requested['CONFIG_ZRAM_BACKEND_LZ4'], 'y')
 
     def test_reviewed_removed_names_pass_only_with_actual_driver(self):
@@ -47,11 +48,11 @@ class Tests(unittest.TestCase):
         self.assertFalse(result['build_config_guards_passed'])
         self.assertIn('CONFIG_SENSORS_GW9558X', result['build_guard_failures'])
 
-    def test_compiler_enabling_lto_or_hardware_loss_cannot_be_silently_accepted(self):
+    def test_unsupported_lto_mode_or_hardware_loss_cannot_be_silently_accepted(self):
         baseline, after = self.fixtures()
         for key, value in [('CONFIG_COMPAT', 'n'), ('CONFIG_SECURITY_SELINUX', 'n'),
                            ('CONFIG_USB_DWC3_MSM', 'n'), ('CONFIG_NETFILTER_XT_TARGET_NFLOG', 'n'),
-                           ('CONFIG_RELR', 'y'), ('CONFIG_LTO_CLANG', 'y'), ('CONFIG_NOMOUNT', 'y')]:
+                           ('CONFIG_RELR', 'n'), ('CONFIG_LTO_CLANG', 'n'), ('CONFIG_THINLTO', 'n'), ('CONFIG_NOMOUNT', 'y')]:
             with self.subTest(key=key):
                 modified = {**after, key: value}
                 result = helper.config_guards(baseline, config(modified))
