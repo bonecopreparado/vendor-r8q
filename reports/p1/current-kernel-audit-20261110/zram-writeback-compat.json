@@ -1,0 +1,10 @@
+{
+  "source_commit": "a265508933bbecb682e45e3b956d95bf4426d60b",
+  "path": "drivers/block/zram/zram_drv.c",
+  "before_sha256": "e4789899ff9cbe812517ca2cf47cbd3398011b5f5a0d488a081093adab83134c",
+  "after_sha256": "58a8efaff00878f08806e72a22e43b23bb8f69d41b2596d4c61f8f1dbc814125",
+  "patch_sha256": "fdddef4184a57e3e0fc5c651e51d387f4c183490d63b3946db247224ffc0ccee",
+  "behavior": "Adapt block-device modes and BIO initialization to pinned 4.19 APIs; retain exclusive backing-device claim and propagate allocation failures before chaining the parent BIO.",
+  "device_tested": false,
+  "compiled": false
+}

@@ -37,6 +37,17 @@ The compiler cache stores only the exact verified compiler checkout, outside
 fresh kernel/source/output directories. Cache hits are reverified and copied
 before use. No previous generated config, kernel object or image is reused.
 
+Run 42935655781 passed configuration guards with the debug UMD disabled and
+compiled further. It exposed two incomplete source backports: mq-deadline
+still used the old two-argument merge API, and zram writeback called modern
+block-device/BIO APIs absent from this 4.19 tree. Two exact, hashed patches
+adapt these callers. mq-deadline releases the entire merge list after dropping
+its spin lock. Zram retains exclusive backing-device ownership, initializes
+device/operation fields through the actual 4.19 API and propagates allocation
+failure before chaining a parent BIO. Scheduler and writeback stay enabled.
+The build accepts only those two tracked changes to the pinned resulting
+bytes. Every other source/submodule change remains an error.
+
 ## Remaining device evidence
 
 The latest private logs show that the ueventd bridge lets Keymaster and

@@ -1,0 +1,41 @@
+--- a/block/mq-deadline.c
++++ b/block/mq-deadline.c
+@@ -481,7 +481,7 @@
+  * add rq to rbtree and fifo
+  */
+ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
+-			      bool at_head)
++			      bool at_head, struct list_head *free)
+ {
+ 	struct request_queue *q = hctx->queue;
+ 	struct deadline_data *dd = q->elevator->elevator_data;
+@@ -493,7 +493,7 @@
+ 	 */
+ 	blk_req_zone_write_unlock(rq);
+ 
+-	if (blk_mq_sched_try_insert_merge(q, rq))
++	if (blk_mq_sched_try_insert_merge(q, rq, free))
+ 		return;
+ 
+ 	blk_mq_sched_request_inserted(rq);
+@@ -525,6 +525,7 @@
+ {
+ 	struct request_queue *q = hctx->queue;
+ 	struct deadline_data *dd = q->elevator->elevator_data;
++	LIST_HEAD(free);
+ 
+ 	spin_lock(&dd->lock);
+ 	while (!list_empty(list)) {
+@@ -532,9 +533,11 @@
+ 
+ 		rq = list_first_entry(list, struct request, queuelist);
+ 		list_del_init(&rq->queuelist);
+-		dd_insert_request(hctx, rq, at_head);
++		dd_insert_request(hctx, rq, at_head, &free);
+ 	}
+ 	spin_unlock(&dd->lock);
++
++	blk_mq_free_requests(&free);
+ }
+ 
+ /*

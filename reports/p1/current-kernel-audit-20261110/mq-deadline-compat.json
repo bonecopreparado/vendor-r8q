@@ -1,0 +1,59 @@
+{
+  "source_repository": "https://github.com/notkernel-oss/not_samsung.sm8250-4.19",
+  "source_commit": "a265508933bbecb682e45e3b956d95bf4426d60b",
+  "path": "block/mq-deadline.c",
+  "before_git_blob": "2cdd09c7b4c7ab4c5c1bb17a38f4cb02977843d2",
+  "before_sha256": "91bc938a86dea90d74ebc9377b38748e1a78550fb927ccb2abecf853edf0ce3f",
+  "after_sha256": "3a21051922d8d04906ba478c712e36f70609cf329d908c58b73b196fc8a56d27",
+  "patch_sha256": "ca3fe52254a2833df902fb5b8242df58c29d6ef8981c13880211625fa1399068",
+  "evidence": {
+    "block/mq-deadline.c": {
+      "git_blob": "2cdd09c7b4c7ab4c5c1bb17a38f4cb02977843d2",
+      "sha256": "91bc938a86dea90d74ebc9377b38748e1a78550fb927ccb2abecf853edf0ce3f"
+    },
+    "block/blk-mq-sched.c": {
+      "git_blob": "b68b7933a995267ec4a14dac4d5ae056d4cbdec2",
+      "sha256": "b2e33d889eadbb8545b2f2d8d47466d9ddde8667a3ef4e40da6da55db6354b05"
+    },
+    "block/blk-mq-sched.h": {
+      "git_blob": "d98f693c3a3aa205e589b9e8a60005ba182cf087",
+      "sha256": "ecadf14a4428f3cf4aaad0342ae276b44964e8dd7206b1b95c31b2f38cab32e7"
+    },
+    "block/elevator.c": {
+      "git_blob": "c63a29ac0449e48e6e3df70f0bbd88b565873909",
+      "sha256": "b129f6a56e5bbfbd7f4dfcc19c3d46fcbdc8258bfce25265236ab7ba4397b95c"
+    },
+    "block/blk-mq.h": {
+      "git_blob": "253c2f65a0938138c19f254f444b6e14354e4613",
+      "sha256": "6e7ad16a7b96f468ecb3467ef2f0b62b999a094e6eaaa27bf6b48a1dbd672119"
+    },
+    "block/bfq-iosched.c": {
+      "git_blob": "eff6c668a077ace280496b5703306f8025719e17",
+      "sha256": "bc778e392038367f4424a2d4d0f9ebef2372f37cee0dbe1d301272bd85ea3ac7"
+    }
+  },
+  "behavior": "Preserve mq-deadline; collect all insert-merge releases under dd->lock, free the accumulated request list after dropping dd->lock.",
+  "device_tested": false,
+  "compiled": false,
+  "verification": {
+    "patch_applies_without_fuzz": true,
+    "result_matches_after_sha256": true,
+    "host_cc_compile_original_reproduces_error": true,
+    "host_cc_compile_patched_functions": true,
+    "host_runtime_cases": [
+      "empty input",
+      "two nonmerged requests",
+      "one merged request",
+      "multiple merged requests including extra merge-chain release",
+      "mixed merged/nonmerged requests"
+    ],
+    "host_runtime_assertions": [
+      "scheduler lock held while calling merge API",
+      "all accumulated merged requests released exactly once",
+      "release list drained only after scheduler spin unlock",
+      "nonmerged requests remain queued and are not released"
+    ],
+    "full_kernel_compilation": false,
+    "hardware_tested": false
+  }
+}

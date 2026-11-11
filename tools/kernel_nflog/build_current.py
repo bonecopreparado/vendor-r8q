@@ -17,6 +17,7 @@ import zlib
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import audit_current as audit
 import compiler_cache
+import current_compat
 
 LOCALVERSION = '-r8q-nflog-staging1'
 LTO_MAKE_ARGUMENT = 'LD_FLAGS_LTO_CLANG=-mllvm -import-instr-limit=5 --thinlto-jobs=2 --threads=2'
@@ -63,6 +64,8 @@ SOURCE_EVIDENCE = (
     'net/netfilter/nf_log.c', 'include/net/netfilter/nf_log.h', '.gitmodules',
     'kernel/bpf/preload/Kconfig', 'kernel/bpf/preload/Makefile',
     'kernel/bpf/inode.c', 'scripts/Makefile.build',
+    'block/mq-deadline.c', 'block/blk-mq-sched.h', 'block/blk-mq.h',
+    'drivers/block/zram/zram_drv.c', 'include/linux/bio.h', 'include/linux/fs.h',
     'KernelSU/kernel/Kconfig', 'KernelSU/kernel/Makefile',
     'Baseband-guard/Kconfig', 'NoMount/kernel/src/Kconfig',
 )
@@ -215,7 +218,8 @@ def main():
                   'Scheduler, RNG and root integration differ from A06; successful compilation proves no boot compatibility.',
                   'Current ARM64 Image uses text_offset=0; old shipped Image uses 0x80000. No header patch or boot repack is performed.',
                   'Clang18 is pinned to old compiler identity; upstream current build.sh instead downloads moving Neutron.',
-                  'Optional new BPF_PRELOAD_UMD debug iterators are disabled: userprogs build support is absent in this tree. Existing Android/network BPF selectors remain protected.'
+                  'Optional new BPF_PRELOAD_UMD debug iterators are disabled: userprogs build support is absent in this tree. Existing Android/network BPF selectors remain protected.',
+                  'Exact reviewed mq-deadline/zram API compatibility patches preserve the shipped scheduler and writeback features; no other tracked source modifications are accepted.'
               ]}
     (evidence / 'NOT-FLASHABLE.txt').write_text(
         'OFFLINE REVIEW ONLY. Raw Image/vmlinux are NOT a flashable ZIP or Android boot.img.\n'
@@ -233,6 +237,7 @@ def main():
         source, clang, out = work / 'kernel', work / 'clang', work / 'out'
         audit.checkout(audit.SOURCE_REPO, audit.SOURCE_COMMIT, source, evidence, 'kernel', env)
         report['submodules'] = audit.verify_submodules(source, evidence, env)
+        report['reviewed_source_overlay'] = current_compat.apply(source, evidence, env)
         compiler = compiler_cache.prepare_compiler(clang, evidence, env, verify_toolchain,
                                                    cache=args.clang_cache, work=work, output=evidence)
         report['toolchain'] = compiler['toolchain']
@@ -281,12 +286,12 @@ def main():
         report['commands'].append(audit.run(['llvm-nm', '--defined-only', vmlinux],
                                             evidence / 'vmlinux-defined-symbols.log', env))
         report['required_defined_symbols'] = defined_symbols((evidence / 'vmlinux-defined-symbols.log').read_text())
-        report['tracked_source_changes'] = audit.output(['git', '-C', source, 'diff', '--name-only', 'HEAD', '--'], env)
+        report['tracked_source_changes'] = current_compat.verify_applied(source, env)
         report['submodule_changes'] = {item['path']: audit.output(
             ['git', '-C', source / item['path'], 'diff', '--name-only', 'HEAD', '--'], env)
             for item in report['submodules']}
-        if report['tracked_source_changes'] or any(report['submodule_changes'].values()):
-            raise ValueError('Build modified tracked pinned source; retaining logs without accepting output')
+        if any(report['submodule_changes'].values()):
+            raise ValueError('Build modified pinned submodule source; retaining logs without accepting output')
         report['outputs'] = {}
         for label, path in (('Image', image), ('vmlinux', vmlinux), ('System.map', out / 'System.map')):
             target = evidence / label

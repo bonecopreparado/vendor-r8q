@@ -23,6 +23,7 @@ jobs:
         run: |
           python3 -m unittest discover -s ci-r8q/tests -p test_current_kernel_build.py -v
           python3 -m unittest discover -s ci-r8q/tests -p test_kernel_compiler_cache.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_current_source_compat.py -v
       - name: Restore exact immutable compiler only
         id: clang-cache
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
