@@ -1,0 +1,58 @@
+{
+  "source_repository": "https://github.com/notkernel-oss/not_samsung.sm8250-4.19",
+  "source_commit": "a265508933bbecb682e45e3b956d95bf4426d60b",
+  "path": "drivers/ccic/max77705_usbc.c",
+  "before_git_blob": "9e66b4a70f15c24e566453551587543cff75bc48",
+  "before_sha256": "48fc16cebd1916cc19c72ef4fbe31254b914bda2eaad446edfdf536cfee3c7e7",
+  "after_sha256": "0ff9fc77cb8f8277454028ab49934e11fa0e8d25b04f8b45dc492988bf770650",
+  "patch_sha256": "25749e3689f5c9049f5d582c88aa7f47c122b60ed4e393a18f91b42a9dec8296",
+  "diagnosis": "CPU frequency vote API and DVFS_BOOST_HOST_ID are provided only by CONFIG_CPU_FREQ_LIMIT_USERSPACE; both shipped/current configs disable CPU_FREQ_LIMIT while USB audio boost remains enabled. Current caller lost its optional CPU vote gates.",
+  "behavior": "Keep USB host/PD, scheduler HMP boost, DDR votes and timers; include the real header and issue CPU votes only when their actual provider is configured. Do not add stubs or enable a new frequency framework.",
+  "evidence": {
+    "drivers/ccic/max77705_usbc.c": {
+      "git_blob": "9e66b4a70f15c24e566453551587543cff75bc48",
+      "sha256": "48fc16cebd1916cc19c72ef4fbe31254b914bda2eaad446edfdf536cfee3c7e7"
+    },
+    "include/linux/cpufreq.h": {
+      "git_blob": "904960e7f5d532538831c875814a20b26a810c5a",
+      "sha256": "bc7997d40e4e1e3797f8c810ff537de1cba8835fa2bd8adb804d13892ef1bf84"
+    },
+    "include/linux/cpufreq_limit.h": {
+      "git_blob": "551875ffacb866ebd3be68ca6d5037a9027ab4e2",
+      "sha256": "1a962d254e04ef33747ad11e136c18788344705a20321b887a354c245f2a3340"
+    },
+    "drivers/cpufreq/cpufreq_limit.c": {
+      "git_blob": "51518dd3495d40746a34bcb8b954df5026e804ca",
+      "sha256": "34fea83a5b35cb4789966d24fe331ac4a2bd6c30583aca27c15916ebf69de478"
+    },
+    "kernel/power/main.c": {
+      "git_blob": "77a85dda3ebc3087a86198f4679347cc52964161",
+      "sha256": "1392bbac09f715564ddc3b96c553225b4db767ed1653f712f2268239eb62df82"
+    },
+    "kernel/power/Kconfig": {
+      "git_blob": "4081a8b9d7acce6113786623d2c99010325aaf16",
+      "sha256": "08e5be426b6ea66fde6a5cf6112d41ea8fad8c6d220d56c7c82c9f697b3e2241"
+    },
+    "drivers/cpufreq/Makefile": {
+      "git_blob": "b1be9c2e2d55a6a8e9866dc27ba9d2e18e11d02b",
+      "sha256": "9f929ca1bf71eb6a5446d695b253f8c68db5757d16fabd074fd60bbe165b28eb"
+    }
+  },
+  "compiled_full_kernel": false,
+  "hardware_tested": false,
+  "verification": {
+    "offline_source_compat_tests": 9,
+    "host_compile_original_api_absent_reproduces_error": true,
+    "host_compile_and_execute_provider_disabled": true,
+    "host_compile_and_execute_provider_enabled": true,
+    "runtime_assertions": [
+      "early boot leaves all boost paths untouched",
+      "CPU provider absent has no unresolved CPU votes or stub",
+      "CPU provider present receives HOST ID with MAX_FREQ then unsigned release -1",
+      "HMP/DDR votes and delayed work lifecycle retained in both branches",
+      "already disabled booster does not schedule redundant off work"
+    ],
+    "full_kernel_compilation": false,
+    "hardware_tested": false
+  }
+}

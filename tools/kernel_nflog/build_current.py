@@ -66,6 +66,7 @@ SOURCE_EVIDENCE = (
     'kernel/bpf/inode.c', 'scripts/Makefile.build',
     'block/mq-deadline.c', 'block/blk-mq-sched.h', 'block/blk-mq.h',
     'drivers/block/zram/zram_drv.c', 'include/linux/bio.h', 'include/linux/fs.h',
+    'drivers/ccic/max77705_usbc.c', 'include/linux/cpufreq.h', 'kernel/power/main.c',
     'KernelSU/kernel/Kconfig', 'KernelSU/kernel/Makefile',
     'Baseband-guard/Kconfig', 'NoMount/kernel/src/Kconfig',
 )
@@ -219,7 +220,8 @@ def main():
                   'Current ARM64 Image uses text_offset=0; old shipped Image uses 0x80000. No header patch or boot repack is performed.',
                   'Clang18 is pinned to old compiler identity; upstream current build.sh instead downloads moving Neutron.',
                   'Optional new BPF_PRELOAD_UMD debug iterators are disabled: userprogs build support is absent in this tree. Existing Android/network BPF selectors remain protected.',
-                  'Exact reviewed mq-deadline/zram API compatibility patches preserve the shipped scheduler and writeback features; no other tracked source modifications are accepted.'
+                  'Exact reviewed API compatibility patches preserve the shipped scheduler and writeback features; only pinned tracked source modifications are accepted.',
+                  'MAX77705 CPU frequency votes are compiled only when their actual CPU_FREQ_LIMIT_USERSPACE provider exists; USB/PD, HMP, DDR and timers remain unchanged.'
               ]}
     (evidence / 'NOT-FLASHABLE.txt').write_text(
         'OFFLINE REVIEW ONLY. Raw Image/vmlinux are NOT a flashable ZIP or Android boot.img.\n'

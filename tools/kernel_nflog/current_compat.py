@@ -1,7 +1,7 @@
-"""Exact, reviewed 4.19 block API overlays for the pinned current source.
+"""Exact, reviewed API/optional-provider overlays for the current source.
 
 No scheduler, zram or writeback feature is disabled to hide compile errors.
-Both original and resulting source bytes, and each patch, are independently
+Original and resulting source bytes, and each patch, are independently
 pinned. A build may change only these tracked files to these exact bytes.
 """
 from pathlib import Path
@@ -24,6 +24,12 @@ PINS = {
         'before_sha256': 'e4789899ff9cbe812517ca2cf47cbd3398011b5f5a0d488a081093adab83134c',
         'after_sha256': '58a8efaff00878f08806e72a22e43b23bb8f69d41b2596d4c61f8f1dbc814125',
         'patch_sha256': 'fdddef4184a57e3e0fc5c651e51d387f4c183490d63b3946db247224ffc0ccee',
+    },
+    'drivers/ccic/max77705_usbc.c': {
+        'patch': 'current-max77705.patch',
+        'before_sha256': '48fc16cebd1916cc19c72ef4fbe31254b914bda2eaad446edfdf536cfee3c7e7',
+        'after_sha256': '0ff9fc77cb8f8277454028ab49934e11fa0e8d25b04f8b45dc492988bf770650',
+        'patch_sha256': '25749e3689f5c9049f5d582c88aa7f47c122b60ed4e393a18f91b42a9dec8296',
     },
 }
 

@@ -1,0 +1,47 @@
+--- a/drivers/ccic/max77705_usbc.c
++++ b/drivers/ccic/max77705_usbc.c
+@@ -70,6 +70,9 @@
+ #include <linux/spu-verify.h>
+ #endif
+ #include <linux/string.h>
++#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
++#include <linux/cpufreq.h>
++#endif
+ 
+ static enum ccic_sysfs_property max77705_sysfs_properties[] = {
+ 	CCIC_SYSFS_PROP_CHIP_NAME,
+@@ -3685,7 +3688,6 @@
+ void max77705_clk_booster_set(void *data, int on)
+ {
+ 	struct max77705_usbc_platform_data *usbpd_data = data;
+-	int res = 0;
+ 	int index = 0;
+ 
+ 	if (system_state < SYSTEM_RUNNING) {
+@@ -3696,8 +3698,10 @@
+ 	cancel_delayed_work_sync(&usbpd_data->acc_booster_off_work);
+ 	if (on) {
+ 		usbpd_data->set_booster = true;
++#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
+ 		// cpu freq
+-		res = set_freq_limit(DVFS_BOOST_HOST_ID, MAX_FREQ);
++		(void)set_freq_limit(DVFS_BOOST_HOST_ID, MAX_FREQ);
++#endif
+ 		// hmp booster on
+ 		sched_set_boost(1);
+ 		// ddr freq
+@@ -3722,11 +3726,12 @@
+ 		container_of(wk, struct delayed_work, work);
+ 	struct max77705_usbc_platform_data *usbpd_data =
+ 		container_of(delay_work, struct max77705_usbc_platform_data, acc_booster_off_work);		
+-	int res = 0;
+ 
+ 	pr_info("[PDIC Booster] %s+  \n", __func__);
++#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
+ 	// cpu freq
+-	res = set_freq_limit(DVFS_BOOST_HOST_ID, -1);
++	(void)set_freq_limit(DVFS_BOOST_HOST_ID, -1);
++#endif
+ 	// hmp booster off
+ 	sched_set_boost(0);
+ 	// ddr freq

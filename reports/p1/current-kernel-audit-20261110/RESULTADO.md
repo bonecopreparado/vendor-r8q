@@ -48,6 +48,15 @@ failure before chaining a parent BIO. Scheduler and writeback stay enabled.
 The build accepts only those two tracked changes to the pinned resulting
 bytes. Every other source/submodule change remains an error.
 
+Run 42938162359 compiled the corrected storage paths and then exposed an
+unconditional optional CPU-frequency call in MAX77705 USB-C code. The exact
+baseline/current configuration disables CPU_FREQ_LIMIT. Its userspace API and
+HOST_ID constant exist only with CPU_FREQ_LIMIT_USERSPACE. A third pinned
+patch guards those two votes with that actual provider, retaining USB/PD,
+HMP, DDR and timers. Host tests compile and execute both provider branches;
+no replacement no-op CPU-frequency function is introduced. The accepted
+overlay now consists of precisely these three patched files.
+
 ## Remaining device evidence
 
 The latest private logs show that the ueventd bridge lets Keymaster and

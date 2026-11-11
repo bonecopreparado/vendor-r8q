@@ -20,7 +20,7 @@ FIXTURES = ROOT / 'tools/kernel_nflog/upstream-current'
 
 
 def function(text, name):
-    match = re.search(r'^static (?:int|void|ssize_t) ' + re.escape(name) + r'\(', text, re.M)
+    match = re.search(r'^(?:static )?(?:int|void|ssize_t) ' + re.escape(name) + r'\(', text, re.M)
     if not match:
         raise AssertionError('Missing real source function: ' + name)
     opening = text.index('{', match.start())
@@ -62,7 +62,7 @@ class Tests(unittest.TestCase):
             report = helper.apply(source, evidence, dict(os.environ))
         return source, evidence, report, commit
 
-    def compile(self, source, name):
+    def compile(self, source, name, flags=()):
         if not shutil.which('cc'):
             self.skipTest('Host cc is required for real-function ownership fixtures')
         temporary = tempfile.TemporaryDirectory()
@@ -70,7 +70,7 @@ class Tests(unittest.TestCase):
         root = Path(temporary.name)
         text, executable = root / (name + '.c'), root / name
         text.write_text(source)
-        result = subprocess.run(['cc', '-std=gnu11', '-Wall', '-Wextra', '-Werror', '-O0',
+        result = subprocess.run(['cc', '-std=gnu11', '-Wall', '-Wextra', '-Werror', '-O0', *flags,
                                  str(text), '-o', str(executable)], text=True, capture_output=True)
         return result, executable
 
@@ -82,8 +82,10 @@ class Tests(unittest.TestCase):
         self.assertIn('Copyright (C) 2016 Jens Axboe', (FIXTURES / 'block/mq-deadline.c').read_text())
         self.assertIn('This code is released using a dual license strategy: BSD/GPL',
                       (FIXTURES / 'drivers/block/zram/zram_drv.c').read_text())
+        self.assertEqual(helper.file_sha(FIXTURES / 'include/linux/cpufreq.h'),
+                         'bc7997d40e4e1e3797f8c810ff537de1cba8835fa2bd8adb804d13892ef1bf84')
 
-    def test_both_patches_apply_and_after_bytes_and_report_are_exact(self):
+    def test_reviewed_patches_apply_and_after_bytes_and_report_are_exact(self):
         source, evidence, report, commit = self.apply_fixture()
         for path, pin in helper.PINS.items():
             self.assertEqual(helper.file_sha(source / path), pin['after_sha256'])
@@ -183,6 +185,30 @@ class Tests(unittest.TestCase):
         self.assertIn('return zram_read_page(', function(current, 'zram_bvec_read'))
         self.assertIn('if (unlikely(ret < 0))', function(current, 'zram_bvec_rw'))
         self.assertIn('bio_io_error(bio);', current)
+
+    def test_max77705_optional_cpu_votes_match_real_provider_and_preserve_other_boosts(self):
+        original = (FIXTURES / 'drivers/ccic/max77705_usbc.c').read_text()
+        header = (FIXTURES / 'include/linux/cpufreq.h').read_text()
+        api = re.search(r'#if defined\(CONFIG_CPU_FREQ_LIMIT_USERSPACE\)\nenum \{.*?\nint set_freq_limit\(unsigned long id, unsigned int freq\);\n#endif',
+                        header, re.S).group(0)
+        self.assertIn('#ifdef CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME\n\tDVFS_BOOST_HOST_ID', api)
+        before = (MAX_PREFIX + api + MAX_BACKEND + function(original, 'max77705_clk_booster_set') +
+                  function(original, 'max77705_clk_booster_off') + MAX_SUFFIX)
+        result, _ = self.compile(before, 'max77705-before')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('DVFS_BOOST_HOST_ID', result.stderr)
+        source, _, _, _ = self.apply_fixture()
+        current = (source / 'drivers/ccic/max77705_usbc.c').read_text()
+        self.assertIn('#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE\n#include <linux/cpufreq.h>\n#endif', current)
+        for enabled in (False, True):
+            with self.subTest(provider=enabled):
+                code = (MAX_PREFIX + api + MAX_BACKEND + function(current, 'max77705_clk_booster_set') +
+                        function(current, 'max77705_clk_booster_off') + MAX_SUFFIX)
+                flags = ('-DCONFIG_CPU_FREQ_LIMIT_USERSPACE=1',) if enabled else ()
+                result, executable = self.compile(code, 'max77705-after-' + str(enabled), flags)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                run = subprocess.run([str(executable)], check=True, capture_output=True, text=True)
+                self.assertIn('HMP/DDR/timers retained', run.stdout)
 
 MQ_PREFIX = r'''
 #include <assert.h>
@@ -335,6 +361,76 @@ int main(void){
 }
 '''
 
+
+
+MAX_PREFIX = r'''
+#include <assert.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <limits.h>
+#include <stdio.h>
+#define CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME 1
+#define MAX_FREQ 2841600
+#define CLK_BOOSTER_OFF_WAIT_MS 5000
+#define SYSTEM_RUNNING 1
+#define pr_info(...) ((void)0)
+#define container_of(ptr,type,member) ((type *)((char *)(ptr)-offsetof(type,member)))
+struct work_struct { int unused; };
+struct delayed_work {struct work_struct work;};
+struct max77705_usbc_platform_data {bool set_booster;struct delayed_work acc_booster_off_work;};
+static int system_state,cancelled,scheduled,sched_calls,sched_level,bus_calls,bus_index;
+static unsigned int cpu_calls,cpu_frequency;
+static unsigned long delay;
+static unsigned int bus_hdl=77;
+static struct delayed_work *expected_work;
+static void cancel_delayed_work_sync(struct delayed_work *work){assert(work==expected_work);cancelled++;}
+static void schedule_delayed_work(struct delayed_work *work,unsigned long d){assert(work==expected_work);scheduled++;delay=d;}
+static unsigned long msecs_to_jiffies(unsigned long ms){return ms;}
+static void sched_set_boost(int on){sched_calls++;sched_level=on;}
+static int trans_freq_to_idx(int freq){assert(freq==2736);return 12;}
+static void msm_bus_scale_client_update_request(unsigned int handle,int index){assert(handle==bus_hdl);bus_calls++;bus_index=index;}
+'''
+
+
+MAX_BACKEND = r'''
+#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
+int set_freq_limit(unsigned long id,unsigned int freq){
+ assert(id==DVFS_BOOST_HOST_ID);cpu_calls++;cpu_frequency=freq;return -1;
+}
+#endif
+'''
+
+
+MAX_SUFFIX = r'''
+int main(void){
+ struct max77705_usbc_platform_data data={0};expected_work=&data.acc_booster_off_work;
+ system_state=0;
+ max77705_clk_booster_set(&data,1);
+ assert(!data.set_booster && cancelled==0 && scheduled==0 && sched_calls==0 && bus_calls==0 && cpu_calls==0);
+ system_state=SYSTEM_RUNNING;
+ max77705_clk_booster_set(&data,1);
+ assert(data.set_booster && cancelled==1 && scheduled==1 && delay==CLK_BOOSTER_OFF_WAIT_MS);
+ assert(sched_calls==1 && sched_level==1 && bus_calls==1 && bus_index==12);
+#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
+ assert(cpu_calls==1 && cpu_frequency==MAX_FREQ);
+#else
+ assert(cpu_calls==0 && cpu_frequency==0);
+#endif
+ max77705_clk_booster_set(&data,0);
+ assert(data.set_booster && cancelled==2 && scheduled==2 && delay==0);
+ max77705_clk_booster_off(&data.acc_booster_off_work.work);
+ assert(!data.set_booster && sched_calls==2 && sched_level==0 && bus_calls==2 && bus_index==0);
+#ifdef CONFIG_CPU_FREQ_LIMIT_USERSPACE
+ assert(cpu_calls==2 && cpu_frequency==UINT_MAX);
+#else
+ assert(cpu_calls==0 && cpu_frequency==0);
+#endif
+ max77705_clk_booster_set(&data,0);
+ assert(cancelled==3 && scheduled==2);
+ assert(sched_calls==2 && bus_calls==2);
+ puts("PASS: optional CPU provider branches; HMP/DDR/timers retained");
+}
+'''
 
 
 if __name__ == '__main__':
