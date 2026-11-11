@@ -59,12 +59,21 @@ The helper uses a fresh work/output directory and these pinned inputs:
 * Official Android NDK r27c Linux archive, revision `27.2.12479018`,
   663,987,688 bytes, published SHA1
   `090e8083a715fdb1a3e402d0763c388abb03fb4e` from the `android/ndk` r27c release.
-  The helper also records the verified archive's SHA256 in its evidence.
+  CI run 42936832025 also established SHA256
+  `59c2f6dc96743b5daf5d1626684640b20a6bd2b1d85b13156b90333741bad5cc`;
+  subsequent builds require that full archive hash too.
 
 The NDK supplies the compiler, Bionic sysroot and runtime builtins. HIDL,
 utils and **platform libc++** headers/stubs come from the pinned VNDK30
 snapshot. `-nostdinc++ -nostdlib++` avoids accidentally mixing NDK libc++'s
 `std::__ndk1` ABI with platform `std::__1` used by the HIDL libraries.
+
+`platform_locale_compat.h` handles one concrete old-header/new-sysroot conflict:
+VNDK30 libc++ unconditionally includes obsolete POSIX locale fallbacks which
+redefine NDK27 Bionic's inline ctype functions. The compile-only compatibility
+header requires the exact API30/NDK27 version, verifies all 33 fallback function
+names exist in Bionic, then omits that obsolete fallback. It changes no C++
+class layout, service interface or pinned VNDK file.
 
 The helper compiles a PIE for Android API30 ARM64, rejects unexpected ELF
 architecture/interpreter/runtime search paths/NEEDED libraries, and confirms

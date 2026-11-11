@@ -23,6 +23,8 @@ NDK_BYTES = 663987688
 # Google's published Linux checksum in android/ndk release r27c. Also record
 # SHA256 of the fully verified download, rather than inventing an initial pin.
 NDK_SHA1 = '090e8083a715fdb1a3e402d0763c388abb03fb4e'
+# Verified full download in CI run 42936832025 after the official size/SHA1.
+NDK_SHA256 = '59c2f6dc96743b5daf5d1626684640b20a6bd2b1d85b13156b90333741bad5cc'
 NDK_VERSION = '27.2.12479018'
 NDK_DIRECTORY = 'android-ndk-r27c'
 BINARY_NAME = 'r8q-composer-dump'
@@ -66,8 +68,11 @@ def verify_ndk_archive(archive):
         raise ValueError('NDK r27c archive length/type differs')
     if digest(archive, 'sha1') != NDK_SHA1:
         raise ValueError('NDK r27c archive official SHA1 differs')
+    actual_sha256 = digest(archive)
+    if actual_sha256 != NDK_SHA256:
+        raise ValueError('NDK r27c archive SHA256 differs')
     return {'url': NDK_URL, 'bytes': NDK_BYTES, 'official_sha1': NDK_SHA1,
-            'sha256': digest(archive), 'version': NDK_VERSION}
+            'sha256': actual_sha256, 'version': NDK_VERSION}
 
 
 def fetch_ndk(archive):
@@ -181,7 +186,8 @@ def main():
     work, evidence = args.work.resolve(), args.output.resolve()
     report = {'status': 'STARTED', 'vndk_repository': VNDK_REPO, 'vndk_commit': VNDK_COMMIT,
               'phone_execution_tested': False, 'libraries_replaced': False, 'installer_created': False,
-              'source_sha256': digest(Path(__file__).with_name('composer_dump.cpp'))}
+              'source_sha256': digest(Path(__file__).with_name('composer_dump.cpp')),
+              'locale_compat_sha256': digest(Path(__file__).with_name('platform_locale_compat.h'))}
     (evidence / 'NOT-AN-INSTALLER.txt').write_text(
         'Offline ARM64 ELF review only. This is not a recovery ZIP or boot image.\n'
         'No phone execution, HAL mode capture or Android boot is yet confirmed.\n'
@@ -203,12 +209,14 @@ def main():
         readelf = compiler_root / 'bin/llvm-readelf'
         nm = compiler_root / 'bin/llvm-nm'
         source = Path(__file__).with_name('composer_dump.cpp').resolve()
+        locale_compat = Path(__file__).with_name('platform_locale_compat.h').resolve()
         executable = evidence / BINARY_NAME
         library_root = snapshot / 'arm64/arch-arm64-armv8-a/shared'
         library_paths = [library_root / 'vndk-core', library_root / 'vndk-sp']
         command = [compiler, '-std=c++17', '-O2', '-fno-exceptions', '-fno-rtti',
                    '-fPIE', '-pie', '-fstack-protector-strong', '-D_FORTIFY_SOURCE=2',
                    '-DANDROID', '-D__ANDROID_VENDOR__', '-nostdinc++', '-nostdlib++',
+                   '-include', locale_compat,
                    '-Wl,-z,relro,-z,now,-z,max-page-size=4096,--no-undefined,--build-id=sha1',
                    '-Wl,--dynamic-linker=/system/bin/linker64']
         for path in include_paths(snapshot):

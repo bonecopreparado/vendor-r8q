@@ -75,11 +75,23 @@ class ArchiveTests(unittest.TestCase):
             content = b'small verified archive fixture'
             archive.write_bytes(content)
             with mock.patch.object(helper, 'NDK_BYTES', len(content)), mock.patch.object(
-                    helper, 'NDK_SHA1', hashlib.sha1(content).hexdigest()):
+                    helper, 'NDK_SHA1', hashlib.sha1(content).hexdigest()), mock.patch.object(
+                    helper, 'NDK_SHA256', hashlib.sha256(content).hexdigest()):
                 result = helper.verify_ndk_archive(archive)
                 self.assertEqual(result['sha256'], hashlib.sha256(content).hexdigest())
                 archive.write_bytes(b'x' * len(content))
                 with self.assertRaisesRegex(ValueError, 'SHA1'):
+                    helper.verify_ndk_archive(archive)
+
+    def test_sha256_pin_is_checked_even_after_official_sha1_matches(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / 'ndk.zip'
+            content = b'verified fixture'
+            archive.write_bytes(content)
+            with mock.patch.object(helper, 'NDK_BYTES', len(content)), mock.patch.object(
+                    helper, 'NDK_SHA1', hashlib.sha1(content).hexdigest()), mock.patch.object(
+                    helper, 'NDK_SHA256', '0' * 64):
+                with self.assertRaisesRegex(ValueError, 'SHA256'):
                     helper.verify_ndk_archive(archive)
 
     def test_short_missing_and_symlinked_archives_fail(self):
