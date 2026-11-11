@@ -1,0 +1,65 @@
+name: Build r8q native composer diagnostic v5 and phone-only collector
+on:
+  push:
+    branches: [r8q-bootdiag-v5-20261111]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install recovery-compatible shell and build prerequisites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh git python3 unzip
+          df -h "$GITHUB_WORKSPACE"
+      - name: Verify addon recovery behavior and native ELF review guards
+        run: |
+          /bin/mksh -n tools/bootdiag_v5/runtime-template.sh
+          /bin/mksh -n tools/bootdiag_v5/upgrade-template.sh
+          /bin/mksh -n tools/bootdiag_v5/collect-template.sh
+          python3 -m unittest discover -s ci-r8q/tests -p test_composer_dump_build.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_bootdiag_v5*.py' -v
+      - name: Compile native client fresh with pinned NDK and VNDK30 - no expiring artifact dependency
+        run: python3 tools/display_probe/build_probe.py
+      - name: Report original vendor library inventory without claiming runtime resolution
+        run: python3 tools/display_probe/inventory_inputs.py --build-report reports/composer-dump-build/summary.json --output reports/composer-dump-build/vendor-library-inventory.json
+      - name: Package guarded ENABLE, exact restorations and mobile COLLECT-ONLY
+        run: python3 tools/package_bootdiag_v5.py --probe-build reports/composer-dump-build --output delivery/Bootdiag-V5
+      - name: Attest exact diagnostic and collector ZIPs
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: delivery/Bootdiag-V5/*.zip
+      - name: Publish experimental diagnostic with phone-only collection instructions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          RELEASE_TAG: r8q-bootdiag-v5-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$BUNDLE" delivery/Bootdiag-V5/R8Q-BOOTDIAG-V5.intoto.jsonl
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'R8Q BOOTDIAG v5 — native composer dump and phone-only collector' \
+            --notes-file delivery/Bootdiag-V5/README-ENGLISH.txt \
+            delivery/Bootdiag-V5/*.zip delivery/Bootdiag-V5/*.sha256 \
+            delivery/Bootdiag-V5/README-ENGLISH.txt delivery/Bootdiag-V5/R8Q-BOOTDIAG-V5.intoto.jsonl
+      - name: Retain ready ZIPs and actual build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-BOOTDIAG-V5-READY-ZIPS-AND-COMPILE-EVIDENCE
+          path: |
+            delivery/Bootdiag-V5/
+            reports/composer-dump-build/
+          retention-days: 30
