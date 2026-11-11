@@ -46,6 +46,7 @@ int main(int argc, char**) {
     // The wrapper must impose its own timeout too. A hung synchronous Binder
     // transaction must not keep a boot diagnostic process alive indefinitely.
     ::signal(SIGPIPE, SIG_IGN);
+    ::signal(SIGALRM, SIG_DFL);
     ::alarm(kDeadlineSeconds);
 
     auto manager = android::hardware::defaultServiceManager();
