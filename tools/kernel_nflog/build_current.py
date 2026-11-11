@@ -16,9 +16,11 @@ import zlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import audit_current as audit
+import compiler_cache
 
 LOCALVERSION = '-r8q-nflog-staging1'
 LTO_MAKE_ARGUMENT = 'LD_FLAGS_LTO_CLANG=-mllvm -import-instr-limit=5 --thinlto-jobs=2 --threads=2'
+CLANG_SHA256 = '19823dc3473e9fc514d5c37f11afc1e7d76f9d519257448445a929e46086ffd9'
 # ARM64 RELOCATABLE selects ARCH_HAS_RELR. RELR is invisible/default-y with
 # this linker and selects LTO_CLANG, so use supported ThinLTO explicitly.
 REQUESTED = {
@@ -26,6 +28,9 @@ REQUESTED = {
     'CONFIG_RELR': 'y', 'CONFIG_LTO_CLANG': 'y', 'CONFIG_THINLTO': 'y',
     'CONFIG_POLLY_CLANG': 'n', 'CONFIG_LLVM_POLLY': 'n',
     'CONFIG_BBG': 'n', 'CONFIG_NOMOUNT': 'n',
+    # This optional debug iterator UMD uses the absent userprogs build framework
+    # in the pinned 4.19 tree. It is not Android's network BPF loader.
+    'CONFIG_BPF_PRELOAD_UMD': 'n',
     'CONFIG_ZRAM_BACKEND_LZ4': 'y', 'CONFIG_ZRAM_DEF_COMP_LZ4': 'y',
     'CONFIG_ZRAM_BACKEND_LZO': 'n', 'CONFIG_ZRAM_DEF_COMP_LZORLE': 'n',
     'CONFIG_ZRAM_DEF_COMP_LZO': 'n',
@@ -43,7 +48,10 @@ CONFIG_MFD_SPMI_PMIC CONFIG_MMC_SDHCI_MSM CONFIG_USB_DWC3 CONFIG_USB_DWC3_MSM
 CONFIG_USB_DWC3_QCOM CONFIG_USB_CONFIGFS CONFIG_USB_CONFIGFS_F_FS CONFIG_USB_CONFIGFS_F_MTP
 CONFIG_SECURITY_SELINUX_DEVELOP CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE
 CONFIG_CMDLINE CONFIG_CMDLINE_EXTEND CONFIG_RELOCATABLE CONFIG_RANDOMIZE_BASE
-CONFIG_ZRAM CONFIG_ZRAM_WRITEBACK CONFIG_ZRAM_DEF_COMP'''.split())
+CONFIG_ZRAM CONFIG_ZRAM_WRITEBACK CONFIG_ZRAM_DEF_COMP
+CONFIG_BPF CONFIG_BPF_SYSCALL CONFIG_BPF_LSM CONFIG_BPF_JIT CONFIG_BPF_JIT_ALWAYS_ON
+CONFIG_BPF_JIT_DEFAULT_ON CONFIG_CGROUP_BPF CONFIG_NET_CLS_BPF CONFIG_NET_ACT_BPF
+CONFIG_BPF_PRELOAD CONFIG_USERMODE_DRIVER'''.split())
 REQUIRED_SYMBOLS = frozenset(('nf_log_packet', 'nf_log_register', 'netfilter_log_init',
                               'nfnetlink_log_init', 'nfulnl_log_packet', 'nflog_tg', 'nflog_tg_init'))
 SOURCE_EVIDENCE = (
@@ -53,6 +61,8 @@ SOURCE_EVIDENCE = (
     'drivers/fingerprint/gw9558x_common.c', 'drivers/fingerprint/gw9558x_platform.c',
     'net/netfilter/Makefile', 'net/netfilter/xt_NFLOG.c', 'net/netfilter/nfnetlink_log.c',
     'net/netfilter/nf_log.c', 'include/net/netfilter/nf_log.h', '.gitmodules',
+    'kernel/bpf/preload/Kconfig', 'kernel/bpf/preload/Makefile',
+    'kernel/bpf/inode.c', 'scripts/Makefile.build',
     'KernelSU/kernel/Kconfig', 'KernelSU/kernel/Makefile',
     'Baseband-guard/Kconfig', 'NoMount/kernel/src/Kconfig',
 )
@@ -161,6 +171,9 @@ def verify_toolchain(toolchain, env):
         raise ValueError('Pinned clang-18 size differs')
     if audit.output(['git', '-C', toolchain, 'hash-object', binary], env) != audit.CLANG_BLOB:
         raise ValueError('Pinned clang-18 Git blob differs')
+    compiler_sha = file_sha(binary)
+    if compiler_sha != CLANG_SHA256:
+        raise ValueError('Pinned clang-18 SHA256 differs')
     env['PATH'] = str(toolchain / audit.CLANG_DIRECTORY / 'bin') + os.pathsep + env['PATH']
     version = audit.output(['clang', '--version'], env)
     if 'clang version 18.0.1' not in version or '11889484' not in version:
@@ -170,7 +183,7 @@ def verify_toolchain(toolchain, env):
         raise ValueError('Pinned linker cannot enforce the reviewed ThinLTO worker limits')
     return {'repository': audit.CLANG_REPO, 'commit': audit.CLANG_COMMIT,
             'directory': audit.CLANG_DIRECTORY, 'clang_git_blob': audit.CLANG_BLOB,
-            'clang_sha256': file_sha(binary), 'clang_version': version,
+            'clang_sha256': compiler_sha, 'clang_version': version,
             'ld_lld_version': audit.output(['ld.lld', '--version'], env),
             'lto_make_argument': LTO_MAKE_ARGUMENT}
 
@@ -180,6 +193,7 @@ def main():
     parser.add_argument('--baseline', type=Path, default=audit.ROOT / 'tools/kernel_nflog/shipped-config.gz')
     parser.add_argument('--work', type=Path, default=audit.ROOT / '.deps/current-kernel-build')
     parser.add_argument('--output', type=Path, default=audit.ROOT / 'reports/current-kernel-build')
+    parser.add_argument('--clang-cache', type=Path, help='Optional verified compiler-only cache outside fresh work/output')
     parser.add_argument('--jobs', type=int, choices=(1, 2, 3), default=2)
     args = parser.parse_args()
     baseline = baseline_bytes(args.baseline)
@@ -200,7 +214,8 @@ def main():
                   'Current ARM64 relocation support forces RELR and LTO_CLANG; ThinLTO is explicitly retained instead of full LTO.',
                   'Scheduler, RNG and root integration differ from A06; successful compilation proves no boot compatibility.',
                   'Current ARM64 Image uses text_offset=0; old shipped Image uses 0x80000. No header patch or boot repack is performed.',
-                  'Clang18 is pinned to old compiler identity; upstream current build.sh instead downloads moving Neutron.'
+                  'Clang18 is pinned to old compiler identity; upstream current build.sh instead downloads moving Neutron.',
+                  'Optional new BPF_PRELOAD_UMD debug iterators are disabled: userprogs build support is absent in this tree. Existing Android/network BPF selectors remain protected.'
               ]}
     (evidence / 'NOT-FLASHABLE.txt').write_text(
         'OFFLINE REVIEW ONLY. Raw Image/vmlinux are NOT a flashable ZIP or Android boot.img.\n'
@@ -218,9 +233,16 @@ def main():
         source, clang, out = work / 'kernel', work / 'clang', work / 'out'
         audit.checkout(audit.SOURCE_REPO, audit.SOURCE_COMMIT, source, evidence, 'kernel', env)
         report['submodules'] = audit.verify_submodules(source, evidence, env)
-        audit.checkout(audit.CLANG_REPO, audit.CLANG_COMMIT, clang, evidence, 'clang', env,
-                       sparse=audit.CLANG_DIRECTORY)
-        report['toolchain'] = verify_toolchain(clang, env)
+        compiler = compiler_cache.prepare_compiler(clang, evidence, env, verify_toolchain,
+                                                   cache=args.clang_cache, work=work, output=evidence)
+        report['toolchain'] = compiler['toolchain']
+        report['compiler_cache'] = compiler['cache']
+        if compiler['cache']['enabled']:
+            # The workflow saves only after the actual cache and private copy
+            # have both passed identity verification, even if Image later fails.
+            (evidence / 'compiler-cache-verified.txt').write_text(
+                json.dumps({'clang_sha256': report['toolchain']['clang_sha256'],
+                            'commit': report['toolchain']['commit']}, sort_keys=True) + '\n')
         report['environment'] = {'ARCH': 'arm64', 'PLATFORM_VERSION': '11', 'jobs': args.jobs,
                                  'host_gcc': audit.output(['gcc', '--version'], env).splitlines()[0],
                                  'cross_gcc': audit.output(['aarch64-linux-gnu-gcc', '--version'], env).splitlines()[0]}

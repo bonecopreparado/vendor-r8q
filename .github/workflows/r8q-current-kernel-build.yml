@@ -20,9 +20,23 @@ jobs:
           df -h "$GITHUB_WORKSPACE"
           free -h
       - name: Verify host-only config, Image and symbol guards
-        run: python3 -m unittest discover -s ci-r8q/tests -p test_current_kernel_build.py -v
+        run: |
+          python3 -m unittest discover -s ci-r8q/tests -p test_current_kernel_build.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_kernel_compiler_cache.py -v
+      - name: Restore exact immutable compiler only
+        id: clang-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/r8q-clang
+          key: r8q-clang-v1-${{ runner.os }}-5a1f5d58aa30f70047f18cf5fc077a3dd391589c-clang-r522817-5f9bb95cd5b0c3c7ff9f7579af87b54ed4395190
       - name: Compile raw Image and vmlinux with reviewed config - never repackage boot
-        run: python3 tools/kernel_nflog/build_current.py --jobs 2
+        run: python3 tools/kernel_nflog/build_current.py --jobs 2 --clang-cache .cache/r8q-clang
+      - name: Save verified compiler even when a later compile fails
+        if: always() && steps.clang-cache.outputs.cache-hit != 'true' && hashFiles('reports/current-kernel-build/compiler-cache-verified.txt') != ''
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/r8q-clang
+          key: r8q-clang-v1-${{ runner.os }}-5a1f5d58aa30f70047f18cf5fc077a3dd391589c-clang-r522817-5f9bb95cd5b0c3c7ff9f7579af87b54ed4395190
       - name: Retain unflashable outputs and full compile provenance
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

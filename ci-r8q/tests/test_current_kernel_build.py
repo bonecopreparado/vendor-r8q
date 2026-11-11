@@ -37,6 +37,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(requested['CONFIG_RELR'], 'y')
         self.assertEqual(requested['CONFIG_THINLTO'], 'y')
         self.assertEqual(requested['CONFIG_ZRAM_BACKEND_LZ4'], 'y')
+        self.assertEqual(requested['CONFIG_BPF_PRELOAD_UMD'], 'n')
 
     def test_reviewed_removed_names_pass_only_with_actual_driver(self):
         baseline, after = self.fixtures()
@@ -73,6 +74,20 @@ class Tests(unittest.TestCase):
         result = helper.config_guards(baseline, config(after))
         self.assertIn('CONFIG_ZRAM_DEF_COMP', result['build_guard_failures'])
         self.assertIn('CONFIG_ZRAM_BACKEND_LZ4', result['build_guard_failures'])
+
+    def test_optional_debug_umd_disabled_without_losing_android_network_bpf(self):
+        baseline, after = self.fixtures()
+        before = helper.audit.parse_config(baseline)
+        bpf = ('CONFIG_BPF', 'CONFIG_BPF_SYSCALL', 'CONFIG_BPF_LSM', 'CONFIG_BPF_JIT',
+               'CONFIG_BPF_JIT_ALWAYS_ON', 'CONFIG_BPF_JIT_DEFAULT_ON', 'CONFIG_CGROUP_BPF',
+               'CONFIG_NET_CLS_BPF', 'CONFIG_NET_ACT_BPF', 'CONFIG_BPF_PRELOAD', 'CONFIG_USERMODE_DRIVER')
+        for key in bpf:
+            with self.subTest(key=key):
+                self.assertEqual(before[key], 'y')
+                modified = {**after, key: 'n'}
+                self.assertIn(key, helper.config_guards(baseline, config(modified))['build_guard_failures'])
+        after['CONFIG_BPF_PRELOAD_UMD'] = 'y'
+        self.assertIn('CONFIG_BPF_PRELOAD_UMD', helper.config_guards(baseline, config(after))['build_guard_failures'])
 
     def image(self, offset=0, flags=10, memory_size=4096):
         result = bytearray(64)
