@@ -22,6 +22,8 @@ jobs:
         run: python3 -m unittest discover -s ci-r8q/tests -p test_composer_dump_build.py -v
       - name: Compile pinned VNDK30 ABI client and inspect dependencies
         run: python3 tools/display_probe/build_probe.py
+      - name: Compare dependency names with original vendor inventory - informational
+        run: python3 tools/display_probe/inventory_inputs.py --build-report reports/composer-dump-build/summary.json --output reports/composer-dump-build/vendor-library-inventory.json
       - name: Retain offline binary and compile evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

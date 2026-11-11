@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import urllib.request
@@ -35,6 +36,7 @@ ALLOWED_NEEDED = frozenset((
 REQUIRED_NEEDED = frozenset((
     'android.hardware.graphics.composer@2.1.so', 'libhidlbase.so', 'libutils.so', 'libc++.so', 'libc.so',
 ))
+VNDK_NOTICES = ('libc++.so.txt', 'libhidlbase.so.txt', 'libutils.so.txt')
 
 
 def digest(path, name='sha256'):
@@ -112,13 +114,65 @@ def extract_ndk(archive, destination, evidence, env):
     return ndk / 'toolchains/llvm/prebuilt/linux-x86_64'
 
 
+def collect_ndk_notices(archive, evidence):
+    target = evidence / 'licenses'
+    target.mkdir(exist_ok=True)
+    records = {}
+    with zipfile.ZipFile(archive) as package:
+        for name in ('NOTICE', 'NOTICE.toolchain'):
+            info = package.getinfo(NDK_DIRECTORY + '/' + name)
+            if info.is_dir() or not 0 < info.file_size <= 6 * 1024 * 1024:
+                raise ValueError('NDK notice absent/oversized')
+            data = package.read(info)
+            data.decode('utf-8')
+            output = target / ('NDK-' + name + '.txt')
+            output.write_bytes(data)
+            records['licenses/' + output.name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
+                'source': NDK_URL + '#' + info.filename}
+    return records
+
+
+def collect_vndk_notices(snapshot, evidence):
+    target = evidence / 'licenses'
+    target.mkdir(exist_ok=True)
+    records = {}
+    for name in VNDK_NOTICES:
+        source = snapshot / 'common/NOTICE_FILES' / name
+        if source.is_symlink() or not source.is_file() or not 0 < source.stat().st_size <= 128 * 1024:
+            raise ValueError('Pinned VNDK notice absent/oversized: ' + name)
+        source.read_text(encoding='utf-8')
+        output = target / ('VNDK30-' + name)
+        shutil.copyfile(source, output)
+        records['licenses/' + output.name] = {'bytes': output.stat().st_size, 'sha256': digest(output),
+            'source': VNDK_REPO + '/blob/' + VNDK_COMMIT + '/common/NOTICE_FILES/' + name}
+    # Preserve original notices from the actual platform headers whose inline
+    # smart-pointer/HIDL code is used, in addition to their full license texts.
+    header_names = ('system/libhidl/base/include/hidl/HidlSupport.h',
+                    'system/libhidl/base/include/hidl/Status.h',
+                    'system/core/libutils/include/utils/StrongPointer.h',
+                    'system/core/libutils/include/utils/RefBase.h')
+    chunks = []
+    for name in header_names:
+        source = snapshot / 'arm64/include' / name
+        text = source.read_text(encoding='utf-8')
+        end = text.find('*/')
+        if not text.startswith('/*') or end < 0 or end > 8192:
+            raise ValueError('Pinned header license comment not found: ' + name)
+        chunks.append(name + '\n' + text[:end + 2] + '\n')
+    output = target / 'VNDK30-HEADER-NOTICES.txt'
+    output.write_text('\n'.join(chunks))
+    records['licenses/' + output.name] = {'bytes': output.stat().st_size, 'sha256': digest(output),
+        'source': VNDK_REPO + '/tree/' + VNDK_COMMIT + '/arm64/include'}
+    return records
+
+
 def checkout_vndk(destination, evidence, env):
     destination.mkdir()
     commands = (
         ['git', 'init', destination],
         ['git', '-C', destination, 'remote', 'add', 'origin', VNDK_REPO],
         ['git', '-C', destination, 'sparse-checkout', 'init', '--cone'],
-        ['git', '-C', destination, 'sparse-checkout', 'set', 'arm64'],
+        ['git', '-C', destination, 'sparse-checkout', 'set', 'arm64', 'common/NOTICE_FILES'],
         ['git', '-C', destination, 'fetch', '--no-tags', '--depth=1', '--filter=blob:none', 'origin', VNDK_COMMIT],
         ['git', '-C', destination, 'checkout', '--detach', VNDK_COMMIT],
     )
@@ -202,9 +256,11 @@ def main():
             print('Downloading exact official NDK r27c Linux archive', flush=True)
             fetch_ndk(archive)
         report['ndk'] = verify_ndk_archive(archive)
+        report['notices'] = collect_ndk_notices(archive, evidence)
         compiler_root = extract_ndk(archive, work / 'ndk', evidence, env)
         snapshot = work / 'vndk30'
         checkout_vndk(snapshot, evidence, env)
+        report['notices'].update(collect_vndk_notices(snapshot, evidence))
         compiler = compiler_root / 'bin/aarch64-linux-android30-clang++'
         readelf = compiler_root / 'bin/llvm-readelf'
         nm = compiler_root / 'bin/llvm-nm'

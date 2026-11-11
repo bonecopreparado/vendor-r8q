@@ -82,6 +82,12 @@ from the VNDK snapshot are link-time inputs only. **No platform/vendor library
 is bundled, installed or replaced.** Any compiler, linker or ELF inspection
 failure retains the log and prevents claiming a successful build.
 
+The artifact's `licenses/` directory preserves the actual verified NDK
+`NOTICE`/`NOTICE.toolchain`, relevant pinned VNDK libc++/HIDL/utils full notices,
+and original copyright/license comments from the used HIDL and smart-pointer
+headers. Their hashes and source paths are recorded in the build summary and
+must accompany any later diagnostic distribution of this executable.
+
 The proposed workflow only uploads offline evidence and the small ELF. It does
 not publish a diagnostic ZIP or touch the ROM. The initial version has not yet
 been compiled in CI or run on the phone. A build that passes ELF checks still
