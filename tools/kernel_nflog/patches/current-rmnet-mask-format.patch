@@ -1,0 +1,16 @@
+--- a/techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c
++++ b/techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c
+@@ -1226,10 +1226,11 @@
+ 	cpu_in_rps_mask = (1 << dest_cpu) & ep->rps_config_msk;
+ 
+ 	rm_err("SHS_MASK:  cur cpu [%d] | dest_cpu [%d] | "
+-	       "cpu isolation_mask = 0x%x | ep_rps_mask = 0x%x | "
++	       "cpu isolation_mask = %*pbl | ep_rps_mask = 0x%x | "
+ 	       "cpu_online(dest) = %d cpu_in_rps_mask = %d | "
+ 	       "cpu isolated(dest) = %d",
+-	       current_cpu, dest_cpu, __cpu_isolated_mask, ep->rps_config_msk,
++	       current_cpu, dest_cpu, cpumask_pr_args(cpu_isolated_mask),
++	       ep->rps_config_msk,
+ 	       cpu_online(dest_cpu), cpu_in_rps_mask, cpu_isolated(dest_cpu));
+ 
+ 	/* We cannot move to dest cpu if the cur cpu is the same,

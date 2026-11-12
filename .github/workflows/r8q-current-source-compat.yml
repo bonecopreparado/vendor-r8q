@@ -1,0 +1,22 @@
+name: Verify reviewed r8q source compatibility patches - no kernel image
+on:
+  push:
+    branches: [r8q-susfs-review-20261112]
+  pull_request:
+    paths:
+      - tools/kernel_nflog/current_compat.py
+      - tools/kernel_nflog/patches/**
+      - tools/kernel_nflog/upstream-current/**
+      - ci-r8q/tests/test_current*compat.py
+      - .github/workflows/r8q-current-source-compat.yml
+permissions:
+  contents: read
+jobs:
+  source-compatibility-only:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify exact patches and execute real source functions in host fixtures
+        run: python3 -m unittest discover -s ci-r8q/tests -p 'test_current*compat.py' -v

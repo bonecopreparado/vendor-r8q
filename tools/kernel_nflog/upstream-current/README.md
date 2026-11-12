@@ -10,14 +10,16 @@ These are unmodified files from
 - `drivers/ccic/max77705_usbc.c`, Git blob
   `9e66b4a70f15c24e566453551587543cff75bc48`;
 - `include/linux/cpufreq.h`, Git blob
-  `904960e7f5d532538831c875814a20b26a810c5a` (unchanged API fixture).
+  `904960e7f5d532538831c875814a20b26a810c5a` (unchanged API fixture);
+- `include/linux/cpumask.h` and `techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c`;
+- `kernel/cpu.c` and `kernel/Makefile` (unchanged mask-provider evidence).
 
 Copyright and license notices remain intact. The kernel's GNU GPL version 2
 license text is included as `COPYING`; zram's original header also describes
 its dual BSD/GPL license.
 
 They support offline tests of the exact reviewed source overlays. Tests check
-original and resulting hashes, apply both patches to a temporary Git checkout,
+original and resulting hashes, apply the reviewed patches to a temporary Git checkout,
 reject unrelated changes, and compile extracted real scheduler/zram functions
 against focused host stubs. Runtime fixtures cover merge-list ownership,
 unlock-before-free, backing-device BIO initialization, parent chaining, sector
@@ -25,3 +27,12 @@ conversion and allocation-error propagation. MAX77705 fixtures compile and run
 both optional CPU vote-provider branches, retaining scheduler/DDR boosts and
 delayed work in both. They do not execute a real kernel, block device, interrupt
 handler or ARM64 boot.
+
+The RMNET compatibility tests also retain the exact `include/linux/cpumask.h`,
+`techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c`, `kernel/cpu.c` and
+`kernel/Makefile` sources. The latter two show that the mask is still defined,
+exported and built unconditionally, including without SMP. The restored API
+reads that real mask; it does not substitute a constant or housekeeping state.
+Host C fixtures exercise the extracted migration predicate with mask set/clear,
+online/offline, RPS exclusion, same-CPU and invalid endpoint/CPU cases. They
+also compile the genuine kernel mask printf arguments with format checking.

@@ -31,6 +31,18 @@ PINS = {
         'after_sha256': '0ff9fc77cb8f8277454028ab49934e11fa0e8d25b04f8b45dc492988bf770650',
         'patch_sha256': '25749e3689f5c9049f5d582c88aa7f47c122b60ed4e393a18f91b42a9dec8296',
     },
+    'include/linux/cpumask.h': {
+        'patch': 'current-cpumask-isolated-api.patch',
+        'before_sha256': 'fc079c7b52722349e18f2408ccbe3dac7956b74b22ee78ed0a4121327e9238b8',
+        'after_sha256': 'ea7b1397ec9e2067732e17042cc598922eb6e5772651482e6a3408f72a0f12b3',
+        'patch_sha256': '9f5421656c4540d8f03f9e9bdbf7622a3a59ab8567ddf3b97b80fb65e3eb0387',
+    },
+    'techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c': {
+        'patch': 'current-rmnet-mask-format.patch',
+        'before_sha256': '04bb7c485030147267f5a53d8b31ef82bafd7c0f1cdde305177c0c9cf2806cdd',
+        'after_sha256': '71a108631acdc159bbe31bdc6617956ac6f46625673d9b39e24195b41b26481a',
+        'patch_sha256': '34064ff70711c27a5182fbadab463ca9771fbd8259ff3ba811dfb6d606fb26a7',
+    },
 }
 
 
