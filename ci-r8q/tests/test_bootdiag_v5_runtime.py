@@ -115,6 +115,10 @@ class Tests(unittest.TestCase):
             self.assertFalse((r / 'metadata/r8q-bootdiag-v5').exists())
         r, _ = self.fixture()
         base = r / 'metadata/r8q-bootdiag-v5'
+        # mkdir(parents=True) does not apply mode to intermediate parents.
+        # CI's umask 022 otherwise creates a 0755 base which the production
+        # privacy guard correctly rejects before reaching the capture cap.
+        base.mkdir(mode=0o700)
         for index in range(3):
             d = base / f'capture.{index:06}'
             d.mkdir(parents=True, mode=0o700)

@@ -31,6 +31,17 @@ elif name=='umount':
  path=r/'proc/mounts';path.write_text(''.join(line+'\n' for line in path.read_text().splitlines() if line.split()[1]!=str(r/'metadata')))
 elif name=='sync':pass
 elif name=='timeout':os.execvp(args[1],args[1:])
+elif name=='mv':
+ if args and args[0]=='-n':
+  if f.get('unsupported_mv_n'):sys.exit(2)
+  source,target=Path(args[1]),Path(args[2])
+  if f.get('publish_collision') and str(source).endswith('.inprogress'):
+   target.write_bytes(b'preserve existing archive')
+  if target.exists() or target.is_symlink():
+   if f.get('ignore_mv_n'):
+    os.replace(source,target);sys.exit(0)
+   sys.exit(f.get('mv_skip_status',0))
+ os.execv('/usr/bin/mv',['mv']+args)
 else:sys.exit(3)
 '''
 
@@ -57,7 +68,7 @@ class Tests(unittest.TestCase):
             (d / 'boot.log').write_text('Android SurfaceFlinger crash evidence\n')
             (d / 'README.txt').write_text('capture metadata')
             (d / 'COMPLETE.txt').write_text('capture=complete\n')
-        for name in ('id', 'getprop', 'df', 'stat', 'mount', 'umount', 'sync', 'timeout'):
+        for name in ('id', 'getprop', 'df', 'stat', 'mount', 'umount', 'sync', 'timeout', 'mv'):
             path = r / 'bin' / name
             path.write_text(MOCK)
             path.chmod(0o755)
@@ -174,6 +185,34 @@ class Tests(unittest.TestCase):
         archives = list((r / 'sdcard/Download').glob('*.tar.gz'))
         self.assertEqual(len(archives), 2)
         self.assertEqual(hashlib.sha256(first.read_bytes()).hexdigest(), original)
+
+    def test_no_clobber_probe_accepts_old_and_new_skip_status_only_with_preserved_files(self):
+        for status in (0, 1):
+            with self.subTest(status=status):
+                r = self.fixture(flags={'mv_skip_status': status})
+                result = self.execute(r)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertNotIn('PARTIAL', self.archive(r).name)
+
+    def test_unsupported_or_ineffective_no_clobber_is_refused(self):
+        for flags in ({'unsupported_mv_n': True}, {'ignore_mv_n': True}):
+            with self.subTest(flags=flags):
+                r = self.fixture(flags=flags)
+                result = self.execute(r)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse(list((r / 'sdcard/Download').iterdir()))
+                self.assertIn('no-clobber' if flags.get('unsupported_mv_n') else 'No-clobber', result.stdout)
+
+    def test_publication_collision_preserves_existing_archive_for_both_skip_statuses(self):
+        for status in (0, 1):
+            with self.subTest(status=status):
+                r = self.fixture(flags={'publish_collision': True, 'mv_skip_status': status})
+                result = self.execute(r)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertNotIn('evidence archive saved', result.stdout)
+                archive = self.archive(r)
+                self.assertEqual(archive.read_bytes(), b'preserve existing archive')
+                self.assertEqual(len(list((r / 'sdcard/Download').glob('*.inprogress'))), 1)
 
     def test_large_stream_is_bounded_and_honestly_partial(self):
         r = self.fixture()

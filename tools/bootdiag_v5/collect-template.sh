@@ -62,9 +62,17 @@ gzip -t "$WORK/test.tar.gz" 2>> "$ERRORS" || abort "Recovery gzip verification i
 tar -tzf "$WORK/test.tar.gz" > "$WORK/test.list" 2>> "$ERRORS" || abort "Recovery tar cannot list gzip archives."
 [ "$(tar -xOzf "$WORK/test.tar.gz" check.txt 2>> "$ERRORS")" = tar-capability-check ] || abort "Recovery tar cannot verify archive members."
 printf 'source\n' > "$WORK/mv-source"
+mv -n "$WORK/mv-source" "$WORK/mv-fresh" 2>> "$ERRORS" || abort "Recovery mv lacks no-clobber support."
+[ ! -e "$WORK/mv-source" ] && [ "$(cat "$WORK/mv-fresh")" = source ] || abort "No-clobber fresh-move verification failed."
+printf 'source\n' > "$WORK/mv-source"
 printf 'preserve\n' > "$WORK/mv-target"
-mv -n "$WORK/mv-source" "$WORK/mv-target" 2>> "$ERRORS" || abort "Recovery mv lacks no-clobber support."
-[ -f "$WORK/mv-source" ] && [ "$(cat "$WORK/mv-target")" = preserve ] || abort "No-clobber verification failed."
+# A skipped -n collision returns zero in older tools and one in newer GNU mv.
+# The fresh move above proves flag support; a collision must preserve BOTH
+# files regardless of that documented status difference.
+if mv -n "$WORK/mv-source" "$WORK/mv-target" 2> "$WORK/mv-collision-stderr"; then mv_status=0; else mv_status=$?; fi
+case "$mv_status" in 0|1) ;; *) abort "Recovery mv collision check failed.";; esac
+[ -f "$WORK/mv-source" ] && [ "$(cat "$WORK/mv-source")" = source ] &&
+    [ "$(cat "$WORK/mv-target")" = preserve ] || abort "No-clobber verification failed."
 
 EXPECTED=/dev/block/platform/soc/1d84000.ufshc/by-name/metadata
 METADATA_OK=0
