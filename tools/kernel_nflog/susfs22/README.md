@@ -15,7 +15,7 @@ KernelSU integration remains pinned at sKernelSU `7d46da2ae166570c14b5336a5f5fe3
 The reference is adapted specifically to canonical r8q kernel commit
 `a265508933bbecb682e45e3b956d95bf4426d60b`.
 
-`pins.json` records the reference and exact before/after hashes for 20 paths.
+`pins.json` records the reference and exact before/after hashes for 21 paths.
 Three paths are genuine new source/header files. The derived patch must apply
 without fuzz to the exact source; a mismatched existing/new file is rejected.
 Canonical `security/selinux/avc.c` was independently bound to upstream Git blob
@@ -53,3 +53,9 @@ The existing production boot packager does not accept this new source record.
 Kernel-derived source retains the kernel's GPLv2 license; the full license is
 included in `../upstream-current/COPYING`. This README records the reference
 and local adaptations; it does not replace upstream copyright notices.
+
+The second full compile built the SUSFS/namei/namespace/AVC objects and reached
+the MMC driver. Its direct internal `__WARN_printf` call is now the public
+`WARN(1, ...)` API, which is valid with CONFIG_BUG both enabled and disabled.
+The existing timeout completion, MMC event log and power-register dump are
+unchanged. This additional source repair is included in the pinned 21 paths.

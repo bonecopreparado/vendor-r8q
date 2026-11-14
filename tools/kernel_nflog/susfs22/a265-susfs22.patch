@@ -3972,3 +3972,15 @@ diff --git a/security/selinux/avc.c b/security/selinux/avc.c
  	BUG_ON(!tclass || tclass >= ARRAY_SIZE(secclass_map));
  	audit_log_format(ab, " tclass=%s", secclass_map[tclass-1].name);
  }
+diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
+--- a/drivers/mmc/host/sdhci-msm.c
++++ b/drivers/mmc/host/sdhci-msm.c
+@@ -3445,7 +3445,7 @@
+ 		init_completion(&msm_host->pwr_irq_completion);
+ 	else if (!wait_for_completion_timeout(&msm_host->pwr_irq_completion,
+ 				msecs_to_jiffies(MSM_PWR_IRQ_TIMEOUT_MS))) {
+-		__WARN_printf("%s: request(%d) timed out waiting for pwr_irq\n",
++		WARN(1, "%s: request(%d) timed out waiting for pwr_irq\n",
+ 					mmc_hostname(host->mmc), req_type);
+ 		mmc_log_string(host->mmc,
+ 			"request(%d) timed out waiting for pwr_irq\n",

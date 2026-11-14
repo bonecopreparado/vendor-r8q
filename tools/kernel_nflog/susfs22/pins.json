@@ -3,7 +3,7 @@
   "reference_repository": "JackA1ltman/NonGKI_Kernel_Build_2nd",
   "reference_commit": "bf3b496646c77147444faff1cc55b58a07b7160a",
   "reference_patch_sha256": "8a768457349165ae26ba0c6aa396740b92f1b59e88048a4566e19762f78ed697",
-  "patch_sha256": "616a09c319164c47f0b389f9a20c7a209d499a215302f3a8f470aacbd3728cc3",
+  "patch_sha256": "e4fee33b20a77d7a9148d497b30a0a6fb9bce7282f5ffeacdfe7d32ad12f8d93",
   "files": [
     {
       "path": "fs/Makefile",
@@ -104,6 +104,11 @@
       "path": "security/selinux/avc.c",
       "before_sha256": "dd8225b22782f378ac84cf97da64105b45b0a3c6becdfbe4288feab8bb8aaf52",
       "after_sha256": "cb50584565cf218d215ffa6c8281450a6458a0a4981ed0254e50e9b67d7f3e22"
+    },
+    {
+      "path": "drivers/mmc/host/sdhci-msm.c",
+      "before_sha256": "9b4ed6d65873ddd387388b24c8af99ce1db72c0b4bbd16e4366c94a034578244",
+      "after_sha256": "1e155ca472c9fc653a4389d0b050635cd651da4ba6f63f09c620c95f001f4601"
     }
   ]
 }

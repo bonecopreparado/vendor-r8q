@@ -17,7 +17,7 @@ import current_compat as original
 
 PINS = json.loads((HERE/'pins.json').read_text())
 PATCH = HERE/'a265-susfs22.patch'
-PATCH_SHA = '616a09c319164c47f0b389f9a20c7a209d499a215302f3a8f470aacbd3728cc3'
+PATCH_SHA = 'e4fee33b20a77d7a9148d497b30a0a6fb9bce7282f5ffeacdfe7d32ad12f8d93'
 ROWS = PINS['files']
 NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
 TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None})
