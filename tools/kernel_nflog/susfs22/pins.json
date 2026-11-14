@@ -3,7 +3,7 @@
   "reference_repository": "JackA1ltman/NonGKI_Kernel_Build_2nd",
   "reference_commit": "bf3b496646c77147444faff1cc55b58a07b7160a",
   "reference_patch_sha256": "8a768457349165ae26ba0c6aa396740b92f1b59e88048a4566e19762f78ed697",
-  "patch_sha256": "8132f13f45e7bc72699758b013e7437ab1d0ea50de26dfa37f4b3d326bed785f",
+  "patch_sha256": "092ad5779f1c3f69d6e23d14716745543f61b56d5eaf7a49356e8af80a3085f1",
   "files": [
     {
       "path": "fs/Makefile",
@@ -114,6 +114,11 @@
       "path": "kernel/sched/fair.c",
       "before_sha256": "5b1a19a83830624784e5f71dae37088a6a5e10fe397395206f86af8308c21963",
       "after_sha256": "093b1970f0b3439da706647108229158d71fb0561a339d5f8aaaa060c7261881"
+    },
+    {
+      "path": "kernel/Makefile",
+      "before_sha256": "8eb57c35723d247232cdb96726b575ae181b584060ec9b212241f0e7e5e8ca04",
+      "after_sha256": "f7de0a2ec9dd8c395c2840c1253152adf8e12e654791a3227f1a7f02ba0998b2"
     }
   ]
 }

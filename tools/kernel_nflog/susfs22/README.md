@@ -15,7 +15,7 @@ KernelSU integration remains pinned at sKernelSU `7d46da2ae166570c14b5336a5f5fe3
 The reference is adapted specifically to canonical r8q kernel commit
 `a265508933bbecb682e45e3b956d95bf4426d60b`.
 
-`pins.json` records the reference and exact before/after hashes for 22 paths.
+`pins.json` records the reference and exact before/after hashes for 23 paths.
 Three paths are genuine new source/header files. The derived patch must apply
 without fuzz to the exact source; a mismatched existing/new file is rejected.
 Canonical `security/selinux/avc.c` was independently bound to upstream Git blob
@@ -67,3 +67,11 @@ one call behind. In that caller `delta` is initialized to zero and never
 assigned. The adaptation uses the existing real `cpu_overutilized(prev_cpu)`
 provider and removes that dead zero variable; it does not add a stub or change
 the provider, utilization measurements, uclamp limits or scheduler config.
+
+The fourth compile successfully linked Image/vmlinux with real SUSFS/NFLOG
+symbols. Independent artifact inspection then found that kernel/Makefile
+embedded arch/arm64/configs/stock-defconfig instead of the actual build config.
+That would make /proc/config.gz and offline Image inspection report stale
+features. The rule now embeds $(KCONFIG_CONFIG), and the compile workflow must
+verify the completed Image/IKCONFIG against its complete successful build
+record before its final step can succeed. SUSFS options are checked individually.

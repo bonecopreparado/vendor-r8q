@@ -17,7 +17,7 @@ import current_compat as original
 
 PINS = json.loads((HERE/'pins.json').read_text())
 PATCH = HERE/'a265-susfs22.patch'
-PATCH_SHA = '8132f13f45e7bc72699758b013e7437ab1d0ea50de26dfa37f4b3d326bed785f'
+PATCH_SHA = '092ad5779f1c3f69d6e23d14716745543f61b56d5eaf7a49356e8af80a3085f1'
 ROWS = PINS['files']
 NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
 TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None})
@@ -74,6 +74,7 @@ def apply(source, evidence, env):
     # build; no patched kernel binary or Android ELF is executed on the host.
     build.audit.run([sys.executable,HERE/'test_ownership.py',source],evidence/'susfs22-ownership-test.log',env)
     build.audit.run([sys.executable,HERE/'test_scheduler.py',source],evidence/'scheduler-util-test.log',env)
+    build.audit.run([sys.executable,HERE/'test_ikconfig.py',source],evidence/'ikconfig-prerequisite-test.log',env)
     report = expected_overlay()
     if report['original_compatibility']!=before:
         raise ValueError('Original compatibility record changed')
@@ -87,3 +88,22 @@ if __name__ == '__main__':
     build.current_compat = SimpleNamespace(apply=apply, verify_applied=verify)
     build.REQUIRED_SYMBOLS = build.REQUIRED_SYMBOLS | SUSFS_SYMBOLS
     build.main()
+    # A linked binary is not accepted merely because .config passed before
+    # compilation: inspect the configuration actually embedded in that Image.
+    import argparse
+    parser=argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--output',type=Path,default=build.audit.ROOT/'reports/current-kernel-build')
+    args,_=parser.parse_known_args()
+    summary_path=args.output/'summary.json'
+    summary=json.loads(summary_path.read_text())
+    try:
+        import verify_linked
+        verification=verify_linked.verify((args.output/'Image').read_bytes(),summary)
+        build.audit.write_json(args.output/'linked-image-verification.json',verification)
+        summary['independent_linked_image_verification_passed']=True
+        build.audit.write_json(summary_path,summary)
+    except Exception as error:
+        summary['status']='LINKED_IMAGE_VERIFICATION_FAILED'
+        summary['error']=str(error)
+        build.audit.write_json(summary_path,summary)
+        raise
