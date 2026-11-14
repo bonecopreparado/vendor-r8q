@@ -1,0 +1,109 @@
+{
+  "status": "SCRATCH_DERIVED_OVERLAY_NOT_COMPILED_NOT_FLASHABLE",
+  "reference_repository": "JackA1ltman/NonGKI_Kernel_Build_2nd",
+  "reference_commit": "bf3b496646c77147444faff1cc55b58a07b7160a",
+  "reference_patch_sha256": "8a768457349165ae26ba0c6aa396740b92f1b59e88048a4566e19762f78ed697",
+  "patch_sha256": "4b94c7e71e2daf512e95a677e2ba15233361aeef5ea6a7389bf495b20ac0c485",
+  "files": [
+    {
+      "path": "fs/Makefile",
+      "before_sha256": "ce77fa42535c4f1d072d0822454e343da0ff952390d1a3b9c195996298a8eea5",
+      "after_sha256": "6ed28ccfcf5bbd1cf4a5e7f01bfd39862186b0f57de0df6979cf5fe57cdee635"
+    },
+    {
+      "path": "fs/namei.c",
+      "before_sha256": "225d9012fd2dc5f3f7ffadeddb29a0f7cfb2608cbeb4f50b94fc04874d8d92c6",
+      "after_sha256": "f1313ef70c36ffddbf43dfe5ada37ac5d9d9e4a38c25d86f2d76fd2c6a0bc41f"
+    },
+    {
+      "path": "fs/namespace.c",
+      "before_sha256": "f1bc0adac9e9fd72ce91456d23d58c720ccc29c306447ec715d887c3019c36d1",
+      "after_sha256": "0c12b6a744bea4884598acd75ea44b0ea05d41fabbad9d286ad3b97df5cdab29"
+    },
+    {
+      "path": "fs/notify/fdinfo.c",
+      "before_sha256": "f7ab508e8d9b14c993f035f290103cb580b72fd1d99ff0f3c4522953446b93f1",
+      "after_sha256": "b053448af374106907e0b108a74a4af95e9f3d352a368ec59ab25af509d55024"
+    },
+    {
+      "path": "fs/open.c",
+      "before_sha256": "22cb1fb0718ad711131299b2f28018faf183d88ba87c92878aca1eebce4d9672",
+      "after_sha256": "5afe3697b24d49345c2cda129dc446945b9ecda81d7a93e8818d7d80ec4271de"
+    },
+    {
+      "path": "fs/proc/base.c",
+      "before_sha256": "f629bc87c903fbbf750f1a2e059afb309fe10fd22eaf5ce2551d1dc0fe3953df",
+      "after_sha256": "46307c452a2c6c140a44e1b114b7dd8dc1845f651a678cea459b2f5604018ccf"
+    },
+    {
+      "path": "fs/proc/cmdline.c",
+      "before_sha256": "f72e7aa795a63e8ef2ea957b2d4d82917df2dae86b05b249e09d01ca951de8f4",
+      "after_sha256": "38492092a712b2b6c768bb6a566271eef96f30f5088b2f1afbc09193374271b9"
+    },
+    {
+      "path": "fs/proc/fd.c",
+      "before_sha256": "5c2e42ee48989a4fbdb47047627128514ed43fa16ecc5be00619f0ad4861a359",
+      "after_sha256": "733c94bdba3a1d2e7ce4cf5b6151a95d8165c0302ce9ef53c1804a72f2df26c0"
+    },
+    {
+      "path": "fs/proc/task_mmu.c",
+      "before_sha256": "ec399d72079e603e4f0991bcb1fd167e9a72255beffbe034b7b7431b1cdfadc2",
+      "after_sha256": "6a6d2e8298ea97a51d0f67b5e467bd3af93b67e1a918265326029da858e3aa68"
+    },
+    {
+      "path": "fs/proc_namespace.c",
+      "before_sha256": "3cdb082510b0a99084d065447de01781bb757bce72812bf8f9185e2b8118880b",
+      "after_sha256": "471e23ed08e2972db4eb3c413de4bcba2903374c9115b2d6acd9fb1aa29d874c"
+    },
+    {
+      "path": "fs/readdir.c",
+      "before_sha256": "1f06076fee8ec199aa2cd0e4882ae6d8e41e47ddb5b1bc6a8699491078dd9b84",
+      "after_sha256": "71a8aefac0fe9988519f1cf5bb504a16dfbc7461b257ba3bb470800f931b97f4"
+    },
+    {
+      "path": "fs/stat.c",
+      "before_sha256": "27f0314ed423802ca775ae4ccbab721a5271efa99cd5f34f875cb7735cc97762",
+      "after_sha256": "a976b014dbd55fd359f0184378a3becad31b1f2bcee9f1e56ae9f008fbebe0f8"
+    },
+    {
+      "path": "fs/statfs.c",
+      "before_sha256": "b2b1ac1683dded7c2203992e0a1312f0b4678094e1aeb01df6abba7ddb89dc49",
+      "after_sha256": "f69da323bd369cfbf84da70a2943ebae6bf9e9c5615db93b8232a48c9e361483"
+    },
+    {
+      "path": "fs/susfs.c",
+      "before_sha256": null,
+      "after_sha256": "799faa57907f3d67903c153b361c162575b63d48f5f954889a0899c0b24a8522"
+    },
+    {
+      "path": "include/linux/susfs.h",
+      "before_sha256": null,
+      "after_sha256": "05d4ec96ba75d459612d6269614bc7e1948c4e7b1ecd4dfaf47fbd4ec4a3fcfb"
+    },
+    {
+      "path": "include/linux/susfs_def.h",
+      "before_sha256": null,
+      "after_sha256": "f92802cd9152925d3800f6c40570b21f67c04cc03effd1474fd20c3bb16c24a7"
+    },
+    {
+      "path": "kernel/kallsyms.c",
+      "before_sha256": "0cee299eb22522e459c401c435d23b472f8e71a1962dd147426fe9cdf5adb6fe",
+      "after_sha256": "df0d847eb006f460b0c16ef668bc6ed102ec75c6e01e89838666de6aaa5b5df9"
+    },
+    {
+      "path": "kernel/sys.c",
+      "before_sha256": "c54d41b448973ccb2f258818511d50e93df7167eb054c6bf87e672138d07f223",
+      "after_sha256": "fbf1fcd3912a6b3e6e562ec9178b06171472c6c1b47513f34c8c430eef0283bc"
+    },
+    {
+      "path": "mm/memory.c",
+      "before_sha256": "964a98e1d3995cd910d33985eac645669b039eb3cc55b281f22ace22e614d1d1",
+      "after_sha256": "6fc2fb9c6e20dba63c0e9376abf1f0b24ab8756d84c3d44816262d1c6f8c1bdf"
+    },
+    {
+      "path": "security/selinux/avc.c",
+      "before_sha256": "dd8225b22782f378ac84cf97da64105b45b0a3c6becdfbe4288feab8bb8aaf52",
+      "after_sha256": "cb50584565cf218d215ffa6c8281450a6458a0a4981ed0254e50e9b67d7f3e22"
+    }
+  ]
+}
