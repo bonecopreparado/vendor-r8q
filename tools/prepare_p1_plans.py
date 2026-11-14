@@ -16,6 +16,12 @@ MAPPING_BASE='/etc/selinux/mapping'
 MAPPING_PARTITIONS=('system_ext','product')
 
 
+def require_digest(data, expected, description):
+    # Input validation must also run under python -O, which removes asserts.
+    if not isinstance(expected, str) or not re.fullmatch('[0-9a-f]{64}', expected) or SHA(data) != expected:
+        raise ValueError('Pinned content differs: ' + description)
+
+
 def parse_mapping_listing(data,part):
     if len(data)>65536:raise ValueError('Mapping directory listing exceeds bound')
     names=[];table=False
@@ -118,9 +124,9 @@ def main(argv=None):
                       ('system_ext_mapping_30.0.cil','/etc/selinux/mapping/30.0.cil')]:
         if args.omit_optional_mappings and path.startswith(MAPPING_BASE+'/'):continue
         old=read('system_ext',path)
-        assert SHA(old)==manifest['files']['original/'+name]
+        require_digest(old,manifest['files']['original/'+name],'original policy '+name)
         new=(bundle/'candidate'/name).read_bytes()
-        assert SHA(new)==manifest['files']['candidate/'+name]
+        require_digest(new,manifest['files']['candidate/'+name],'candidate policy '+name)
         change('system_ext',path,new,'Resolve duplicate donor types through existing Samsung aliases and declare an already-used mapping attribute; no allow/capability deletion')
     mapping_report=[]
     if args.omit_optional_mappings:
@@ -136,9 +142,9 @@ def main(argv=None):
     hardware=ROOT/'patches/0006-hardware-adaptation/candidate'
     for row in json.loads((hardware/'manifest.json').read_text())['files']:
         part,path=row['path'].split('/',1);path='/'+path
-        assert SHA(read(part,path))==row['old_sha256']
+        require_digest(read(part,path),row['old_sha256'],'original hardware '+part+path)
         new=(hardware/row['path']).read_bytes() if row['action']=='replace' else None
-        if new is not None:assert SHA(new)==row['new_sha256']
+        if new is not None:require_digest(new,row['new_sha256'],'candidate hardware '+part+path)
         change(part,path,new,'Consolidate the Samsung NFC service with its existing HIDL interface bindings')
     # This obsolete Samsung diagnostic writes directly to a logdump partition.
     # It is disabled, has no valid domain, and its sole trigger is removed too.
@@ -188,3 +194,4 @@ on property:ro.logdumpd.enabled=1
 
 
 if __name__=='__main__':main()
+

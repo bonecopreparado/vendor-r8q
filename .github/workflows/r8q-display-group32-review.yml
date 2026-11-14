@@ -5,12 +5,16 @@ on:
     paths:
       - tools/display_group/**
       - ci-r8q/tests/test_display_group_patch.py
+      - ci-r8q/tests/test_display_image_plans.py
+      - tools/prepare_p1_plans.py
       - reports/p1/display-group32-review-20261114/**
       - .github/workflows/r8q-display-group32-review.yml
   pull_request:
     paths:
       - tools/display_group/**
       - ci-r8q/tests/test_display_group_patch.py
+      - ci-r8q/tests/test_display_image_plans.py
+      - tools/prepare_p1_plans.py
       - .github/workflows/r8q-display-group32-review.yml
   workflow_dispatch:
 permissions:
@@ -29,8 +33,8 @@ jobs:
           .venv-display-review/bin/python -m pip install unicorn==2.1.4 pyelftools==0.32
       - name: Check syntax and ARM64 group/file-guard regressions
         run: |
-          .venv-display-review/bin/python -m compileall -q tools/display_group ci-r8q/tests/test_display_group_patch.py
-          .venv-display-review/bin/python -m unittest discover -s ci-r8q/tests -p test_display_group_patch.py -v
+          .venv-display-review/bin/python -m compileall -q tools/display_group tools/prepare_p1_plans.py
+          .venv-display-review/bin/python -m unittest discover -s ci-r8q/tests -p 'test_display*.py' -v
       - name: State verification limits
         run: |
           echo 'No OEM binaries are downloaded or uploaded. No ROM is rebuilt, released or flashed.' >> "$GITHUB_STEP_SUMMARY"

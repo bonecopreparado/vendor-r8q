@@ -86,3 +86,33 @@ negative group IDs. The two initial external calls are stubbed, testing the
 returned flag as both false and true; PAC instructions are skipped. It is not
 a full Android, Binder, display hardware or boot emulation. The report includes
 these limitations and exact binary hashes.
+
+## Stage both boot fixes without losing the existing policy changes
+
+After generating and verifying the existing P1r2 policy/mapping plans, run:
+
+```sh
+python3 tools/display_group/prepare_image_plans.py --plans patches/0007-policy-integration --output patches/p1r3-boot-fixes
+```
+
+This reads the source images without changing them, verifies their complete
+SHA256 against the plans, preserves all existing operations/replacement bytes,
+and stages the corrected library plus `/vendor/etc/ueventd.rc` in NEW plans.
+The bridge imports the existing verified `/vendor/ueventd.rc` and inherits its
+metadata. An existing canonical file, unknown vendor init/rules, absent donor
+import, conflicting operation or wrong library causes refusal. The original
+plan directory is never overwritten. The resulting status deliberately says
+`STAGED_IMAGE_PLANS_ONLY_KERNEL_BLOCKED`; these are not images or a flashable
+installer. A failed staging invocation must not be consumed by a build.
+
+The future complete-ROM workflow must consume these new plans with the old
+kernel symlink compatibility mode and integrate a genuinely linked NFLOG kernel
+with complete SUSFS. It must regenerate and verify all images and ZIP hashes.
+The old `rebuild_p1_ci.py` workflow still consumes the original plans and is
+NOT a delivery path for these boot fixes. Do not rerun it and rename P1r2.
+
+Four policy/hardware input guards in `prepare_p1_plans.py` now use explicit
+exceptions instead of Python assertions, so `python -O` cannot skip them.
+Integration regression fixtures verify unchanged prior operations, duplicate/
+foreign-target rejection, exact imports, path containment and optimized-Python
+hash enforcement. They do not replace a full image rebuild or phone test.
