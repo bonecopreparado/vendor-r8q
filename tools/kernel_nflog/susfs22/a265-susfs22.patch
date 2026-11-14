@@ -759,7 +759,18 @@ diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
 diff --git a/fs/open.c b/fs/open.c
 --- a/fs/open.c
 +++ b/fs/open.c
-@@ -1185,11 +1185,18 @@
+@@ -32,6 +32,10 @@
+ #include <linux/dnotify.h>
+ #include <linux/compat.h>
+ 
++#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
++#include <linux/susfs_def.h>
++#endif
++
+ #include "internal.h"
+ #include <trace/hooks/syscall_check.h>
+ 
+@@ -1185,11 +1189,18 @@
  	return true;
  }
  
@@ -778,7 +789,7 @@ diff --git a/fs/open.c b/fs/open.c
  
  	if (fd)
  		return fd;
-@@ -1199,8 +1206,26 @@
+@@ -1199,8 +1210,26 @@
  		return PTR_ERR(tmp);
  
  	fd = get_unused_fd_flags(flags);

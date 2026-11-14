@@ -3,7 +3,7 @@
   "reference_repository": "JackA1ltman/NonGKI_Kernel_Build_2nd",
   "reference_commit": "bf3b496646c77147444faff1cc55b58a07b7160a",
   "reference_patch_sha256": "8a768457349165ae26ba0c6aa396740b92f1b59e88048a4566e19762f78ed697",
-  "patch_sha256": "4b94c7e71e2daf512e95a677e2ba15233361aeef5ea6a7389bf495b20ac0c485",
+  "patch_sha256": "616a09c319164c47f0b389f9a20c7a209d499a215302f3a8f470aacbd3728cc3",
   "files": [
     {
       "path": "fs/Makefile",
@@ -28,7 +28,7 @@
     {
       "path": "fs/open.c",
       "before_sha256": "22cb1fb0718ad711131299b2f28018faf183d88ba87c92878aca1eebce4d9672",
-      "after_sha256": "5afe3697b24d49345c2cda129dc446945b9ecda81d7a93e8818d7d80ec4271de"
+      "after_sha256": "32513345fb57bde2a08385a836a0f29980bd9cc42a8a05f694319b8de95302b6"
     },
     {
       "path": "fs/proc/base.c",

@@ -3,8 +3,16 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import json
 
 source=Path(sys.argv[1])
+for row in json.loads((Path(__file__).parent/'pins.json').read_text())['files']:
+    if not row['path'].endswith('.c'):
+        continue
+    body=(source/row['path']).read_text()
+    if 'SUSFS_IS_INODE_' in body and not any(header in body for header in
+            ('#include <linux/susfs_def.h>', '#include <linux/susfs.h>')):
+        raise ValueError('SUSFS inode-macro header is missing: '+row['path'])
 text=(source/'fs/namespace.c').read_text()
 definition=[line for line in (source/'include/linux/susfs_def.h').read_text().splitlines()
             if line.startswith('#define VFSMOUNT_MNT_FLAGS_KSU_UNSHARED_MNT ')]
