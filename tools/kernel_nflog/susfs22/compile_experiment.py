@@ -17,10 +17,20 @@ import current_compat as original
 
 PINS = json.loads((HERE/'pins.json').read_text())
 PATCH = HERE/'a265-susfs22.patch'
-PATCH_SHA = 'e4fee33b20a77d7a9148d497b30a0a6fb9bce7282f5ffeacdfe7d32ad12f8d93'
+PATCH_SHA = '8132f13f45e7bc72699758b013e7437ab1d0ea50de26dfa37f4b3d326bed785f'
 ROWS = PINS['files']
 NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
 TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None})
+SUSFS_SYMBOLS=frozenset((
+    'susfs_init','susfs_start_sdcard_monitor_fn','susfs_add_sus_path',
+    'susfs_add_sus_path_loop','susfs_is_inode_sus_path','susfs_add_sus_map',
+    'susfs_extra_works','susfs_set_uname','susfs_get_enabled_features'))
+
+
+def expected_overlay():
+    return dict(status='EXPERIMENTAL_SUSFS22_SOURCE_NOT_HARDWARE_TESTED',
+                original_compatibility=original.expected_report(),susfs22=PINS,
+                susfs_disabled=False,boot_image_created=False)
 
 
 def sha(path):
@@ -63,9 +73,10 @@ def apply(source, evidence, env):
     # Exercise the real patched ownership statements before starting a long
     # build; no patched kernel binary or Android ELF is executed on the host.
     build.audit.run([sys.executable,HERE/'test_ownership.py',source],evidence/'susfs22-ownership-test.log',env)
-    report = dict(status='EXPERIMENTAL_SUSFS22_SOURCE_NOT_HARDWARE_TESTED',
-                  original_compatibility=before, susfs22=PINS,
-                  susfs_disabled=False, boot_image_created=False)
+    build.audit.run([sys.executable,HERE/'test_scheduler.py',source],evidence/'scheduler-util-test.log',env)
+    report = expected_overlay()
+    if report['original_compatibility']!=before:
+        raise ValueError('Original compatibility record changed')
     build.audit.write_json(evidence/'susfs22-overlay.json',report)
     return report
 
@@ -74,8 +85,5 @@ if __name__ == '__main__':
     if '--without-susfs' in sys.argv:
         raise SystemExit('This experiment must preserve SUSFS')
     build.current_compat = SimpleNamespace(apply=apply, verify_applied=verify)
-    build.REQUIRED_SYMBOLS = build.REQUIRED_SYMBOLS | frozenset((
-        'susfs_init','susfs_start_sdcard_monitor_fn','susfs_add_sus_path',
-        'susfs_add_sus_path_loop','susfs_is_inode_sus_path','susfs_add_sus_map',
-        'susfs_extra_works','susfs_set_uname','susfs_get_enabled_features'))
+    build.REQUIRED_SYMBOLS = build.REQUIRED_SYMBOLS | SUSFS_SYMBOLS
     build.main()

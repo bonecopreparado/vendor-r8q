@@ -3,7 +3,7 @@
   "reference_repository": "JackA1ltman/NonGKI_Kernel_Build_2nd",
   "reference_commit": "bf3b496646c77147444faff1cc55b58a07b7160a",
   "reference_patch_sha256": "8a768457349165ae26ba0c6aa396740b92f1b59e88048a4566e19762f78ed697",
-  "patch_sha256": "e4fee33b20a77d7a9148d497b30a0a6fb9bce7282f5ffeacdfe7d32ad12f8d93",
+  "patch_sha256": "8132f13f45e7bc72699758b013e7437ab1d0ea50de26dfa37f4b3d326bed785f",
   "files": [
     {
       "path": "fs/Makefile",
@@ -109,6 +109,11 @@
       "path": "drivers/mmc/host/sdhci-msm.c",
       "before_sha256": "9b4ed6d65873ddd387388b24c8af99ce1db72c0b4bbd16e4366c94a034578244",
       "after_sha256": "1e155ca472c9fc653a4389d0b050635cd651da4ba6f63f09c620c95f001f4601"
+    },
+    {
+      "path": "kernel/sched/fair.c",
+      "before_sha256": "5b1a19a83830624784e5f71dae37088a6a5e10fe397395206f86af8308c21963",
+      "after_sha256": "093b1970f0b3439da706647108229158d71fb0561a339d5f8aaaa060c7261881"
     }
   ]
 }

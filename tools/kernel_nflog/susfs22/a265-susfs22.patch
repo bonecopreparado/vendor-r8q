@@ -3984,3 +3984,23 @@ diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
  					mmc_hostname(host->mmc), req_type);
  		mmc_log_string(host->mmc,
  			"request(%d) timed out waiting for pwr_irq\n",
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -8259,7 +8259,6 @@
+ 	bool need_idle = wake_to_idle(p);
+ 	int placement_boost = task_boost_policy(p);
+ 	u64 start_t = 0;
+-	int delta = 0;
+ 	int task_boost = per_task_boost(p);
+ 	int boosted = (uclamp_boosted(p) > 0) || (task_boost > 0);
+ 	bool prefer_high_cap = boosted;
+@@ -8354,7 +8353,7 @@
+ 	}
+ 
+ 	if (task_placement_boost_enabled(p) || fbt_env.need_idle ||
+-	    prefer_high_cap || is_rtg || __cpu_overutilized(prev_cpu, delta) ||
++	    prefer_high_cap || is_rtg || cpu_overutilized(prev_cpu) ||
+             !task_fits_max(p, prev_cpu)) {
+ 		best_energy_cpu = cpu;
+ 		goto unlock;

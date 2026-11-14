@@ -15,7 +15,7 @@ KernelSU integration remains pinned at sKernelSU `7d46da2ae166570c14b5336a5f5fe3
 The reference is adapted specifically to canonical r8q kernel commit
 `a265508933bbecb682e45e3b956d95bf4426d60b`.
 
-`pins.json` records the reference and exact before/after hashes for 21 paths.
+`pins.json` records the reference and exact before/after hashes for 22 paths.
 Three paths are genuine new source/header files. The derived patch must apply
 without fuzz to the exact source; a mismatched existing/new file is rejected.
 Canonical `security/selinux/avc.c` was independently bound to upstream Git blob
@@ -58,4 +58,12 @@ The second full compile built the SUSFS/namei/namespace/AVC objects and reached
 the MMC driver. Its direct internal `__WARN_printf` call is now the public
 `WARN(1, ...)` API, which is valid with CONFIG_BUG both enabled and disabled.
 The existing timeout completion, MMC event log and power-register dump are
-unchanged. This additional source repair is included in the pinned 21 paths.
+unchanged. This additional source repair is included in the pinned source paths.
+
+The third compile reached the full vmlinux link and exposed a stale scheduler
+call. Upstream commit `9cff1c267ca82d9c2b2ec8c2cdc3e980a294aa75` removed
+`__cpu_overutilized` in favor of the uclamp-aware `cpu_overutilized`, but left
+one call behind. In that caller `delta` is initialized to zero and never
+assigned. The adaptation uses the existing real `cpu_overutilized(prev_cpu)`
+provider and removes that dead zero variable; it does not add a stub or change
+the provider, utilization measurements, uclamp limits or scheduler config.
