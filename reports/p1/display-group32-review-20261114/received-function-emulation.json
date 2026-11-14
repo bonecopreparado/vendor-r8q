@@ -1,0 +1,162 @@
+{
+  "scope": "Actual received function instructions; synthetic config map/mode objects; two external callees stubbed, tested with returned flag false and true; PAC skipped; no Android/device boot simulation",
+  "surfaceflinger_original_sha256": "5c472e0e217b054a95b207ccfa4cca8737b2a6e5ce5d0e07aa303a1965f6f5be",
+  "surfaceflinger_patched_sha256": "f11986fff4ce9d9f1b59d282722d529b8f847f78bac4e4f0a308fe80d911abd6",
+  "composer_sha256": "39b509d355bd642f57a111521df31ef817c7938fbf7a736dbe0cfad255d51c3a",
+  "results": [
+    {
+      "composer_config": 0,
+      "return_code": 0,
+      "group": 1080
+    },
+    {
+      "composer_config": 1,
+      "return_code": 0,
+      "group": 1080
+    },
+    {
+      "case": "120Hz same group1080",
+      "feature_flag": false,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "120Hz same group1080",
+      "feature_flag": true,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "60Hz same group1080",
+      "feature_flag": false,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "60Hz same group1080",
+      "feature_flag": true,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "different group56",
+      "feature_flag": false,
+      "original": true,
+      "patched": false
+    },
+    {
+      "case": "different group56",
+      "feature_flag": true,
+      "original": true,
+      "patched": false
+    },
+    {
+      "case": "different group1081",
+      "feature_flag": false,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "different group1081",
+      "feature_flag": true,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "different resolution",
+      "feature_flag": false,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "different resolution",
+      "feature_flag": true,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "physical out of range",
+      "feature_flag": false,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "physical out of range",
+      "feature_flag": true,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "render out of range",
+      "feature_flag": false,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "render out of range",
+      "feature_flag": true,
+      "original": false,
+      "patched": false
+    },
+    {
+      "case": "allow group switching",
+      "feature_flag": false,
+      "original": true,
+      "patched": true
+    },
+    {
+      "case": "allow group switching",
+      "feature_flag": true,
+      "original": true,
+      "patched": true
+    },
+    {
+      "case": "group0",
+      "feature_flag": false,
+      "original": true,
+      "patched": true
+    },
+    {
+      "case": "group0",
+      "feature_flag": true,
+      "original": true,
+      "patched": true
+    },
+    {
+      "case": "group255",
+      "feature_flag": false,
+      "original": true,
+      "patched": true
+    },
+    {
+      "case": "group255",
+      "feature_flag": true,
+      "original": true,
+      "patched": true
+    },
+    {
+      "case": "group256",
+      "feature_flag": false,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "group256",
+      "feature_flag": true,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "group minus1",
+      "feature_flag": false,
+      "original": false,
+      "patched": true
+    },
+    {
+      "case": "group minus1",
+      "feature_flag": true,
+      "original": false,
+      "patched": true
+    }
+  ]
+}
