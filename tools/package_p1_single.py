@@ -45,7 +45,7 @@ def helper_blob(path,require_arm64):
 def load_images(path,root=ROOT):
     manifest=json.loads(Path(path).read_text());rows=manifest['images']
     boot_expected=FIXED['boot']
-    if manifest.get('build_label')=='P1r3':
+    if manifest.get('build_label')=='P1r4':
         from p1r3_materials import collect
         boot_expected,_,_=collect(manifest,root)
     if {r.get('partition')for r in rows}!=set(CAPACITIES) or len(rows)!=3:raise ValueError('Exactly super, boot and dtbo are required')
@@ -128,9 +128,9 @@ all compressed hashes, gzip CRCs, raw hashes and partition readbacks remain.
 
 def variant_metadata(manifest):
     label=manifest.get('build_label','P1');omitted=manifest.get('omitted_optional_mappings',[])
-    if label not in ('P1','P1r1','P1r2','P1r3') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
+    if label not in ('P1','P1r1','P1r2','P1r4') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
     if label=='P1' and omitted:raise ValueError('Baseline cannot omit mappings')
-    if label in ('P1r1','P1r2','P1r3'):
+    if label in ('P1r1','P1r2','P1r4'):
         seen=set()
         for row in omitted:
             if not isinstance(row,dict):raise ValueError('Optional mapping evidence is not an object')
@@ -147,14 +147,14 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
     output=Path(output);root=Path(root)
     build_label,omitted=variant_metadata(dict(build_label=build_label,omitted_optional_mappings=list(omitted_optional_mappings)))
     extras={};revision_evidence=None
-    if build_label=='P1r3':
-        if not isinstance(revision_manifest,dict):raise ValueError('P1r3 requires complete independently verified revision inputs')
+    if build_label=='P1r4':
+        if not isinstance(revision_manifest,dict):raise ValueError('P1r4 requires complete independently verified revision inputs')
         from p1r3_materials import collect
         boot_expected,extras,revision_evidence=collect(revision_manifest,root)
         boot=[row for row in images if row['partition']=='boot']
-        if len(boot)!=1 or boot[0]['sha256']!=boot_expected:raise ValueError('Actual boot image differs from regenerated P1r3 kernel evidence')
+        if len(boot)!=1 or boot[0]['sha256']!=boot_expected:raise ValueError('Actual boot image differs from regenerated P1r4 kernel evidence')
     elif revision_manifest is not None:
-        raise ValueError('Revision inputs require the explicit P1r3 profile')
+        raise ValueError('Revision inputs require the explicit P1r4 profile')
     staged=output.with_name(output.name+'.partial')
     checksum_path=output.with_suffix(output.suffix+'.sha256')
     instructions_path=output.with_name('P1-TESTER-ENGLISH.txt')
@@ -194,9 +194,10 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
             'and package publication/verification. It does not establish the\n'
             'cause of the previous bootloop or confirm a boot fix.\n\n'
             'IMPORTANT: boot is not confirmed.')
-    if build_label=='P1r3':
+    if build_label=='P1r4':
         instructions=instructions.replace('IMPORTANT: boot is not confirmed.',
-            'P1r3 includes the compiled NFLOG/SUSFS kernel, group32 display correction,\n'
+            'P1r4 corrects the observed kernel scheduler capacity/CPU-index crash.\n'
+            'P1r4 includes the compiled NFLOG/SUSFS kernel, group32 display correction,\n'
             'canonical ueventd bridge and V6 diagnostic capture in the ROM images.\n'
             'No separate ENABLE or installer-generation step is needed.\n\n'
             'IMPORTANT: boot is not confirmed.')
@@ -306,7 +307,7 @@ def main():
     revision=json.loads(args.images_manifest.read_text())
     label,omitted=variant_metadata(revision)
     report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper,ndk_notices=args.ndk_notice,
-                 build_label=label,omitted_optional_mappings=omitted,revision_manifest=revision if label=='P1r3'else None)
+                 build_label=label,omitted_optional_mappings=omitted,revision_manifest=revision if label=='P1r4'else None)
     print(json.dumps(report,indent=2))
 
 if __name__=='__main__':main()

@@ -15,8 +15,8 @@ REPO='bonecopreparado/vendor-r8q'
 BRANCH='r8q-susfs22-compile-20261114'
 WORKFLOW='.github/workflows/r8q-susfs22-compile.yml'
 ARTIFACT='R8Q-SUSFS22-NFLOG-OFFLINE-REVIEW-NOT-FLASHABLE'
-COMPLETE_BRANCH='r8q-p1r3-complete-20261114'
-COMPLETE_WORKFLOW='.github/workflows/r8q-p1r3-singlezip.yml'
+COMPLETE_BRANCH='r8q-p1r4-scheduler-20261115'
+COMPLETE_WORKFLOW='.github/workflows/r8q-p1r4-singlezip.yml'
 KERNEL_JOB='Compile pinned NFLOG and SUSFS kernel'
 ROOT=Path(__file__).resolve().parents[2]
 

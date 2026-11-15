@@ -17,7 +17,7 @@ import current_compat as original
 
 PINS = json.loads((HERE/'pins.json').read_text())
 PATCH = HERE/'a265-susfs22.patch'
-PATCH_SHA = '092ad5779f1c3f69d6e23d14716745543f61b56d5eaf7a49356e8af80a3085f1'
+PATCH_SHA = 'c4509c96daf851b425861a3b3acefb43d634b4d6a87fce33a9cb098e53125720'
 ROWS = PINS['files']
 NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
 TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None})
@@ -74,6 +74,7 @@ def apply(source, evidence, env):
     # build; no patched kernel binary or Android ELF is executed on the host.
     build.audit.run([sys.executable,HERE/'test_ownership.py',source],evidence/'susfs22-ownership-test.log',env)
     build.audit.run([sys.executable,HERE/'test_scheduler.py',source],evidence/'scheduler-util-test.log',env)
+    build.audit.run([sys.executable,HERE/'test_capacity.py',source],evidence/'scheduler-capacity-test.log',env)
     build.audit.run([sys.executable,HERE/'test_ikconfig.py',source],evidence/'ikconfig-prerequisite-test.log',env)
     report = expected_overlay()
     if report['original_compatibility']!=before:

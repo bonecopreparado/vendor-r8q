@@ -1,4 +1,4 @@
-"""Recheck new boot/probe inputs and prepare mandatory P1r3 ZIP extras."""
+"""Recheck new boot/probe inputs and prepare mandatory P1r4 ZIP extras."""
 import hashlib
 import io
 import json
@@ -24,7 +24,7 @@ def collector_bytes(root):
     import render
     readme=b'''R8Q BOOTDIAG V6 COLLECT-ONLY - NOT A ROM
 
-The P1r3 ROM already includes V6 diagnostics. After a boot attempt, return
+The P1r4 ROM already includes V6 diagnostics. After a boot attempt, return
 directly to OrangeFox and install this collector ZIP. It copies logs to the
 Download folder and displays the resulting .tar.gz path. Send that archive
 privately; a PARTIAL archive is still useful. Keep the archive compressed.
@@ -49,7 +49,7 @@ This collector does not enable diagnostics, flash partitions or erase captures.
 
 def collect(manifest,root):
     root=Path(root)
-    if manifest.get('build_label')!='P1r3':raise ValueError('Expected explicit P1r3 manifest')
+    if manifest.get('build_label')!='P1r4':raise ValueError('Expected explicit P1r4 manifest')
     inputs=manifest.get('kernel_repack_inputs')
     if not isinstance(inputs,dict)or set(inputs)!={'source_boot_file','kernel_file','summary_file'}:
         raise ValueError('Missing real kernel/repack inputs')

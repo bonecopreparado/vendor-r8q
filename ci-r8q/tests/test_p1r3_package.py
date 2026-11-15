@@ -31,15 +31,15 @@ class Tests(unittest.TestCase):
         extras={'extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip':collector}
         evidence=dict(susfs_enabled=True,hardware_boot_confirmed=False)
         expected=next(r['sha256']for r in images if r['partition']=='boot')
-        output=self.folder/'HyperOS4-R8Q-P1r3-SINGLE-EXPERIMENTAL.zip'
+        output=self.folder/'HyperOS4-R8Q-P1r4-SINGLE-EXPERIMENTAL.zip'
         with patch.object(p1r3_materials,'collect',return_value=(expected,extras,evidence)):
             result=package.build(output,self.helper,images,require_arm64=False,host_helper=self.helper,
-                build_label='P1r3',omitted_optional_mappings=omitted,revision_manifest={'build_label':'P1r3'})
-        self.assertEqual(result['build_label'],'P1r3')
+                build_label='P1r4',omitted_optional_mappings=omitted,revision_manifest={'build_label':'P1r4'})
+        self.assertEqual(result['build_label'],'P1r4')
         with zipfile.ZipFile(output)as archive:
             self.assertIsNone(archive.testzip())
             script=archive.read(package.INSTALLER).decode()
-            self.assertIn('P1r3 SINGLE ZIP EXPERIMENTAL',script)
+            self.assertIn('P1r4 SINGLE ZIP EXPERIMENTAL',script)
             self.assertIn('check_battery before-write',script)
             self.assertIn('verify_written super',script)
             self.assertNotIn('@@',script)

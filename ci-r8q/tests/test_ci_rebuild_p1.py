@@ -16,8 +16,8 @@ class Tests(unittest.TestCase):
         self.assertEqual(build.select_build_label(None,False),'P1')
         self.assertEqual(build.select_build_label(None,True),'P1r1')
         self.assertEqual(build.select_build_label('P1r2',True),'P1r2')
-        self.assertEqual(build.select_build_label('P1r3',True),'P1r3')
-        for label,omitted in [('P1',True),('P1r1',False),('P1r2',False),('P1r3',False),('P1r4',True)]:
+        self.assertEqual(build.select_build_label('P1r4',True),'P1r4')
+        for label,omitted in [('P1',True),('P1r1',False),('P1r2',False),('P1r4',False),('P1r5',True)]:
             with self.assertRaises(ValueError):build.select_build_label(label,omitted)
 
     def test_verified_file_requires_exact_size_and_hash(self):

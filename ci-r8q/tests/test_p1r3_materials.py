@@ -38,7 +38,7 @@ class Tests(unittest.TestCase):
             p=root/'patches/0008-boot-fixes/zip-extra'/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
         native=patch.object(probe,'validate_probe',return_value=(helper,{'fixture':True},notices))
         native.start();self.addCleanup(native.stop)
-        manifest=dict(build_label='P1r3',kernel_repack_inputs=dict(source_boot_file='old.img',kernel_file='Image',summary_file='summary.json'),
+        manifest=dict(build_label='P1r4',kernel_repack_inputs=dict(source_boot_file='old.img',kernel_file='Image',summary_file='summary.json'),
             kernel_repack=proof,diagnostic_probe_dir='probe',diagnostic_stage=dict(diagnostics=dict(
                 namespace='/metadata/r8q-bootdiag-v6',probe_sha256=materials.sha(helper),probe_build={'fixture':True},
                 required_zip_licenses={name:materials.sha(data)for name,data in notices.items()})))
