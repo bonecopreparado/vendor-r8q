@@ -77,6 +77,27 @@ def mapping_deletions(part):
     return rows
 
 
+def remove_unsupported_logdump(original):
+    """Remove only the known block logger; preserve all other bytes and EOF."""
+    old=original.decode()
+    block='''# Logcat dump daemon, dumps logs to logdump partition
+service logdumpd /system/bin/logcat -b all -v threadtime -D -w /dev/block/bootdevice/by-name/logdump
+    class core
+    writepid /dev/cpuset/system-background/tasks
+    seclabel u:r:logdumpd:s0
+    disabled
+
+# Logdumpd is enabled only for userdebug non-perf build
+on property:ro.logdumpd.enabled=1
+    start logdumpd
+'''
+    if old.count(block)!=1 or len(re.findall(r'\blogdumpd\b',old))!=4:
+        raise ValueError('Obsolete logdump service shape/references changed')
+    new=old.replace(block,'# Unsupported Samsung block-partition debug logger omitted in this port.\n')
+    if re.search(r'\blogdumpd\b',new):raise ValueError('Dangling logdump service reference')
+    return new.encode()
+
+
 def read(part,path):
     erofs=part in {'system','system_ext','product'}
     image=ROOT/'extracted'/('hyperos' if erofs else 'r8q')/(part+'.img')
@@ -146,25 +167,9 @@ def main(argv=None):
         new=(hardware/row['path']).read_bytes() if row['action']=='replace' else None
         if new is not None:require_digest(new,row['new_sha256'],'candidate hardware '+part+path)
         change(part,path,new,'Consolidate the Samsung NFC service with its existing HIDL interface bindings')
-    # This obsolete Samsung diagnostic writes directly to a logdump partition.
-    # It is disabled, has no valid domain, and its sole trigger is removed too.
-    path='/etc/init/hw/init.qcom.rc';old=read('vendor',path).decode()
-    block='''# Logcat dump daemon, dumps logs to logdump partition
-service logdumpd /system/bin/logcat -b all -v threadtime -D -w /dev/block/bootdevice/by-name/logdump
-    class core
-    writepid /dev/cpuset/system-background/tasks
-    seclabel u:r:logdumpd:s0
-    disabled
-
-# Logdumpd is enabled only for userdebug non-perf build
-on property:ro.logdumpd.enabled=1
-    start logdumpd
-'''
-    if old.count(block)!=1 or len(re.findall(r'\blogdumpd\b',old))!=4:
-        raise ValueError('Obsolete logdump service shape/references changed')
-    new=old.replace(block,'# Unsupported Samsung block-partition debug logger omitted in this port.\n')
-    if re.search(r'\blogdumpd\b',new):raise ValueError('Dangling logdump service reference')
-    change('vendor',path,new.encode(),'Remove unsupported disabled block-partition debug logger and its only trigger; ordinary logcat remains available')
+    path='/etc/init/hw/init.qcom.rc'
+    change('vendor',path,remove_unsupported_logdump(read('vendor',path)),
+           'Remove unsupported disabled block-partition debug logger and its only trigger; ordinary logcat remains available')
     # The ColorOS precompiled policy does not match this framework. Keep the
     # genuine framework hash files; remove only the obsolete ODM cache so init
     # compiles the corrected CIL rather than trusting incompatible old bytes.

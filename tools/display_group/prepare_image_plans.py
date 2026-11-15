@@ -1,7 +1,7 @@
 """Stage SF group32 and the proven ueventd bridge in copied P1 image plans.
 
 Offline only. Existing plans/images are preserved. No kernel or ROM is built,
-and the result explicitly remains blocked on a complete NFLOG + SUSFS kernel.
+and the result is not a built ROM; the complete workflow separately verifies its kernel.
 """
 import argparse
 import copy
@@ -19,9 +19,9 @@ import patch_ext4_candidate as ext4
 import patch_surfaceflinger as sf
 
 LEGACY_SHA = '8debe752a74eb73382de872638462e6869f50041d75bba9f66aa89e2e2530f12'
-# This is the generated P1 plan's final init, after removing logdumpd. The
-# separate recovery addon's installed-init pin must not be reused here.
-INIT_SHA = 'b8fbfbf01ff85843b4e82b64d2515c3894fd17b07df6f222e1c2f2f975e346c8'
+# Exact generated P1 init bytes, including the source's missing final newline.
+# Validate against the baseline + real generator, never a normalized text copy.
+INIT_SHA = '9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea'
 BRIDGE_SHA = 'a62d17938582b2205610749a6ede6989b173aa08e6e995ebefc1ff7339ee21b8'
 
 
@@ -61,8 +61,11 @@ def augment(plans, library, legacy, final_init, system_rules, bridge, canonical_
             raise ValueError('Boot-fix target already has an operation')
     if canonical_exists:
         raise ValueError('Unexpected existing canonical ueventd file')
-    if (sha(legacy), sha(final_init), sha(bridge)) != (LEGACY_SHA, INIT_SHA, BRIDGE_SHA):
-        raise ValueError('Expected exact reviewed R8Q ueventd configuration')
+    for name, data, expected in (('legacy rules',legacy,LEGACY_SHA),
+                                 ('generated final init',final_init,INIT_SHA),
+                                 ('canonical bridge',bridge,BRIDGE_SHA)):
+        if sha(data) != expected:
+            raise ValueError('Reviewed R8Q ueventd '+name+' SHA differs: expected '+expected+', actual '+sha(data))
     imports = [line.split('#', 1)[0].split() for line in system_rules.decode().splitlines()]
     if imports.count(['import', '/vendor/etc/ueventd.rc']) != 1:
         raise ValueError('Donor System must import canonical Vendor rules exactly once')
@@ -169,11 +172,11 @@ def main():
             dest.parent.mkdir(parents=True, exist_ok=True)
             with dest.open('xb') as stream:
                 stream.write(data)
-    status = dict(status='STAGED_IMAGE_PLANS_ONLY_KERNEL_BLOCKED', flashable=False,
+    status = dict(status='STAGED_IMAGE_PLANS_ONLY', flashable=False,
         boot_confirmed=False, kernel_changed=False, susfs_removal_allowed=False,
         legacy_kernel_symlinks_required=True, original_plans_preserved=True,
         diagnostics=diagnostic,
-        blockers=['Complete linked kernel with NFLOG and real SUSFS integration is still required.',
+        blockers=['Bind the plans to the independently verified NFLOG/SUSFS kernel in the complete build.',
                   'Rebuild and verify all partition images, policy/VINTF, super and the complete recovery ZIP.'])
     (output/'STAGING-RESULT.json').write_text(json.dumps(status, indent=2) + '\n')
     print(json.dumps(status, indent=2))
