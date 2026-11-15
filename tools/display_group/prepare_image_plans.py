@@ -87,6 +87,8 @@ def main():
     parser.add_argument('--project-root', type=Path, default=previous.ROOT)
     parser.add_argument('--plans', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--diagnostic-probe-dir', type=Path,
+                        help='Verified native build directory; stage fresh V6 diagnostics and required ZIP licenses')
     args = parser.parse_args()
     root, source, output = args.project_root.resolve(), args.plans.resolve(), args.output.absolute()
     if output.exists() or output.is_symlink() or output.resolve().is_relative_to(source):
@@ -120,6 +122,23 @@ def main():
         previous.read('vendor', '/ueventd.rc'), init,
         previous.read('system', '/system/etc/ueventd.rc'),
         (root/'tools/ueventd_compat/ueventd.rc').read_bytes(), exists)
+    diagnostic = None
+    notices = {}
+    if args.diagnostic_probe_dir:
+        sys.path.insert(0, str(root/'tools/bootdiag_v6'))
+        import image_plan as diagnostics
+        vendor_plan, extra, notices, diagnostic = diagnostics.add_diagnostics(
+            updated['vendor'], args.diagnostic_probe_dir)
+        with tempfile.TemporaryDirectory() as work:
+            vendor = ext4.Ext4(root/'extracted/r8q/vendor.img', Path(work))
+            for row in vendor_plan['operations'][len(updated['vendor']['operations']):]:
+                if vendor.stat(row['path'], missing_ok=True) is not None:
+                    raise ValueError('Diagnostic add target already exists in source Vendor')
+                vendor.regular(row['metadata_from'])
+        if set(payloads) & set(extra):
+            raise ValueError('Diagnostic payload collision')
+        updated['vendor'] = vendor_plan
+        payloads.update(extra)
     # Validate every preserved replacement before creating any staged output.
     preserved = {}
     for plan in plans.values():
@@ -143,9 +162,17 @@ def main():
             stream.write(data)
     for part, plan in updated.items():
         (output/(part + '-plan.json')).write_text(json.dumps(plan, indent=2) + '\n')
+    if notices:
+        for name, data in notices.items():
+            # validate_probe accepts the exact fixed license-name set only.
+            dest = output/'zip-extra'/name
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            with dest.open('xb') as stream:
+                stream.write(data)
     status = dict(status='STAGED_IMAGE_PLANS_ONLY_KERNEL_BLOCKED', flashable=False,
         boot_confirmed=False, kernel_changed=False, susfs_removal_allowed=False,
         legacy_kernel_symlinks_required=True, original_plans_preserved=True,
+        diagnostics=diagnostic,
         blockers=['Complete linked kernel with NFLOG and real SUSFS integration is still required.',
                   'Rebuild and verify all partition images, policy/VINTF, super and the complete recovery ZIP.'])
     (output/'STAGING-RESULT.json').write_text(json.dumps(status, indent=2) + '\n')

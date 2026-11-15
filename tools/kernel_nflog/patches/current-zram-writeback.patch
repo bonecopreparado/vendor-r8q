@@ -1,0 +1,88 @@
+--- a/drivers/block/zram/zram_drv.c
++++ b/drivers/block/zram/zram_drv.c
+@@ -573,7 +573,7 @@
+ 		return;
+ 
+ 	bdev = zram->bdev;
+-	blkdev_put(bdev, zram);
++	blkdev_put(bdev, FMODE_READ | FMODE_WRITE | FMODE_EXCL);
+ 	/* hope filp_close flush all of IO */
+ 	filp_close(zram->backing_dev, NULL);
+ 	zram->backing_dev = NULL;
+@@ -660,8 +660,8 @@
+ 		goto out;
+ 	}
+ 
+-	bdev = blkdev_get_by_dev(inode->i_rdev, BLK_OPEN_READ | BLK_OPEN_WRITE,
+-				 zram, NULL);
++	bdev = blkdev_get_by_dev(inode->i_rdev,
++				 FMODE_READ | FMODE_WRITE | FMODE_EXCL, zram);
+ 	if (IS_ERR(bdev)) {
+ 		err = PTR_ERR(bdev);
+ 		bdev = NULL;
+@@ -698,7 +698,7 @@
+ 	kvfree(bitmap);
+ 
+ 	if (bdev)
+-		blkdev_put(bdev, zram);
++		blkdev_put(bdev, FMODE_READ | FMODE_WRITE | FMODE_EXCL);
+ 
+ 	if (backing_dev)
+ 		filp_close(backing_dev, NULL);
+@@ -735,16 +735,21 @@
+ 	atomic64_dec(&zram->stats.bd_count);
+ }
+ 
+-static void read_from_bdev_async(struct zram *zram, struct page *page,
++static int read_from_bdev_async(struct zram *zram, struct page *page,
+ 			unsigned long entry, struct bio *parent)
+ {
+ 	struct bio *bio;
+ 
+-	bio = bio_alloc(zram->bdev, 1, parent->bi_opf, GFP_NOIO);
++	bio = bio_alloc(GFP_NOIO, 1);
++	if (!bio)
++		return -ENOMEM;
++	bio_set_dev(bio, zram->bdev);
++	bio->bi_opf = parent->bi_opf;
+ 	bio->bi_iter.bi_sector = entry * (PAGE_SIZE >> 9);
+ 	__bio_add_page(bio, page, PAGE_SIZE, 0);
+ 	bio_chain(bio, parent);
+ 	submit_bio(bio);
++	return 0;
+ }
+ 
+ #define PAGE_WB_SIG "page_index="
+@@ -887,8 +892,9 @@
+ 			goto next;
+ 		zram_slot_unlock(zram, index);
+ 
+-		bio_init(&bio, zram->bdev, &bio_vec, 1,
+-			 REQ_OP_WRITE | REQ_SYNC);
++		bio_init(&bio, &bio_vec, 1);
++		bio_set_dev(&bio, zram->bdev);
++		bio.bi_opf = REQ_OP_WRITE | REQ_SYNC;
+ 		bio.bi_iter.bi_sector = blk_idx * (PAGE_SIZE >> 9);
+ 		__bio_add_page(&bio, page, PAGE_SIZE, 0);
+ 
+@@ -967,7 +973,9 @@
+ 	struct bio_vec bv;
+ 	struct bio bio;
+ 
+-	bio_init(&bio, zw->zram->bdev, &bv, 1, REQ_OP_READ);
++	bio_init(&bio, &bv, 1);
++	bio_set_dev(&bio, zw->zram->bdev);
++	bio.bi_opf = REQ_OP_READ;
+ 	bio.bi_iter.bi_sector = zw->entry * (PAGE_SIZE >> 9);
+ 	__bio_add_page(&bio, zw->page, PAGE_SIZE, 0);
+ 	zw->error = submit_bio_wait(&bio);
+@@ -1004,8 +1012,7 @@
+ 			return -EIO;
+ 		return read_from_bdev_sync(zram, page, entry);
+ 	}
+-	read_from_bdev_async(zram, page, entry, parent);
+-	return 0;
++	return read_from_bdev_async(zram, page, entry, parent);
+ }
+ #else
+ static inline void reset_bdev(struct zram *zram) {};

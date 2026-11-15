@@ -21,7 +21,8 @@ spec.loader.exec_module(upload)
 
 NAMES = ('HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip',
          'HyperOS4-R8Q-P1r1-SINGLE-EXPERIMENTAL.zip',
-         'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip')
+         'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip',
+         'HyperOS4-R8Q-P1r3-SINGLE-EXPERIMENTAL.zip')
 
 
 class StreamingRomUploadTests(unittest.TestCase):
@@ -94,7 +95,7 @@ class StreamingRomUploadTests(unittest.TestCase):
                 self.assertFalse(private_configs[0][0].exists())
 
     def test_unrelated_or_future_rom_name_rejected_before_file_hash_or_network(self):
-        for name in ('unrelated.zip', 'HyperOS4-R8Q-P1r3-SINGLE-EXPERIMENTAL.zip'):
+        for name in ('unrelated.zip', 'HyperOS4-R8Q-P1r4-SINGLE-EXPERIMENTAL.zip'):
             path = self.archive(name)
             with self.subTest(name=name), patch.object(upload, 'identities') as identities, \
                     patch.object(upload.subprocess, 'run') as run, \
@@ -146,3 +147,4 @@ class StreamingRomUploadTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

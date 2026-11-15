@@ -10,13 +10,10 @@ def replace_once(text,old,new):
     return text.replace(old,new)
 
 def template(root=ROOT,build_label='P1'):
-    if build_label not in ('P1','P1r1','P1r2'):raise ValueError('Unknown experimental build label')
+    if build_label not in ('P1','P1r1','P1r2','P1r3'):raise ValueError('Unknown experimental build label')
     parent=(root/'delivery/Ready-P0r8/installer-template-ready.sh').read_bytes()
     if hashlib.sha256(parent).hexdigest()!=PARENT_SHA:raise ValueError('P0r8 template identity changed')
     s=parent.decode()
-    s=s.replace('ui_print "Conferindo o vbmeta atual antes de qualquer escrita..."',
-                'ui_print "EROFS-COMPAT revision: plain symlink targets; boot test pending."\n'
-                'ui_print "Conferindo o vbmeta atual antes de qualquer escrita..."')
     # mksh may use a missing inherited TMPDIR for here-document backing files.
     # WORK was created and validated under /tmp; pin the shell's temporary
     # directory before it encounters the payload-table here-document.
@@ -27,10 +24,14 @@ def template(root=ROOT,build_label='P1'):
     s=s.replace('ui_print "Altera somente super, boot e dtbo. Nao formata userdata."',
                 'ui_print "Altera somente super, boot e dtbo. Nao formata userdata."\n'
                 'ui_print "P1: kernel/FCM/HAL compatibility work remains. This is an experimental boot test."')
-    if build_label in ('P1r1','P1r2'):
+    if build_label in ('P1r1','P1r2','P1r3'):
         s=s.replace('ui_print "P1: kernel/FCM/HAL compatibility work remains. This is an experimental boot test."',
                     'ui_print "'+build_label+': system_ext/product SELinux mappings omitted; system mappings retained."\n'
                     'ui_print "Experimental test only. Kernel/FCM/HAL compatibility work remains."')
+    if build_label=='P1r3':
+        s=s.replace('ui_print "Experimental test only. Kernel/FCM/HAL compatibility work remains."',
+            'ui_print "P1r3: NFLOG/SUSFS kernel, group32 display correction, ueventd bridge and V6 diagnostics."\n'
+            'ui_print "Experimental boot test. Boot and hardware compatibility remain unconfirmed."')
     s=s.replace('trap \'rm -f "$WORK/probe"', 'trap \'rm -f "$WORK/zipread" "$WORK/probe"')
     start=s.index('# Payloads stay outside the tiny installer ZIP:')
     end=s.index('cat > "$WORK/payload.rows"',start)
@@ -82,3 +83,4 @@ P0R7_PAYLOAD_ROWS
     return s
 
 if __name__=='__main__':print(template(),end='')
+

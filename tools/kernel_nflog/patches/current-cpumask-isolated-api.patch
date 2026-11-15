@@ -1,0 +1,16 @@
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -96,11 +96,13 @@
+ extern struct cpumask __cpu_online_mask;
+ extern struct cpumask __cpu_present_mask;
+ extern struct cpumask __cpu_active_mask;
++extern struct cpumask __cpu_isolated_mask;
+ #define cpu_possible_mask ((const struct cpumask *)&__cpu_possible_mask)
+ #define cpu_online_mask   ((const struct cpumask *)&__cpu_online_mask)
+ #define cpu_present_mask  ((const struct cpumask *)&__cpu_present_mask)
+ #define cpu_active_mask   ((const struct cpumask *)&__cpu_active_mask)
+ #define cpu_isolated_mask ((const struct cpumask *)&__cpu_isolated_mask)
++#define cpu_isolated(cpu)	cpumask_test_cpu((cpu), cpu_isolated_mask)
+ extern const struct cpumask *const cpu_lp_mask;
+ extern const struct cpumask *const cpu_perf_mask;
+ extern const struct cpumask *const cpu_prime_mask;

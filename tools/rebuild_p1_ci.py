@@ -35,7 +35,7 @@ def write_json(path, data):
 
 def select_build_label(requested, omit_optional_mappings):
     label=requested or ('P1r1' if omit_optional_mappings else 'P1')
-    if label not in ('P1','P1r1','P1r2'):
+    if label not in ('P1','P1r1','P1r2','P1r3'):
         raise ValueError('Unsupported build label')
     if (label!='P1') != bool(omit_optional_mappings):
         raise ValueError('Build label does not match optional mapping policy')
@@ -147,10 +147,32 @@ def main():
     ap.add_argument('--minimum-free-gib',type=int,default=32)
     ap.add_argument('--omit-optional-mappings',action='store_true',
                     help='P1r1 experiment: remove only system_ext/product SELinux mapping files')
-    ap.add_argument('--build-label',choices=('P1','P1r1','P1r2'),
+    ap.add_argument('--build-label',choices=('P1','P1r1','P1r2','P1r3'),
                     help='Package revision; must agree with the selected mapping policy')
+    ap.add_argument('--kernel-image',type=Path)
+    ap.add_argument('--kernel-summary',type=Path)
+    ap.add_argument('--diagnostic-probe-dir',type=Path)
     args=ap.parse_args()
     build_label=select_build_label(args.build_label,args.omit_optional_mappings)
+    current_kernel=None
+    if build_label=='P1r3':
+        if not all((args.kernel_image,args.kernel_summary,args.diagnostic_probe_dir,args.host_tools,args.legacy_kernel_symlinks)):
+            raise ValueError('P1r3 requires a linked SUSFS kernel, trusted summary, native diagnostic build, VINTF tools and legacy symlink mode')
+        sys.path.insert(0,str(ROOT/'tools/kernel_nflog/susfs22'))
+        import verify_linked
+        for path,limit in ((args.kernel_image,64*1024**2),(args.kernel_summary,1024**2)):
+            if path.is_symlink()or not path.is_file()or not 0<path.stat().st_size<=limit:
+                raise ValueError('Invalid P1r3 kernel input')
+            if not path.resolve().is_relative_to(ROOT):
+                raise ValueError('P1r3 kernel inputs must stay inside the build checkout')
+        current_kernel=json.loads(args.kernel_summary.read_text())
+        verify_linked.verify(args.kernel_image.read_bytes(),current_kernel)
+        if not args.diagnostic_probe_dir.resolve().is_relative_to(ROOT):
+            raise ValueError('Native diagnostic build must stay inside the checkout')
+        from package_bootdiag_v5 import validate_probe
+        validate_probe(args.diagnostic_probe_dir)
+    elif any((args.kernel_image,args.kernel_summary,args.diagnostic_probe_dir)):
+        raise ValueError('Current kernel/diagnostic inputs require the explicit P1r3 profile')
     for path in (ROOT/'extracted/r8q',ROOT/'extracted/hyperos',ROOT/'candidates/p0',ROOT/'candidates/p1',WORK,ROOT/'tools/selinux-modern'):
         if path.exists() or path.is_symlink():
             raise ValueError('Use a clean checkout; preserving prior work: '+str(path))
@@ -192,10 +214,34 @@ def main():
     run('tools/build_boot_candidate.py')
     boot=ROOT/'candidates/p0/boot-r8q-hyperos-p0.img'
     verify_named_file(boot,BOOT_SHA,67108864)
+    boot_digest=BOOT_SHA
+    kernel_inputs=None
+    kernel_repack=None
+    if build_label=='P1r3':
+        import repack_verified
+        original_boot=boot
+        candidate,kernel_repack=repack_verified.repack(boot.read_bytes(),args.kernel_image.read_bytes(),current_kernel)
+        boot=ROOT/'candidates/p0/boot-r8q-hyperos-p1r3.img'
+        with boot.open('xb')as stream:stream.write(candidate)
+        boot_digest=kernel_repack['candidate_boot_sha256']
+        verify_named_file(boot,boot_digest,67108864)
+        kernel_inputs=dict(source_boot_file=str(original_boot.relative_to(ROOT)),
+            kernel_file=str(args.kernel_image.resolve().relative_to(ROOT)),
+            summary_file=str(args.kernel_summary.resolve().relative_to(ROOT)))
+        write_json(WORK/'kernel-repack.json',kernel_repack)
     padded_dtbo(ROOT/'extracted/r8q/dtbo.img',ROOT/'candidates/p0/dtbo-r8q-p0.img')
     variant_args=['--omit-optional-mappings'] if args.omit_optional_mappings else []
     run('tools/prepare_p1_plans.py',*variant_args)
     plans=ROOT/'patches/0007-policy-integration';out=ROOT/'candidates/p1';out.mkdir()
+    diagnostic_stage=None
+    if build_label=='P1r3':
+        staged=ROOT/'patches/0008-boot-fixes'
+        run('tools/display_group/prepare_image_plans.py','--plans',plans,'--output',staged,
+            '--diagnostic-probe-dir',args.diagnostic_probe_dir)
+        plans=staged
+        diagnostic_stage=json.loads((staged/'STAGING-RESULT.json').read_text())
+        if not diagnostic_stage.get('diagnostics'):
+            raise ValueError('P1r3 diagnostic staging evidence missing')
     erofs_parts=('system','system_ext','product') if args.omit_optional_mappings else ('system','system_ext')
     # Recreate the exact previously shipped system with the stock writer once,
     # bind the logged NID to a path, then discard only this derived baseline.
@@ -230,7 +276,8 @@ def main():
         host=args.host_tools.resolve();pin=json.loads((ROOT/'ci-r8q/pins/official-otatools.json').read_text())
         verify_named_file(host/'bin/checkvintf',pin['checkvintf_sha256'])
         link=ROOT/'tools/p1-host/aosp';link.parent.mkdir(parents=True,exist_ok=False);link.symlink_to(host,target_is_directory=True)
-        run('tools/verify_p1_vintf.py','--product',product,'--output',WORK/'vintf')
+        kernel_args=['--kernel-image',args.kernel_image,'--kernel-summary',args.kernel_summary]if build_label=='P1r3'else[]
+        run('tools/verify_p1_vintf.py','--product',product,'--output',WORK/'vintf',*kernel_args)
     composition=dict(reviewed)
     composition['partitions']=[dict(row)for row in reviewed['partitions']]
     for row in composition['partitions']:
@@ -252,10 +299,13 @@ def main():
     run('tools/build_super_p1.py','--plan',plan,'--output',super_image,'--report',super_report)
     independent_super(super_image,super_report)
     images=[dict(partition='super',file=str(super_image.relative_to(ROOT)),bytes=super_image.stat().st_size,sha256=digest(super_image)),
-            dict(partition='boot',file=str(boot.relative_to(ROOT)),bytes=67108864,sha256=BOOT_SHA),
+            dict(partition='boot',file=str(boot.relative_to(ROOT)),bytes=67108864,sha256=boot_digest),
             dict(partition='dtbo',file='candidates/p0/dtbo-r8q-p0.img',bytes=10485760,sha256=DTBO_SHA)]
     write_json(WORK/'package-images.json',dict(name='HyperOS4-R8Q-'+build_label,
         build_label=build_label,omitted_optional_mappings=omitted,
+        kernel_repack=kernel_repack,kernel_repack_inputs=kernel_inputs,
+        diagnostic_stage=diagnostic_stage,
+        diagnostic_probe_dir=str(args.diagnostic_probe_dir.resolve().relative_to(ROOT))if build_label=='P1r3'else None,
         status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,images=images,
         limits=['Host kernel/FCM4/HAL compatibility findings remain; no stable ROM claim.',
                 'Raw ext4/LP hashes are computed per build because filesystem bookkeeping timestamps may differ.']))

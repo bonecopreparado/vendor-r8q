@@ -1,0 +1,38 @@
+# Exact current-source fixtures
+
+These are unmodified files from
+`notkernel-oss/not_samsung.sm8250-4.19` commit
+`a265508933bbecb682e45e3b956d95bf4426d60b`:
+
+- `block/mq-deadline.c`, Git blob `2cdd09c7b4c7ab4c5c1bb17a38f4cb02977843d2`;
+- `drivers/block/zram/zram_drv.c`, SHA256
+  `e4789899ff9cbe812517ca2cf47cbd3398011b5f5a0d488a081093adab83134c`.
+- `drivers/ccic/max77705_usbc.c`, Git blob
+  `9e66b4a70f15c24e566453551587543cff75bc48`;
+- `include/linux/cpufreq.h`, Git blob
+  `904960e7f5d532538831c875814a20b26a810c5a` (unchanged API fixture);
+- `include/linux/cpumask.h` and `techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c`;
+- `kernel/cpu.c` and `kernel/Makefile` (unchanged mask-provider evidence).
+
+Copyright and license notices remain intact. The kernel's GNU GPL version 2
+license text is included as `COPYING`; zram's original header also describes
+its dual BSD/GPL license.
+
+They support offline tests of the exact reviewed source overlays. Tests check
+original and resulting hashes, apply the reviewed patches to a temporary Git checkout,
+reject unrelated changes, and compile extracted real scheduler/zram functions
+against focused host stubs. Runtime fixtures cover merge-list ownership,
+unlock-before-free, backing-device BIO initialization, parent chaining, sector
+conversion and allocation-error propagation. MAX77705 fixtures compile and run
+both optional CPU vote-provider branches, retaining scheduler/DDR boosts and
+delayed work in both. They do not execute a real kernel, block device, interrupt
+handler or ARM64 boot.
+
+The RMNET compatibility tests also retain the exact `include/linux/cpumask.h`,
+`techpack/data/drivers/rmnet/shs/rmnet_shs_wq.c`, `kernel/cpu.c` and
+`kernel/Makefile` sources. The latter two show that the mask is still defined,
+exported and built unconditionally, including without SMP. The restored API
+reads that real mask; it does not substitute a constant or housekeeping state.
+Host C fixtures exercise the extracted migration predicate with mask set/clear,
+online/offline, RPS exclusion, same-CPU and invalid endpoint/CPU cases. They
+also compile the genuine kernel mask printf arguments with format checking.

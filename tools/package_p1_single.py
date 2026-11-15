@@ -44,6 +44,10 @@ def helper_blob(path,require_arm64):
 
 def load_images(path,root=ROOT):
     manifest=json.loads(Path(path).read_text());rows=manifest['images']
+    boot_expected=FIXED['boot']
+    if manifest.get('build_label')=='P1r3':
+        from p1r3_materials import collect
+        boot_expected,_,_=collect(manifest,root)
     if {r.get('partition')for r in rows}!=set(CAPACITIES) or len(rows)!=3:raise ValueError('Exactly super, boot and dtbo are required')
     result=[]
     for part in ('super','boot','dtbo'):
@@ -52,7 +56,7 @@ def load_images(path,root=ROOT):
         if not file.is_file() or file.is_symlink() or type(row['bytes']) is not int or row['bytes']!=CAPACITIES[part] or file.stat().st_size!=row['bytes']:
             raise ValueError('Image capacity/type differs: '+part)
         if not isinstance(row.get('sha256'),str) or not re.fullmatch('[0-9a-f]{64}',row['sha256']):raise ValueError('Invalid source hash')
-        if part in FIXED and row['sha256']!=FIXED[part]:raise ValueError('Boot/dtbo changed from reviewed R8Q sources')
+        if part in FIXED and row['sha256']!=(boot_expected if part=='boot'else FIXED[part]):raise ValueError('Boot/dtbo changed from reviewed R8Q sources')
         result.append(dict(partition=part,file=str(file),bytes=row['bytes'],sha256=row['sha256']))
     return result
 
@@ -124,9 +128,9 @@ all compressed hashes, gzip CRCs, raw hashes and partition readbacks remain.
 
 def variant_metadata(manifest):
     label=manifest.get('build_label','P1');omitted=manifest.get('omitted_optional_mappings',[])
-    if label not in ('P1','P1r1','P1r2') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
+    if label not in ('P1','P1r1','P1r2','P1r3') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
     if label=='P1' and omitted:raise ValueError('Baseline cannot omit mappings')
-    if label in ('P1r1','P1r2'):
+    if label in ('P1r1','P1r2','P1r3'):
         seen=set()
         for row in omitted:
             if not isinstance(row,dict):raise ValueError('Optional mapping evidence is not an object')
@@ -139,9 +143,18 @@ def variant_metadata(manifest):
         if {part for part,_ in seen}!={'system_ext','product'}:raise ValueError('Both optional mapping partitions need evidence')
     return label,omitted
 
-def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk_notices=(),build_label='P1',omitted_optional_mappings=()):
+def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk_notices=(),build_label='P1',omitted_optional_mappings=(),revision_manifest=None):
     output=Path(output);root=Path(root)
     build_label,omitted=variant_metadata(dict(build_label=build_label,omitted_optional_mappings=list(omitted_optional_mappings)))
+    extras={};revision_evidence=None
+    if build_label=='P1r3':
+        if not isinstance(revision_manifest,dict):raise ValueError('P1r3 requires complete independently verified revision inputs')
+        from p1r3_materials import collect
+        boot_expected,extras,revision_evidence=collect(revision_manifest,root)
+        boot=[row for row in images if row['partition']=='boot']
+        if len(boot)!=1 or boot[0]['sha256']!=boot_expected:raise ValueError('Actual boot image differs from regenerated P1r3 kernel evidence')
+    elif revision_manifest is not None:
+        raise ValueError('Revision inputs require the explicit P1r3 profile')
     staged=output.with_name(output.name+'.partial')
     checksum_path=output.with_suffix(output.suffix+'.sha256')
     instructions_path=output.with_name('P1-TESTER-ENGLISH.txt')
@@ -181,6 +194,26 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
             'and package publication/verification. It does not establish the\n'
             'cause of the previous bootloop or confirm a boot fix.\n\n'
             'IMPORTANT: boot is not confirmed.')
+    if build_label=='P1r3':
+        instructions=instructions.replace('IMPORTANT: boot is not confirmed.',
+            'P1r3 includes the compiled NFLOG/SUSFS kernel, group32 display correction,\n'
+            'canonical ueventd bridge and V6 diagnostic capture in the ROM images.\n'
+            'No separate ENABLE or installer-generation step is needed.\n\n'
+            'IMPORTANT: boot is not confirmed.')
+        old='''   The agreed first-boot test needs clean userdata. A separate
+   manual OrangeFox Format Data erases internal storage, including downloaded
+   ZIPs and backups stored there. Keep backups, the working restoration ROM and
+   logs on external SD/USB before choosing it. The installer never formats data.
+   After the agreed clean-install procedure, reboot System and record the result.'''
+        new='''   If you already prepared clean data for P1r2 and Android never completed
+   setup, keep it for this test. The installer never formats userdata.
+   Reboot System and record whether it reaches the boot animation or setup.
+   If stuck, allow about two minutes and return directly to recovery. Extract
+   extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip from this ROM ZIP and install that
+   small collector ZIP to save the new logs to Download. Send the resulting
+   .tar.gz privately; preserve recovery.log if collection fails.'''
+        if instructions.count(old)!=1:raise ValueError('Reviewed clean-install instructions changed')
+        instructions=instructions.replace(old,new)
     manifest=dict(name='HyperOS4-R8Q-'+build_label+'-SINGLE-EXPERIMENTAL',status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,
                   build_label=build_label,omitted_optional_mappings=omitted,
                   known_host_vintf_status='LEGACY_KERNEL_FCM_HAL_CONTRACTS_UNRESOLVED',
@@ -190,11 +223,14 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
                   helper=dict(member=HELPER_NAME,bytes=len(blob),sha256=SHA(blob),data_offset=4096),
                   installer_sha256=SHA(script.encode()),external_payloads_required=False,
                   target_super_prefix_policy='Preserve the actual target first 4096 bytes; first super readback hash excludes them')
+    if revision_evidence is not None:manifest['revision_evidence']=revision_evidence
     metadata={HELPER_NAME:blob,INSTALLER:script.encode(),
               'META-INF/com/google/android/updater-script':b'# Native ZIP64-backed shell installer\n',
               'P1-MANIFEST.json':(json.dumps(manifest,indent=2)+'\n').encode(),
               'README-TESTER.txt':instructions.encode(),'LICENSE.txt':license_data,
               'THIRD-PARTY-NOTICES.txt':notice_data}
+    if set(metadata)&set(extras):raise ValueError('Revision ZIP metadata collision')
+    metadata.update(extras)
     created_sidecars=[];staged_created=False
     try:
         # An interrupted/failed build cannot look like a finished flashable ZIP.
@@ -267,9 +303,11 @@ def main():
     ap.add_argument('--host-helper',type=Path)
     ap.add_argument('--ndk-notice',type=Path,action='append',default=[])
     args=ap.parse_args()
-    label,omitted=variant_metadata(json.loads(args.images_manifest.read_text()))
+    revision=json.loads(args.images_manifest.read_text())
+    label,omitted=variant_metadata(revision)
     report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper,ndk_notices=args.ndk_notice,
-                 build_label=label,omitted_optional_mappings=omitted)
+                 build_label=label,omitted_optional_mappings=omitted,revision_manifest=revision if label=='P1r3'else None)
     print(json.dumps(report,indent=2))
 
 if __name__=='__main__':main()
+
