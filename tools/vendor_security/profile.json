@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "init_sha256": "9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea",
+  "data": [
+    {
+      "name": "ipa_fws.b01",
+      "old_sha256": "f3185a8a9c39e3b7d6edc0c2bd1a1c7a58c0081150aa4c462c561ba89aa64e53",
+      "new_sha256": "8bc6bf3243e4a76cd18e5128cccf1cf1b7c6653ee228116d16b3b8e086cf8231"
+    },
+    {
+      "name": "ipa_fws.mdt",
+      "old_sha256": "49bd59c7d0189e06e0883fddaca5723ebe7d18906eaef2d6bd98e200355c6dbd",
+      "new_sha256": "0b2e4533de1cd1cbf81cdf4406926ea12139dbca83f07b6c3fce1bfc9a59ab05"
+    },
+    {
+      "name": "ipa_fws.elf",
+      "old_sha256": "bf08513983e01d9a331eba795e53a96adf0010fd41b65152ff1ec2e29843ebe8",
+      "new_sha256": "94587aaebc7b9edc1935d929c7a0253ca3e35317337cc1359df0efcfa082e209"
+    },
+    {
+      "name": "ipa_uc.b00",
+      "old_sha256": "e5e337f396e3d27e4ecf6306c1edd5268a9f58f4c89476f5c39d15b39bb52214",
+      "new_sha256": "8489acb6713ed1923726bbaa10d4e6cee5e4f828aea583933eb3af729ac1ea0b"
+    },
+    {
+      "name": "ipa_uc.b01",
+      "old_sha256": "5fe5324815a032a62ad47f87192a1ec4c165cc969298e39a30620d522fcb73bd",
+      "new_sha256": "b73ac0c1acbce0abe3e3ceace92533b32bcf860ed9272567faa699554d2928e0"
+    },
+    {
+      "name": "ipa_uc.b02",
+      "old_sha256": "546ba47b9407b94a866d12c526d5343d88a6e8cb6b8039664b7b88f2ff5a9668",
+      "new_sha256": "afd05299c490145d8ac0f7a414d2c5c79ed83c07404246e569beb7eca92aa126"
+    },
+    {
+      "name": "ipa_uc.mdt",
+      "old_sha256": "8282095c20f48c0993b4460550bda35cfcca385ed2344421c960fabc311eaf04",
+      "new_sha256": "70a423eb8400a9eae77e07db671176613e4c8b34c1c009f9beee48e6c6bd6996"
+    },
+    {
+      "name": "ipa_uc.elf",
+      "old_sha256": "aed49cd09d3a58dcc2e0166830acb4eb51f214a26de742800785f05f827715e9",
+      "new_sha256": "ebca5839da824c23084897b20df0c5cd98d2fabb2128edc27910206415c064d6"
+    }
+  ],
+  "stock": [
+    {
+      "name": "ipa_fws.b01",
+      "sha256": "8bc6bf3243e4a76cd18e5128cccf1cf1b7c6653ee228116d16b3b8e086cf8231"
+    },
+    {
+      "name": "ipa_fws.mdt",
+      "sha256": "0b2e4533de1cd1cbf81cdf4406926ea12139dbca83f07b6c3fce1bfc9a59ab05"
+    },
+    {
+      "name": "ipa_uc.b00",
+      "sha256": "8489acb6713ed1923726bbaa10d4e6cee5e4f828aea583933eb3af729ac1ea0b"
+    },
+    {
+      "name": "ipa_uc.b01",
+      "sha256": "b73ac0c1acbce0abe3e3ceace92533b32bcf860ed9272567faa699554d2928e0"
+    },
+    {
+      "name": "ipa_uc.b02",
+      "sha256": "afd05299c490145d8ac0f7a414d2c5c79ed83c07404246e569beb7eca92aa126"
+    },
+    {
+      "name": "ipa_uc.mdt",
+      "sha256": "70a423eb8400a9eae77e07db671176613e4c8b34c1c009f9beee48e6c6bd6996"
+    }
+  ],
+  "labels": [
+    {
+      "path": ".",
+      "sha256": null,
+      "label": "u:object_r:vendor_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_hwservice_contexts",
+      "sha256": "cfb944f45e60c94cf78309aad07de1f8daa70c76b69585a4d3ee8c0ae45ab5e6",
+      "label": "u:object_r:hwservice_contexts_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_file_contexts",
+      "sha256": "440d7777858ebf8b253cd2ce7e042ad72bb35253db68fbae832a6900992692cf",
+      "label": "u:object_r:file_contexts_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_property_contexts",
+      "sha256": "10122fb2715f716aa3b74ea1442effef0e414cf11411df28d086c6e1881ac7b3",
+      "label": "u:object_r:property_contexts_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_seapp_contexts",
+      "sha256": "d609023e7ab6df17f7687f6624fc45bf2d034fd7e2950ef11bbfdee1e01d3e61",
+      "label": "u:object_r:seapp_contexts_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_service_contexts",
+      "sha256": "2d5d2f73207d5e7cb9094a746afc6d514c6b2b872b9b20a9631a5405aa2aff87",
+      "label": "u:object_r:vendor_service_contexts_file:s0"
+    },
+    {
+      "path": "etc/selinux/vndservice_contexts",
+      "sha256": "cf6fcc383aeed6609fbab83b666f13d29e03f35acb306ee717ad19efa58848e8",
+      "label": "u:object_r:vndservice_contexts_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_sepolicy.cil",
+      "sha256": "291ab0e40932af38acc2cf5c13c03994ea60e0d47fcdfee4d73f266c38dd4de4",
+      "label": "u:object_r:sepolicy_file:s0"
+    },
+    {
+      "path": "etc/selinux/plat_pub_versioned.cil",
+      "sha256": "2c87f51a1394e89e2b2587966e37def2a0aa98fe49d0f29fe0638dc2245ef65a",
+      "label": "u:object_r:sepolicy_file:s0"
+    },
+    {
+      "path": "etc/selinux/plat_sepolicy_vers.txt",
+      "sha256": "166983be04e2ab397fc7a70bb60a516b1cfd42a5ec6dd356df01ae63a8500ec0",
+      "label": "u:object_r:sepolicy_file:s0"
+    },
+    {
+      "path": "etc/selinux/vendor_mac_permissions.xml",
+      "sha256": "439454f4e3cc87ba5a55bcc198f0d32285f9311b53f46ce501e989b6d791988c",
+      "label": "u:object_r:mac_perms_file:s0"
+    }
+  ],
+  "immutable": [
+    {
+      "name": "ipa_fws.b00",
+      "sha256": "6140bd155996ed6134a8d2403ae1f911554a2dfee71b82568bff5bbf90d84c22"
+    },
+    {
+      "name": "ipa_fws.b02",
+      "sha256": "75042a4ebd0835080c016bb9e22be738db863005bfbd57e230f654122e9ec1e1"
+    },
+    {
+      "name": "ipa_fws.b03",
+      "sha256": "14024088f436ebd24b097cb113b2177e12c939efdac0211d560c7cc498611507"
+    },
+    {
+      "name": "ipa_fws.b04",
+      "sha256": "08a996d4efe3ac0d4e4d8948d2a6bcc24fda5138c2e196f9568245fbafee62a3"
+    }
+  ]
+}

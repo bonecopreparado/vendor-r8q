@@ -64,6 +64,27 @@ def verify_named_file(path, expected_sha, expected_size=None):
         raise ValueError('Input hash differs: '+str(path))
 
 
+def repair_rebuilt_vendor_labels(image, work):
+    """Chain the content/tree proof to an independently checked metadata repair."""
+    from vendor_security.image_labels import repair
+    image, work = Path(image), Path(work)
+    original_report = work/'vendor-build.json'
+    before = json.loads(original_report.read_text())['output_sha256']
+    verify_named_file(image, before)
+    fixed = image.with_name('vendor-security-labels-fixed.img')
+    result = repair(image, fixed, before)
+    # Only the just-built intermediate is replaced; extracted source images
+    # and the original content/tree proof remain preserved.
+    os.replace(fixed, image)
+    verify_named_file(image, result['candidate_sha256'])
+    result['repair_input_preserved_until_verified_replacement'] = result.pop('source_preserved')
+    result['extracted_source_images_preserved'] = True
+    result['prelabel_build_report_sha256'] = digest(original_report)
+    result['prelabel_intermediate_replaced_after_verification'] = True
+    write_json(work/'vendor-label-repair.json', result)
+    return result
+
+
 def padded_dtbo(source, destination):
     verify_named_file(source, DTBO_SOURCE_SHA, 4783195)
     data = source.read_bytes()+bytes(10485760-source.stat().st_size)
@@ -266,6 +287,7 @@ def main():
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),'--report',report)
         run('tools/verify_ext4_tree_diff.py','--before',ROOT/'extracted/r8q'/(part+'.img'),
             '--after',out/(part+'.img'),'--build-report',report,'--report',WORK/(part+'-tree-diff.json'))
+    vendor_label_repair = repair_rebuilt_vendor_labels(out/'vendor.img', WORK) if build_label == 'P1r4' else None
     product=out/'product.img' if args.omit_optional_mappings else ROOT/'extracted/hyperos/product.img'
     run('tools/verify_p1_policy.py','--checker',ROOT/'build/check-contexts','--require-checker',
         '--product',product,'--output',WORK/'policy',*variant_args)
@@ -293,7 +315,8 @@ def main():
             if not removed:raise ValueError('Optional mapping removal evidence missing: '+part)
             omitted+=removed
     composition.update(status='P1_REBUILT_HOST_CHECKED_NOT_BOOT_TESTED',boot_confirmed=False,
-                       build_label=build_label,omitted_optional_mappings=omitted)
+                       build_label=build_label,omitted_optional_mappings=omitted,
+                       vendor_label_repair=vendor_label_repair)
     plan=WORK/'composition.json';write_json(plan,composition)
     super_image=out/'super-r8q-hyperos-p1.img';super_report=WORK/'super-build.json'
     run('tools/build_super_p1.py','--plan',plan,'--output',super_image,'--report',super_report)
@@ -304,6 +327,7 @@ def main():
     write_json(WORK/'package-images.json',dict(name='HyperOS4-R8Q-'+build_label,
         build_label=build_label,omitted_optional_mappings=omitted,
         kernel_repack=kernel_repack,kernel_repack_inputs=kernel_inputs,
+        vendor_label_repair=vendor_label_repair,
         diagnostic_stage=diagnostic_stage,
         diagnostic_probe_dir=str(args.diagnostic_probe_dir.resolve().relative_to(ROOT))if build_label=='P1r4'else None,
         status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,images=images,

@@ -1,0 +1,69 @@
+{
+  "status": "CUMULATIVE_SECURITY_R2_OFFLINE_REVIEW_NOT_BOOT_TESTED",
+  "new_boots_with_ipa_success": 3,
+  "new_boots_with_old_ipa_assert": 0,
+  "latest_normal_init_reboot_seconds": 31.555539,
+  "current_bootloader": "G781BXXSIHYJ2",
+  "measured_root_label": "u:object_r:vendor_apex_file:s0",
+  "measured_hwservice_database_label": "u:object_r:vendor_configs_file:s0",
+  "correct_context_entries_present": true,
+  "stock_uc_samsung_chain_signatures_verified": 3,
+  "stock_uc_mbn_signature_verified": true,
+  "stock_uc_code_equals_vendor": false,
+  "reconstructed_uc_elf_sha256": "ebca5839da824c23084897b20df0c5cd98d2fabb2128edc27910206415c064d6",
+  "target_labels_exist_in_prior_compiled_policy_check": {
+    "u:object_r:vendor_file:s0": {
+      "context": "u:object_r:vendor_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:hwservice_contexts_file:s0": {
+      "context": "u:object_r:hwservice_contexts_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:file_contexts_file:s0": {
+      "context": "u:object_r:file_contexts_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:property_contexts_file:s0": {
+      "context": "u:object_r:property_contexts_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:seapp_contexts_file:s0": {
+      "context": "u:object_r:seapp_contexts_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:vendor_service_contexts_file:s0": {
+      "context": "u:object_r:vendor_service_contexts_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:vndservice_contexts_file:s0": {
+      "context": "u:object_r:vndservice_contexts_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:sepolicy_file:s0": {
+      "context": "u:object_r:sepolicy_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    },
+    "u:object_r:mac_perms_file:s0": {
+      "context": "u:object_r:mac_perms_file:s0",
+      "parse_status": 0,
+      "check_status": 0
+    }
+  },
+  "profile_sha256": "3c183819413227e09e7516dfe1168a4006f7644e52b847f31a44920c899f1f0f",
+  "firmware_binary_payloads_distributed": false,
+  "hardware_boot_confirmed": false,
+  "kernel_or_susfs_changed": false,
+  "policy_allow_rules_changed": false,
+  "known_unresolved": [
+    "Two lmkd camopt_killer SIGSEGVs are recorded without a full stack; their cause and persistence after root/label repair remain unconfirmed."
+  ]
+}

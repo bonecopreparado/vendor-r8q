@@ -1,0 +1,70 @@
+name: Test and publish the cumulative Vendor security R2 repair
+on:
+  push:
+    branches: [r8q-vendor-security-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-vendor-security-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      ZIP_NAME: R8Q-P1r4-SECURITY-R2-EXPERIMENTAL.zip
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install Android shell and real ext4 fixture tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh e2fsprogs
+          for name in debugfs mke2fs e2fsck; do command -v "$name"; done
+      - name: Build the candidate and check its actual recovery script syntax
+        run: |
+          python3 tools/package_vendor_security.py --output output
+          unzip -p "output/$ZIP_NAME" META-INF/com/google/android/update-binary > output/installer-review.sh
+          /bin/mksh -n output/installer-review.sh
+      - name: Test recovery rollback and real ext4 metadata repair
+        run: |
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_vendor_security*.py' -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_ci_rebuild_p1.py -v
+      - name: Attest the exact flashable ZIP
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: output/${{ env.ZIP_NAME }}
+      - name: Publish the direct recovery ZIP and checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: p1r4-security-r2-${{ github.run_number }}-${{ github.run_attempt }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" output/SECURITY-R2.intoto.jsonl
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          sha=Path('output/'+os.environ['ZIP_NAME']+'.sha256').read_text().split()[0]
+          notes=('Cumulative experimental addon for the already installed HyperOS4 R8Q P1r4. Hardware boot remains unconfirmed.\n\n'
+                 'Corrects the verified wrong Vendor root/context-file labels and uses the matching Samsung IPA and IPA UC from the device APNHLOS. '
+                 'Includes the earlier IPA fix; no R1 installation is required. Kernel/SUSFS and policy allow rules remain unchanged. '
+                 'Backs up original files/labels and restores them after detected failures. Different stock firmware versions are refused.\n\n'
+                 'Install the ZIP directly in recovery, keep it compressed, then reboot Recovery before System. Do not Format Data.\n\n'
+                 'The retained logs also show lmkd camera-optimization SIGSEGVs without a full stack; that issue is not claimed fixed.\n\n'
+                 'SHA256: `'+sha+'`.\n\n[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'
+                 +Path('output/README-ENGLISH.txt').read_text())
+          Path('output/RELEASE-NOTES.md').write_text(notes)
+          PY
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'P1r4 security R2 - Vendor labels and Samsung IPA UC' --notes-file output/RELEASE-NOTES.md \
+            "output/$ZIP_NAME" "output/$ZIP_NAME.sha256" output/README-ENGLISH.txt output/SECURITY-R2.intoto.jsonl \
+            reports/p1/security-r2-20261116/offline-verification.json
