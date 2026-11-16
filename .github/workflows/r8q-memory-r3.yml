@@ -1,0 +1,117 @@
+name: Package cumulative R8Q memory R3 recovery addon
+on:
+  push:
+    branches: [r8q-memory-r3-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-memory-r3-delivery
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+      ZIP_NAME: R8Q-P1r4-MEMORY-R3-EXPERIMENTAL.zip
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install host fixture tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential mksh e2fsprogs qemu-user
+      - name: Test native I/O, actual recovery shell failures and existing R2 transactions
+        run: |
+          python3 -m unittest discover -s ci-r8q/tests -p test_boot_io.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_boot_memory_installer.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_memory_kernel_dependency.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_vendor_security*.py' -v
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_susfs22*.py' -v
+      - name: Compile production static AArch64 boot I/O helper and retain NDK notices
+        run: |
+          mkdir -p build output
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -x "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" ]; then
+            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          fi
+          "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -static -Os -s -Wall -Wextra -Werror tools/boot_memory/boot_io.c -o build/r8q-bootio
+          qemu-aarch64 build/r8q-bootio --version
+          truncate -s 67108864 build/regular-fixture.img
+          if qemu-aarch64 build/r8q-bootio --check build/regular-fixture.img; then
+            echo 'Production helper incorrectly accepted a regular boot target'; exit 1
+          fi
+          SDK_ROOT="$SDK_ROOT" python3 - <<'PY'
+          import os
+          from pathlib import Path
+          ndk=Path(os.environ['SDK_ROOT'])/'ndk/27.2.12479018'
+          notices=[ndk/n for n in ('NOTICE','NOTICE.toolchain') if(ndk/n).is_file()]
+          if not notices:raise SystemExit('Android NDK notices are missing')
+          Path('build/android-ndk-notices.txt').write_bytes(b'\n\n'.join(p.read_bytes()for p in notices))
+          PY
+      - name: Resolve and independently verify a successful exact-source kernel build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 ci-r8q/tools/fetch_memory_kernel.py --output ci-memory-kernel --wait-minutes 20
+      - name: Reproduce only the pinned original boot template
+        run: python3 tools/audit_boot_kernel_input.py
+      - name: Package and read back every installer member and the actual boot image
+        id: package
+        run: |
+          python3 tools/package_boot_memory.py --source candidates/p0/boot-r8q-hyperos-p0.img --image ci-memory-kernel/Image --summary ci-memory-kernel/summary.json --helper build/r8q-bootio --provenance ci-memory-kernel/PROVENANCE.json --ndk-notice build/android-ndk-notices.txt --output "output/$ZIP_NAME"
+          python3 - <<'PY'
+          import json,os,subprocess,zipfile
+          from pathlib import Path
+          with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME'])as z:
+              p=Path('build/rendered-installer.sh');p.write_bytes(z.read('META-INF/com/google/android/update-binary'))
+          subprocess.run(['/bin/mksh','-n',p],check=True)
+          report=json.loads(Path('output/R3-build-report.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'],'a')as stream:stream.write('sha256='+report['zip_sha256']+'\n')
+          PY
+      - name: Attest the exact ready ZIP
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-name: R8Q-P1r4-MEMORY-R3-EXPERIMENTAL.zip
+          subject-digest: sha256:${{ steps.package.outputs.sha256 }}
+      - name: Publish one ready experimental addon with checksum and provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: p1r4-memory-r3-${{ github.run_number }}-${{ github.run_attempt }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" output/R3.intoto.jsonl
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          notes=('Cumulative experimental addon for the EXACT installed P1r4, not a complete ROM or stock installer.\n\n'
+                 'Includes R2 firmware/SELinux-label repair plus MEMCG, PSI and v1 freezer with SUSFS and NFLOG preserved. '
+                 'SELinux options, ramdisk, DTB and boot arguments are preserved. Mandatory original-boot backup, '
+                 'flushed writes and fresh O_DIRECT readback. No Format Data. Hardware boot and LMKD crash resolution remain unconfirmed.\n\n'
+                 '[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'+Path('output/R3-TESTER-ENGLISH.txt').read_text())
+          Path('output/R3-RELEASE-NOTES.md').write_text(notes)
+          PY
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title 'R8Q P1r4 memory R3 — cumulative experimental addon' --notes-file output/R3-RELEASE-NOTES.md "output/$ZIP_NAME" "output/$ZIP_NAME.sha256" output/R3-TESTER-ENGLISH.txt output/R3-build-report.json output/R3.intoto.jsonl
+      - name: Preserve current package evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-MEMORY-R3-REPORTS-NOT-FLASHABLE
+          path: |
+            output/*.json
+            output/*.jsonl
+            output/*.txt
+            output/*.sha256
+            ci-memory-kernel/PROVENANCE.json
+            ci-memory-kernel/summary.json
+            reports/nflog-input/input-report.json
+          retention-days: 30
+          if-no-files-found: warn
