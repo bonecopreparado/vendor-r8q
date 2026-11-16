@@ -1,0 +1,34 @@
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -195,6 +195,10 @@
+ 
+ #ifdef CONFIG_MEMCG_KMEM
+ 
++/* Serializes memcg shrinker IDs and protects their lifetime during reclaim.
++ * Global shrinker traversal retains the per-shrinker deletion protocol. */
++static DECLARE_RWSEM(shrinker_rwsem);
++
+ /*
+  * We allow subsystems to populate their shrinker-related
+  * LRU lists before register_shrinker_prepared() is called
+@@ -437,6 +441,10 @@
+ void register_shrinker_prepared(struct shrinker *shrinker)
+ {
+ 	init_rwsem(&shrinker->del_rwsem);
++#ifdef CONFIG_MEMCG_KMEM
++	/* idr_replace must use the same sleeping lock as IDR readers/writers. */
++	down_write(&shrinker_rwsem);
++#endif
+ 	spin_lock(&shrinker_lock);
+ 	/* Use the RCU list mutation primitive to allow concurrent iteration */
+ 	list_add_tail_rcu(&shrinker->list, &shrinker_list);
+@@ -445,6 +453,9 @@
+ 		idr_replace(&shrinker_idr, shrinker, shrinker->id);
+ #endif
+ 	spin_unlock(&shrinker_lock);
++#ifdef CONFIG_MEMCG_KMEM
++	up_write(&shrinker_rwsem);
++#endif
+ }
+ 
+ int register_shrinker(struct shrinker *shrinker)

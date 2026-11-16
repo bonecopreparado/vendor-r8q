@@ -65,3 +65,21 @@ MEMCG/PSI ausentes sao lacunas reais de integracao. Sem o tombstone completo
 nao e possivel atribuir a eles o SIGSEGV camopt_killer do lmkd. Tampouco o
 sucesso da compilacao prova boot. Nao foi pedido Format Data nem alterado
 o aparelho durante esta analise.
+
+## Primeira compilacao: defeito latente de sincronizacao MEMCG
+
+O run 43968203666 passou os guardas e olddefconfig, mas parou em sete usos
+de shrinker_rwsem sem declaracao em mm/vmscan.c. O caminho global havia
+mudado para locks de lista/delecao por shrinker, enquanto o caminho MEMCG
+ainda exigia o rwsem antigo. A reparacao separada memory-shrinker.patch
+restaura o rwsem apenas para o IDR/lifetime de MEMCG e serializa tambem
+idr_replace na publicacao do shrinker. Simplesmente declarar o objeto sem
+proteger esse escritor deixaria uma corrida.
+
+Os locks e o algoritmo do caminho global sao preservados. Os hashes
+antes/depois estao fixados, incluindo o Git blob canonico do arquivo. Um
+teste C executa as funcoes reais extraidas do fonte reparado com stubs que
+verificam protecao do IDR, ordem sleeping-lock/spinlock, registro e limpeza
+de erro. Isso nao substitui lockdep nem prova concorrencia no kernel. A
+segunda compilacao usa a identificacao r8q-memcg-staging2 e mantem todos
+os recursos solicitados; nao desabilita MEMCG_KMEM para ocultar a falha.

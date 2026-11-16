@@ -1,0 +1,10 @@
+{
+  "source_commit": "a265508933bbecb682e45e3b956d95bf4426d60b",
+  "path": "mm/vmscan.c",
+  "before_sha256": "cd135f73c865fb0ca7199029e4ea3713eae0e3c2a507cc742ebb149e33f1c62c",
+  "after_sha256": "b85c4733d6fac6d10a8b9c1242f2d3c732c8f2c5c11685ca8e867a0cfabbaa56",
+  "patch_sha256": "56af3c8b394a3a96c2fdbad3a0934fe1ff8ae3f83134700dfe1426641aa646d0",
+  "reason": "Restore memcg IDR lifetime rwsem and serialize idr_replace; preserve existing global per-shrinker deletion locks",
+  "hardware_boot_confirmed": false,
+  "canonical_git_blob": "3edf03c4a474ddb0288110dda4ce0d123f4e93d1"
+}

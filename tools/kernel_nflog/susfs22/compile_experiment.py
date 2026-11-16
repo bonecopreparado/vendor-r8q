@@ -14,13 +14,14 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import build_current as build
 import current_compat as original
+import memory_compat
 
 PINS = json.loads((HERE/'pins.json').read_text())
 PATCH = HERE/'a265-susfs22.patch'
 PATCH_SHA = 'c4509c96daf851b425861a3b3acefb43d634b4d6a87fce33a9cb098e53125720'
 ROWS = PINS['files']
 NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
-TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None})
+TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None} | {memory_compat.PINS['path']})
 SUSFS_SYMBOLS=frozenset((
     'susfs_init','susfs_start_sdcard_monitor_fn','susfs_add_sus_path',
     'susfs_add_sus_path_loop','susfs_is_inode_sus_path','susfs_add_sus_map',
@@ -30,7 +31,8 @@ SUSFS_SYMBOLS=frozenset((
 def expected_overlay():
     return dict(status='EXPERIMENTAL_SUSFS22_SOURCE_NOT_HARDWARE_TESTED',
                 original_compatibility=original.expected_report(),susfs22=PINS,
-                susfs_disabled=False,boot_image_created=False)
+                susfs_disabled=False,boot_image_created=False,
+                memory_compatibility=memory_compat.expected_report())
 
 
 def sha(path):
@@ -40,6 +42,7 @@ def sha(path):
 
 
 def verify(source, env):
+    memory_compat.verify(source)
     for row in ROWS:
         if sha(source/row['path']) != row['after_sha256']:
             raise ValueError('Derived SUSFS source differs: '+row['path'])
@@ -69,6 +72,7 @@ def apply(source, evidence, env):
     command = ['git','-C',source,'apply','--whitespace=nowarn']
     build.audit.run(command+['--check',PATCH],evidence/'susfs22-check.log',env)
     build.audit.run(command+[PATCH],evidence/'susfs22-apply.log',env)
+    memory_compat.apply(source,evidence,env,build.audit)
     verify(source,env)
     # Exercise the real patched ownership statements before starting a long
     # build; no patched kernel binary or Android ELF is executed on the host.
@@ -76,6 +80,7 @@ def apply(source, evidence, env):
     build.audit.run([sys.executable,HERE/'test_scheduler.py',source],evidence/'scheduler-util-test.log',env)
     build.audit.run([sys.executable,HERE/'test_capacity.py',source],evidence/'scheduler-capacity-test.log',env)
     build.audit.run([sys.executable,HERE/'test_ikconfig.py',source],evidence/'ikconfig-prerequisite-test.log',env)
+    build.audit.run([sys.executable,HERE/'test_memory_shrinker.py',source],evidence/'memcg-shrinker-test.log',env)
     report = expected_overlay()
     if report['original_compatibility']!=before:
         raise ValueError('Original compatibility record changed')

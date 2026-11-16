@@ -19,7 +19,7 @@ import audit_current as audit
 import compiler_cache
 import current_compat
 
-LOCALVERSION = '-r8q-memcg-staging1'
+LOCALVERSION = '-r8q-memcg-staging2'
 LTO_MAKE_ARGUMENT = 'LD_FLAGS_LTO_CLANG=-mllvm -import-instr-limit=5 --thinlto-jobs=2 --threads=2'
 CLANG_SHA256 = '19823dc3473e9fc514d5c37f11afc1e7d76f9d519257448445a929e46086ffd9'
 # ARM64 RELOCATABLE selects ARCH_HAS_RELR. RELR is invisible/default-y with
@@ -94,7 +94,7 @@ SOURCE_EVIDENCE = (
     'net/netfilter/Makefile', 'net/netfilter/xt_NFLOG.c', 'net/netfilter/nfnetlink_log.c',
     'net/netfilter/nf_log.c', 'include/net/netfilter/nf_log.h', '.gitmodules',
     'kernel/bpf/preload/Kconfig', 'kernel/bpf/preload/Makefile',
-    'mm/Kconfig', 'mm/memcontrol.c', 'kernel/cgroup/Makefile',
+    'mm/Kconfig', 'mm/memcontrol.c', 'mm/vmscan.c', 'kernel/cgroup/Makefile',
     'kernel/cgroup/legacy_freezer.c', 'kernel/sched/psi.c',
     'security/selinux/Kconfig', 'security/selinux/hooks.c', 'security/selinux/selinuxfs.c',
     'kernel/bpf/inode.c', 'scripts/Makefile.build',
