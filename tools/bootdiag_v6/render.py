@@ -51,6 +51,15 @@ def render_collector():
     if hashlib.sha256(source).hexdigest()!=V5_COLLECTOR_SHA:
         raise ValueError('Reviewed V5 collector differs')
     script=source.decode().replace('v5','v6').replace('V5','V6')
+    guard='[ "$(getprop ro.bootmode)" = recovery ] || [ "$(getprop ro.orangefox.boot)" = 1 ] || abort "Return to OrangeFox recovery first."'
+    if script.count(guard)!=1:
+        raise ValueError('Reviewed recovery guard changed')
+    script=script.replace(guard,'''# Some r8q TWRP builds report ro.bootmode=unknown.
+if [ "$(getprop ro.bootmode)" != recovery ] && [ "$(getprop ro.orangefox.boot)" != 1 ]; then
+    [ "$(getprop ro.twrp.boot)" = 1 ] &&
+    [ "$(getprop init.svc.recovery)" = running ] &&
+    [ "$(getprop ro.twrp.fastbootd)" != 1 ] || abort "Return to TWRP or OrangeFox recovery first."
+fi''')
     anchor='case "$leaf" in boot.log|composer-native-early.txt'
     if script.count(anchor)!=1:
         raise ValueError('Reviewed nonempty Android evidence guard changed')

@@ -25,7 +25,7 @@ def collector_bytes(root):
     readme=b'''R8Q BOOTDIAG V6 COLLECT-ONLY - NOT A ROM
 
 The P1r4 ROM already includes V6 diagnostics. After a boot attempt, return
-directly to OrangeFox and install this collector ZIP. It copies logs to the
+directly to TWRP or OrangeFox and install this collector ZIP. It copies logs to the
 Download folder and displays the resulting .tar.gz path. Send that archive
 privately; a PARTIAL archive is still useful. Keep the archive compressed.
 

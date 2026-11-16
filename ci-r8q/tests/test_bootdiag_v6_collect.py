@@ -51,5 +51,25 @@ class Tests(unittest.TestCase):
         self.assertNotEqual(result.returncode,0)
         self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
 
+    def twrp(self, r, **changes):
+        props={'ro.product.device':'r8q','ro.bootmode':'unknown',
+               'ro.twrp.boot':'1','init.svc.recovery':'running','ro.twrp.fastbootd':'0'}
+        props.update(changes)
+        (r/'bin/getprop').write_text('#!/usr/bin/env python3\nimport sys\nprint('+repr(props)+'.get(sys.argv[1],""))\n')
+
+    def test_actual_twrp_unknown_bootmode_properties_allow_collection(self):
+        r=self.fixture();self.twrp(r)
+        result=self.execute(r)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertTrue(self.archive(r).is_file())
+
+    def test_fastbootd_android_and_absent_recovery_service_are_refused(self):
+        for changes in ({'ro.twrp.fastbootd':'1'}, {'init.svc.recovery':'stopped'},
+                        {'ro.twrp.boot':'0','ro.bootmode':'normal'}):
+            r=self.fixture();self.twrp(r,**changes)
+            result=self.execute(r)
+            self.assertNotEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
+
 
 if __name__=='__main__':unittest.main()
