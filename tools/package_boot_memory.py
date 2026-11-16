@@ -90,7 +90,7 @@ def build(output, source, image, summary, helper, provenance, ndk_notice):
         raise ValueError('Expected production block-only native helper')
     if not ndk_notice or len(ndk_notice) > 8*1024**2:
         raise ValueError('Real bounded Android NDK notices are required')
-    security = package_vendor_security.render()
+    security = package_vendor_security.render().encode('utf-8')
     compressed = gzip.compress(candidate, compresslevel=6, mtime=0)
     installer = render(sha(candidate), sha(compressed), sha(native), sha(security))
     report = dict(schema_version=1, status='PACKAGED_EXPERIMENTAL_NOT_BOOT_TESTED',

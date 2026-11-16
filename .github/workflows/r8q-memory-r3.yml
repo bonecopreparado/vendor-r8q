@@ -32,6 +32,7 @@ jobs:
         run: |
           python3 -m unittest discover -s ci-r8q/tests -p test_boot_io.py -v
           python3 -m unittest discover -s ci-r8q/tests -p test_boot_memory_installer.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_boot_memory_package.py -v
           python3 -m unittest discover -s ci-r8q/tests -p test_memory_kernel_dependency.py -v
           python3 -m unittest discover -s ci-r8q/tests -p 'test_vendor_security*.py' -v
           python3 -m unittest discover -s ci-r8q/tests -p 'test_susfs22*.py' -v
