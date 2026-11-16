@@ -1,0 +1,61 @@
+{
+  "status": "IPA_STOCK_AUTHENTICATION_ADDON_NOT_BOOT_TESTED",
+  "observed_bootloader": "G781BXXSIHYJ2",
+  "retained_ipa_fatal_boots": 4,
+  "source": "Read-only copies of device APNHLOS IPA; executable Vendor code is identical",
+  "stock_signing_chain": [
+    "L=San Diego,O=SecTools,CN=SecTools Test User,ST=California,C=US",
+    "1.2.840.113549.1.9.1=m.security@samsung.com,CN=Samsung Attestation CA,OU=DMC,O=Samsung Corporation,L=Suwon City,ST=South Korea,C=KR",
+    "1.2.840.113549.1.9.1=m.security@samsung.com,CN=Samsung Root CA cert,OU=DMC,O=Samsung Corporation,L=Suwon City,ST=South Korea,C=KR"
+  ],
+  "checks": {
+    "certificate_0_signature_valid": true,
+    "certificate_1_signature_valid": true,
+    "certificate_2_signature_valid": true,
+    "mbn_signature_valid": true,
+    "mdt_matches_b00_b01": true,
+    "code_segments_equal_vendor": true,
+    "derived_elf_auth_segment_matches_stock": true,
+    "derived_elf_other_bytes_preserved": true
+  },
+  "files": [
+    {
+      "name": "ipa_fws.b00",
+      "size": 212,
+      "sha256": "6140bd155996ed6134a8d2403ae1f911554a2dfee71b82568bff5bbf90d84c22"
+    },
+    {
+      "name": "ipa_fws.b01",
+      "size": 6808,
+      "sha256": "8bc6bf3243e4a76cd18e5128cccf1cf1b7c6653ee228116d16b3b8e086cf8231"
+    },
+    {
+      "name": "ipa_fws.b02",
+      "size": 19080,
+      "sha256": "75042a4ebd0835080c016bb9e22be738db863005bfbd57e230f654122e9ec1e1"
+    },
+    {
+      "name": "ipa_fws.b03",
+      "size": 128,
+      "sha256": "14024088f436ebd24b097cb113b2177e12c939efdac0211d560c7cc498611507"
+    },
+    {
+      "name": "ipa_fws.b04",
+      "size": 560,
+      "sha256": "08a996d4efe3ac0d4e4d8948d2a6bcc24fda5138c2e196f9568245fbafee62a3"
+    },
+    {
+      "name": "ipa_fws.elf",
+      "size": 37552,
+      "sha256": "94587aaebc7b9edc1935d929c7a0253ca3e35317337cc1359df0efcfa082e209"
+    },
+    {
+      "name": "ipa_fws.mdt",
+      "size": 7020,
+      "sha256": "0b2e4533de1cd1cbf81cdf4406926ea12139dbca83f07b6c3fce1bfc9a59ab05"
+    }
+  ],
+  "hardware_boot_confirmed": false,
+  "kernel_changed": false,
+  "susfs_disabled": false
+}
