@@ -8,7 +8,7 @@ OUTFD=$2
 case "$OUTFD" in ''|*[!0-9]*) exit 1;; esac
 ui() { printf 'ui_print %s\nui_print\n' "$*" > "/proc/self/fd/$OUTFD"; }
 abort() { ui "ERROR: $*"; exit 1; }
-hash() { sha256sum "$1" | awk '{print $1}'; }
+file_sha256() { sha256sum "$1" | awk '{print $1}'; }
 old_hash() { case "$1" in
     ipa_fws.b01) echo f3185a8a9c39e3b7d6edc0c2bd1a1c7a58c0081150aa4c462c561ba89aa64e53;;
     ipa_fws.mdt) echo 49bd59c7d0189e06e0883fddaca5723ebe7d18906eaef2d6bd98e200355c6dbd;;
@@ -31,12 +31,12 @@ rollback() {
         cp -p "$BACKUP/$file" "$STAGE/restore-$file" || return 1
         context="$(label "$BACKUP/$file")" || return 1
         chcon "$context" "$STAGE/restore-$file" || return 1
-        [ "$(hash "$STAGE/restore-$file")" = "$(old_hash "$file")" ] || return 1
+        [ "$(file_sha256 "$STAGE/restore-$file")" = "$(old_hash "$file")" ] || return 1
         mv -f "$STAGE/restore-$file" "$FW/$file" || return 1
     done
     sync || return 1
     for file in $CHANGED; do
-        [ "$(hash "$FW/$file")" = "$(old_hash "$file")" ] || return 1
+        [ "$(file_sha256 "$FW/$file")" = "$(old_hash "$file")" ] || return 1
     done
 }
 cleanup() {
@@ -94,14 +94,14 @@ SOURCE=$1; OPTIONS=$3
 node="$(basename "$(readlink -f "$SOURCE")")"
 [ "$(cat "/sys/class/block/$node/dm/name")" = vendor ] || abort 'Mounted partition is not logical Vendor.'
 [ -f /vendor/etc/init/hw/init.qcom.rc ] && [ ! -L /vendor/etc/init/hw/init.qcom.rc ] || abort 'Missing reviewed Vendor init.'
-[ "$(hash /vendor/etc/init/hw/init.qcom.rc)" = 9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea ] || abort 'This is not the reviewed P1 Vendor.'
+[ "$(file_sha256 /vendor/etc/init/hw/init.qcom.rc)" = 9971fef6dfa6951ec593bd82351203deb71e6185a4eea5354fe2fef3912114ea ] || abort 'This is not the reviewed P1 Vendor.'
 [ -d "$FW" ] && [ ! -L "$FW" ] || abort 'Unexpected firmware directory.'
 vendor_dev="$(stat -c '%d' /vendor)"
 [ "$(stat -c '%d' "$FW")" = "$vendor_dev" ] || abort 'Firmware directory is outside Vendor.'
 for pair in 'ipa_fws.b00:6140bd155996ed6134a8d2403ae1f911554a2dfee71b82568bff5bbf90d84c22' 'ipa_fws.b02:75042a4ebd0835080c016bb9e22be738db863005bfbd57e230f654122e9ec1e1' 'ipa_fws.b03:14024088f436ebd24b097cb113b2177e12c939efdac0211d560c7cc498611507' 'ipa_fws.b04:08a996d4efe3ac0d4e4d8948d2a6bcc24fda5138c2e196f9568245fbafee62a3'; do
     file=${pair%%:*}; expected=${pair#*:}
     [ -f "$FW/$file" ] && [ ! -L "$FW/$file" ] || abort "Expected regular firmware: $file"
-    [ "$(hash "$FW/$file")" = "$expected" ] || abort "IPA code differs: $file"
+    [ "$(file_sha256 "$FW/$file")" = "$expected" ] || abort "IPA code differs: $file"
 done
 old_count=0
 for file in $FILES; do
@@ -109,7 +109,7 @@ for file in $FILES; do
     [ "$(stat -c '%d' "$FW/$file")" = "$vendor_dev" ] || abort 'IPA file is outside Vendor.'
     [ "$(stat -c '%u:%g:%a' "$FW/$file")" = 0:0:644 ] || abort "Unexpected IPA ownership/mode: $file"
     context="$(label "$FW/$file")" || abort "Cannot read SELinux label: $file"
-    actual="$(hash "$FW/$file")"
+    actual="$(file_sha256 "$FW/$file")"
     if [ "$actual" = "$(old_hash "$file")" ]; then old_count=$((old_count+1))
     elif [ "$actual" != "$(new_hash "$file")" ]; then abort "Unknown IPA content: $file"; fi
 done
@@ -117,7 +117,7 @@ if [ -e "$BACKUP" ] || [ -L "$BACKUP" ]; then
     [ -d "$BACKUP" ] && [ ! -L "$BACKUP" ] && [ "$(stat -c '%d' "$BACKUP")" = "$vendor_dev" ] || abort 'Unexpected backup directory.'
     for file in $FILES; do
         [ -f "$BACKUP/$file" ] && [ ! -L "$BACKUP/$file" ] &&
-        [ "$(hash "$BACKUP/$file")" = "$(old_hash "$file")" ] || abort 'Existing original IPA backup differs.'
+        [ "$(file_sha256 "$BACKUP/$file")" = "$(old_hash "$file")" ] || abort 'Existing original IPA backup differs.'
     done
 elif [ "$old_count" != 3 ] && [ "$old_count" != 0 ]; then
     abort 'Partial IPA replacement without the original backup. Nothing changed.'
@@ -134,7 +134,7 @@ set -- $row
 case ",$3," in *,ro,*) ;; *) abort 'Firmware partition must remain read-only.';; esac
 for file in ipa_fws.b01 ipa_fws.mdt; do
     [ -f "$WORK/apnhlos/image/$file" ] && [ ! -L "$WORK/apnhlos/image/$file" ] || abort "Stock IPA absent: $file"
-    [ "$(hash "$WORK/apnhlos/image/$file")" = "$(new_hash "$file")" ] || abort 'Stock IPA version differs from this reviewed fix. Send its hashes; nothing changed.'
+    [ "$(file_sha256 "$WORK/apnhlos/image/$file")" = "$(new_hash "$file")" ] || abort 'Stock IPA version differs from this reviewed fix. Send its hashes; nothing changed.'
     cat "$WORK/apnhlos/image/$file" > "$WORK/$file"
 done
 umount "$WORK/apnhlos" || abort 'Cannot release temporary firmware mount.'
@@ -142,7 +142,7 @@ STOCK_MOUNTED=0
 if [ "$old_count" = 0 ]; then ui 'Matching Samsung IPA already installed.'; exit 0; fi
 cat "$FW/ipa_fws.elf" > "$WORK/ipa_fws.elf"
 dd if="$WORK/ipa_fws.b01" of="$WORK/ipa_fws.elf" bs=1 seek=4096 conv=notrunc 2>/dev/null || abort 'Cannot prepare the matching ELF.'
-for file in $FILES; do [ "$(hash "$WORK/$file")" = "$(new_hash "$file")" ] || abort 'Prepared stock IPA hash differs.'; done
+for file in $FILES; do [ "$(file_sha256 "$WORK/$file")" = "$(new_hash "$file")" ] || abort 'Prepared stock IPA hash differs.'; done
 available="$(df -Pk /vendor | awk 'NR==2 {print $4}')"
 case "$available" in ''|*[!0-9]*) abort 'Cannot determine Vendor free space.';; esac
 [ "$available" -ge 1024 ] || abort 'Need at least 1 MiB free in Vendor for staging and backup.'
@@ -154,7 +154,7 @@ if [ ! -d "$BACKUP" ]; then
     for file in $FILES; do
         cp -p "$FW/$file" "$BACKUP_STAGE/$file"
         context="$(label "$FW/$file")"; chcon "$context" "$BACKUP_STAGE/$file"
-        [ "$(hash "$BACKUP_STAGE/$file")" = "$(old_hash "$file")" ] || abort 'Original backup hash differs.'
+        [ "$(file_sha256 "$BACKUP_STAGE/$file")" = "$(old_hash "$file")" ] || abort 'Original backup hash differs.'
     done
     sync || abort 'Backup sync failed.'
     mv "$BACKUP_STAGE" "$BACKUP"; BACKUP_STAGE=
@@ -165,13 +165,13 @@ for file in $FILES; do
     cat "$WORK/$file" > "$STAGE/$file"
     chmod 0644 "$STAGE/$file"; chown 0:0 "$STAGE/$file"
     context="$(label "$FW/$file")"; chcon "$context" "$STAGE/$file"
-    [ "$(hash "$STAGE/$file")" = "$(new_hash "$file")" ] || abort 'Staged IPA hash differs.'
+    [ "$(file_sha256 "$STAGE/$file")" = "$(new_hash "$file")" ] || abort 'Staged IPA hash differs.'
 done
 for file in $FILES; do
     CHANGED="$CHANGED $file"
     mv -f "$STAGE/$file" "$FW/$file" || abort 'IPA replacement failed.'
 done
 sync || abort 'IPA sync failed.'
-for file in $FILES; do [ "$(hash "$FW/$file")" = "$(new_hash "$file")" ] || abort 'Installed IPA hash differs.'; done
+for file in $FILES; do [ "$(file_sha256 "$FW/$file")" = "$(new_hash "$file")" ] || abort 'Installed IPA hash differs.'; done
 SUCCESS=1
 ui 'Original IPA backup retained in /vendor/firmware/.r8q-ipa-p1r4-backup.'

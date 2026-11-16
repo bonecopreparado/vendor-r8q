@@ -84,3 +84,7 @@ property and SELinux utilities and regular files rather than block devices:
 Offline certificate/MBN verification used the actual supplied files. Host
 tests and file readback do not prove Android boot. Reboot recovery first,
 then System once; collect a fresh last_kmsg/recovery.log if boot still fails.
+
+The mksh CI pass also checks the shell actually used by Android. An initial
+fixture run exposed its built-in `hash` alias shadowing a same-name helper;
+the installer helper is now named `file_sha256` to avoid that collision.
