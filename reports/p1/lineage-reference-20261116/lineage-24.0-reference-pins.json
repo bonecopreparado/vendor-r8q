@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "scope": "ANDROID17_REFERENCE_NOT_DROP_IN_HYPEROS_KERNEL_OR_VENDOR",
+  "sources": [
+    {
+      "repository": "LineageOS/android_device_samsung_r8q",
+      "branch": "lineage-24.0",
+      "commit": "47316f913bd4684417442f7eb975ef1f280227d8",
+      "tree": "9e47bc4affb24b3789e4dddfdf30bf34ede2f441",
+      "path": "device/samsung/r8q",
+      "url": "https://github.com/LineageOS/android_device_samsung_r8q/tree/47316f913bd4684417442f7eb975ef1f280227d8"
+    },
+    {
+      "repository": "LineageOS/android_device_samsung_sm8250-common",
+      "branch": "lineage-24.0",
+      "commit": "576897d7c84c391b326ebd8b109062e0219b3096",
+      "tree": "e8a49d736b9a13573e65996d23d33ad3939747b2",
+      "path": "device/samsung/sm8250-common",
+      "url": "https://github.com/LineageOS/android_device_samsung_sm8250-common/tree/576897d7c84c391b326ebd8b109062e0219b3096"
+    },
+    {
+      "repository": "TheMuppets/proprietary_vendor_samsung_r8q",
+      "branch": "lineage-24.0",
+      "commit": "028136ec9343d62fcc74bc61343dd189e7c25555",
+      "tree": "a6a3f22e237be39e9bf0e996dd5d4458e053cc5c",
+      "path": "vendor/samsung/r8q",
+      "url": "https://github.com/TheMuppets/proprietary_vendor_samsung_r8q/tree/028136ec9343d62fcc74bc61343dd189e7c25555"
+    },
+    {
+      "repository": "TheMuppets/proprietary_vendor_samsung_sm8250-common",
+      "branch": "lineage-24.0",
+      "commit": "9991284b746f6cb7d0406bd4cbb28d86bfb451ee",
+      "tree": "675650ed20baae7eee930e4bd8e11a5df00b2560",
+      "path": "vendor/samsung/sm8250-common",
+      "url": "https://github.com/TheMuppets/proprietary_vendor_samsung_sm8250-common/tree/9991284b746f6cb7d0406bd4cbb28d86bfb451ee"
+    },
+    {
+      "repository": "LineageOS/android_kernel_samsung_sm8250",
+      "branch": "lineage-24.0",
+      "commit": "b13460286d2792b13c0090fe1ad688a7136410e3",
+      "tree": "99e4c222f42ea942f70d7987af1076e87a9b65e7",
+      "path": "kernel/samsung/sm8250",
+      "url": "https://github.com/LineageOS/android_kernel_samsung_sm8250/tree/b13460286d2792b13c0090fe1ad688a7136410e3"
+    },
+    {
+      "repository": "LineageOS/android_hardware_samsung",
+      "branch": "lineage-24.0",
+      "commit": "5a5a5d94b48ae64efaced925eb6f3f45201ed5b6",
+      "tree": "a4304339065c4cdffb271f57bbd666253182437c",
+      "path": "hardware/samsung",
+      "url": "https://github.com/LineageOS/android_hardware_samsung/tree/5a5a5d94b48ae64efaced925eb6f3f45201ed5b6"
+    },
+    {
+      "repository": "LineageOS/android_hardware_samsung_nfc",
+      "branch": "lineage-24.0",
+      "available": false,
+      "error": [
+        {
+          "type": "text",
+          "text": "GitHub API error 404: {\"message\":\"Branch not found\",\"documentation_url\":\"https://docs.github.com/rest/branches/branches#get-a-branch\",\"status\":\"404\"}"
+        }
+      ]
+    },
+    {
+      "repository": "LineageOS/android_hardware_samsung_slsi_nfc",
+      "branch": "lineage-24.0",
+      "commit": "88490b4408246e6c10ef1a6942844796f66dee5e",
+      "tree": "d844230799cc5212e424449594d3514c96d66fa5",
+      "path": "hardware/samsung_slsi/nfc",
+      "url": "https://github.com/LineageOS/android_hardware_samsung_slsi_nfc/tree/88490b4408246e6c10ef1a6942844796f66dee5e"
+    }
+  ]
+}

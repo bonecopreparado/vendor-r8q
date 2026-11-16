@@ -1,0 +1,48 @@
+{
+  "checked_at_utc": "2026-11-16",
+  "scope": "READ_ONLY_REFERENCE_AND_BOOT_EVIDENCE_NOT_BOOT_CONFIRMATION",
+  "ata": {
+    "device": {
+      "repository": "ata-kaner/android_device_samsung_r8q",
+      "branch": "lineage-24.0",
+      "commit": "e34dd6e96a53fe46a73aadb73d1d84a903b28fa6",
+      "differences_from_lineage_pin": [
+        {
+          "path": "configs/display/displayconfig.xml",
+          "ata": "a65648c49c13fdcf3e54d84e2fd3ed78cf6c506e",
+          "lineage": "260647cd1e8dfecaef81e4c3d16053ab8885279e"
+        }
+      ]
+    },
+    "common": {
+      "repository": "ata-kaner/android_device_samsung_sm8250-common",
+      "branch": "lineage-24.0",
+      "commit": "576897d7c84c391b326ebd8b109062e0219b3096",
+      "same_as_lineage": true
+    },
+    "kernel": {
+      "repository": "ata-kaner/android_kernel_samsung_sm8250",
+      "branch": "lineage-24.0",
+      "commit": "b13460286d2792b13c0090fe1ad688a7136410e3",
+      "same_as_lineage": true
+    },
+    "vendor_common": {
+      "repository": "ata-kaner/proprietary_vendor_samsung_sm8250-common",
+      "branch": "lineage-24.0",
+      "commit": "03c72af154a938998c889311541f78d86c3792b6",
+      "head_change": "Build argosd from source; no standalone security or boot fix established"
+    },
+    "vendor_device": {
+      "repository": "ata-kaner/proprietary_vendor_samsung_r8q",
+      "branch": "lineage-24.0",
+      "commit": "028136ec9343d62fcc74bc61343dd189e7c25555",
+      "same_as_lineage": true
+    }
+  },
+  "init_reference": {
+    "repository": "LineageOS/android_system_core",
+    "branch": "lineage-24.0",
+    "commit": "65d661b1a536701e8b118be4e9728d7b5ca727c9",
+    "qualification": "Reference source only, not proof of proprietary HyperOS init implementation"
+  }
+}

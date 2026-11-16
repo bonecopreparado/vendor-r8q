@@ -1,0 +1,67 @@
+name: Review r8q memory controllers with SUSFS and SELinux preserved
+on:
+  push:
+    branches: [r8q-memory-controllers-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-memory-controllers-review
+  cancel-in-progress: false
+jobs:
+  kernel:
+    name: Compile and independently verify memory-controller kernel
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned-build host dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex bison bc libssl-dev libelf-dev gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi git python3
+          df -h "$GITHUB_WORKSPACE"
+          free -h
+      - name: Verify host-only config, Image and symbol guards
+        run: |
+          python3 -m unittest discover -s ci-r8q/tests -p test_current_kernel_build.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_kernel_memory_profile.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_r8q_security_reference.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_kernel_compiler_cache.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_current_source_compat.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_susfs22*.py' -v
+      - name: Restore exact immutable compiler only
+        id: clang-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/r8q-clang
+          key: r8q-clang-v1-${{ runner.os }}-5a1f5d58aa30f70047f18cf5fc077a3dd391589c-clang-r522817-5f9bb95cd5b0c3c7ff9f7579af87b54ed4395190
+      - name: Compile raw Image and vmlinux with reviewed config - never repackage boot
+        run: python3 tools/kernel_nflog/susfs22/compile_experiment.py --jobs 2 --clang-cache .cache/r8q-clang
+      - name: Independently verify the actual linked Image and embedded configuration
+        run: |
+          python3 - <<'PY'
+          import json,sys
+          from pathlib import Path
+          sys.path.insert(0,'tools/kernel_nflog/susfs22')
+          import verify_linked
+          p=Path('reports/current-kernel-build')
+          result=verify_linked.verify((p/'Image').read_bytes(),json.loads((p/'summary.json').read_text()))
+          (p/'independent-memory-verification.json').write_text(json.dumps(result,indent=2)+'\n')
+          PY
+      - name: Save verified compiler even when a later compile fails
+        if: always() && steps.clang-cache.outputs.cache-hit != 'true' && hashFiles('reports/current-kernel-build/compiler-cache-verified.txt') != ''
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: .cache/r8q-clang
+          key: r8q-clang-v1-${{ runner.os }}-5a1f5d58aa30f70047f18cf5fc077a3dd391589c-clang-r522817-5f9bb95cd5b0c3c7ff9f7579af87b54ed4395190
+      - name: Retain unflashable outputs and full compile provenance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-MEMORY-SUSFS22-OFFLINE-REVIEW-NOT-FLASHABLE
+          path: reports/current-kernel-build/
+          retention-days: 30
+          overwrite: true
+

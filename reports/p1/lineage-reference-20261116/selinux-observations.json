@@ -1,0 +1,26 @@
+{
+  "scope": "P1r4 PRE-R2 observations; private logs not published",
+  "image_sha256": "d82cd304992c642f6cfe37717650d9dd69a3f90ca55708638fa1a3160f4ebb28",
+  "config_sha256": "cc45d3126cefe52746a2e8c3b246810d97a47b12856c1a73b48dc5f6a7007a2e",
+  "config": [
+    "CONFIG_CMDLINE=\"androidboot.boot_devices=soc/1d84000.ufshc\"",
+    "CONFIG_CMDLINE_EXTEND=y",
+    "CONFIG_SECURITY_SELINUX=y",
+    "# CONFIG_SECURITY_SELINUX_BOOTPARAM is not set",
+    "# CONFIG_SECURITY_SELINUX_DISABLE is not set",
+    "CONFIG_SECURITY_SELINUX_DEVELOP=y",
+    "# CONFIG_SECURITY_SELINUX_PERMISSIVE is not set",
+    "# CONFIG_SECURITY_SELINUX_AVC_STATS is not set",
+    "CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE=0",
+    "CONFIG_SECURITY_SELINUX_SIDTAB_HASH_BITS=9",
+    "CONFIG_SECURITY_SELINUX_AVC_HASH_BITS=9",
+    "CONFIG_DEFAULT_SECURITY_SELINUX=y"
+  ],
+  "boot_parameter_permissive_occurrences": 4,
+  "android_userspace_permissive_0_occurrences": 21,
+  "android_userspace_permissive_1_occurrences": 0,
+  "observation": "enforcing observed in Android userspace access checks, despite permissive boot parameter",
+  "recovery_state_used_as_android_state": false,
+  "proprietary_init_binary_implementation_proven": false,
+  "post_R2_hardware_boot_confirmed": false
+}

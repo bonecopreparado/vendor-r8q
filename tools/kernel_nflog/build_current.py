@@ -19,12 +19,41 @@ import audit_current as audit
 import compiler_cache
 import current_compat
 
-LOCALVERSION = '-r8q-nflog-staging1'
+LOCALVERSION = '-r8q-memcg-staging1'
 LTO_MAKE_ARGUMENT = 'LD_FLAGS_LTO_CLANG=-mllvm -import-instr-limit=5 --thinlto-jobs=2 --threads=2'
 CLANG_SHA256 = '19823dc3473e9fc514d5c37f11afc1e7d76f9d519257448445a929e46086ffd9'
 # ARM64 RELOCATABLE selects ARCH_HAS_RELR. RELR is invisible/default-y with
 # this linker and selects LTO_CLANG, so use supported ThinLTO explicitly.
+# Restore interfaces explicitly enabled by lineage-23.2 and used by the
+# existing Vendor. This is a config-only experiment, not an LMKD crash fix.
+MEMORY_PROFILE = {
+    'CONFIG_MEMCG': 'y', 'CONFIG_MEMCG_SWAP': 'y',
+    'CONFIG_MEMCG_SWAP_ENABLED': 'y', 'CONFIG_PSI': 'y',
+    'CONFIG_PSI_DEFAULT_DISABLED': 'n', 'CONFIG_CGROUP_FREEZER': 'y',
+    # Enabling MEMCG otherwise silently enables Samsung-specific accounting
+    # and reclaim changes; keep this conservative experiment on standard
+    # memory.usage_in_bytes semantics.
+    'CONFIG_MEMCG_HEIMDALL': 'n',
+}
+MEMORY_DEPENDENCIES = {
+    'CONFIG_CGROUPS': 'y', 'CONFIG_SWAP': 'y', 'CONFIG_EVENTFD': 'y',
+    'CONFIG_PAGE_COUNTER': 'y', 'CONFIG_MEMCG_KMEM': 'y',
+    'CONFIG_MEMCG_FORCE_USE_VM_SWAPPINESS': 'y', 'CONFIG_SLOB': 'n',
+    'CONFIG_BLK_CGROUP': 'y', 'CONFIG_CGROUP_WRITEBACK': 'y', 'CONFIG_FREEZER': 'y',
+}
+REVIEWED_MEMORY_TRANSITIONS = {
+    'CONFIG_MEMCG': ('n', 'y'), 'CONFIG_PSI': ('n', 'y'),
+    'CONFIG_CGROUP_FREEZER': ('n', 'y'),
+}
+MEMORY_LINK_SYMBOLS = frozenset(('memory_cgrp_subsys', 'freezer_cgrp_subsys', 'psi_system'))
+SELINUX_CONTROLS = frozenset(('CONFIG_SECURITY_SELINUX', 'CONFIG_DEFAULT_SECURITY_SELINUX',
+    'CONFIG_SECURITY_SELINUX_DEVELOP', 'CONFIG_SECURITY_SELINUX_BOOTPARAM',
+    'CONFIG_SECURITY_SELINUX_DISABLE', 'CONFIG_SECURITY_SELINUX_PERMISSIVE'))
 REQUESTED = {
+    **MEMORY_PROFILE,
+    # Selected/default-y closure is explicit in the requested record as well.
+    'CONFIG_PAGE_COUNTER': 'y', 'CONFIG_MEMCG_KMEM': 'y',
+    'CONFIG_MEMCG_FORCE_USE_VM_SWAPPINESS': 'y', 'CONFIG_CGROUP_WRITEBACK': 'y',
     **{key: 'y' for key in audit.NFLOG},
     'CONFIG_RELR': 'y', 'CONFIG_LTO_CLANG': 'y', 'CONFIG_THINLTO': 'y',
     'CONFIG_POLLY_CLANG': 'n', 'CONFIG_LLVM_POLLY': 'n',
@@ -47,14 +76,16 @@ EXTRA_PROTECTED = frozenset('''CONFIG_FINGERPRINT_SECURE CONFIG_SENSORS_GW9558X
 CONFIG_QSEECOM CONFIG_ION CONFIG_QCOM_KGSL CONFIG_QCOM_KGSL_IOMMU CONFIG_PINCTRL_MSM
 CONFIG_MFD_SPMI_PMIC CONFIG_MMC_SDHCI_MSM CONFIG_USB_DWC3 CONFIG_USB_DWC3_MSM
 CONFIG_USB_DWC3_QCOM CONFIG_USB_CONFIGFS CONFIG_USB_CONFIGFS_F_FS CONFIG_USB_CONFIGFS_F_MTP
+CONFIG_SECURITY_SELINUX CONFIG_DEFAULT_SECURITY_SELINUX
 CONFIG_SECURITY_SELINUX_DEVELOP CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE
+CONFIG_SECURITY_SELINUX_PERMISSIVE CONFIG_SECURITY_SELINUX_BOOTPARAM CONFIG_SECURITY_SELINUX_DISABLE
 CONFIG_CMDLINE CONFIG_CMDLINE_EXTEND CONFIG_RELOCATABLE CONFIG_RANDOMIZE_BASE
 CONFIG_ZRAM CONFIG_ZRAM_WRITEBACK CONFIG_ZRAM_DEF_COMP
 CONFIG_BPF CONFIG_BPF_SYSCALL CONFIG_BPF_LSM CONFIG_BPF_JIT CONFIG_BPF_JIT_ALWAYS_ON
 CONFIG_BPF_JIT_DEFAULT_ON CONFIG_CGROUP_BPF CONFIG_NET_CLS_BPF CONFIG_NET_ACT_BPF
-CONFIG_BPF_PRELOAD CONFIG_USERMODE_DRIVER'''.split())
+CONFIG_BPF_PRELOAD CONFIG_USERMODE_DRIVER'''.split()) | frozenset(MEMORY_PROFILE) | frozenset(MEMORY_DEPENDENCIES)
 REQUIRED_SYMBOLS = frozenset(('nf_log_packet', 'nf_log_register', 'netfilter_log_init',
-                              'nfnetlink_log_init', 'nfulnl_log_packet', 'nflog_tg', 'nflog_tg_init'))
+                              'nfnetlink_log_init', 'nfulnl_log_packet', 'nflog_tg', 'nflog_tg_init')) | MEMORY_LINK_SYMBOLS
 SOURCE_EVIDENCE = (
     'Makefile', 'arch/arm64/Makefile', 'arch/arm64/kernel/head.S',
     'arch/arm64/kernel/vmlinux.lds.S', 'arch/Kconfig', 'init/Kconfig',
@@ -63,6 +94,9 @@ SOURCE_EVIDENCE = (
     'net/netfilter/Makefile', 'net/netfilter/xt_NFLOG.c', 'net/netfilter/nfnetlink_log.c',
     'net/netfilter/nf_log.c', 'include/net/netfilter/nf_log.h', '.gitmodules',
     'kernel/bpf/preload/Kconfig', 'kernel/bpf/preload/Makefile',
+    'mm/Kconfig', 'mm/memcontrol.c', 'kernel/cgroup/Makefile',
+    'kernel/cgroup/legacy_freezer.c', 'kernel/sched/psi.c',
+    'security/selinux/Kconfig', 'security/selinux/hooks.c', 'security/selinux/selinuxfs.c',
     'kernel/bpf/inode.c', 'scripts/Makefile.build',
     'block/mq-deadline.c', 'block/blk-mq-sched.h', 'block/blk-mq.h',
     'drivers/block/zram/zram_drv.c', 'include/linux/bio.h', 'include/linux/fs.h',
@@ -117,6 +151,24 @@ def config_guards(baseline, generated):
     for key in EXTRA_PROTECTED & before.keys():
         if before[key] != after.get(key):
             failures[key] = {'before': before[key], 'after': after.get(key)}
+    # The old shipped tree lacks the newer force-permissive selector. An
+    # absent boolean means disabled, and must not become enabled unnoticed.
+    for key in SELINUX_CONTROLS:
+        if before.get(key, 'n') != after.get(key, 'n'):
+            failures[key] = {'before': before.get(key, 'n'), 'after': after.get(key, 'n')}
+    memory_review = {}
+    # Only these exact disabled-to-built-in transitions are allowed to cross
+    # the baseline preservation guard. Never exempt unrelated protected keys.
+    for key, (old, new) in REVIEWED_MEMORY_TRANSITIONS.items():
+        if key in failures and before.get(key, 'n') == old and after.get(key, 'n') == new:
+            memory_review[key] = {'before': old, 'after': new,
+                                  'reason': 'Restore reviewed Android memory/cgroup ABI'}
+            failures.pop(key)
+    # Independent required values prevent weakening REQUESTED from silently
+    # disabling this profile, and inspect olddefconfig's actual closure.
+    for key, required in {**MEMORY_PROFILE, **MEMORY_DEPENDENCIES}.items():
+        if after.get(key, 'n') != required:
+            failures[key] = {'required': required, 'after': after.get(key)}
     reviewed = {}
     for key, reason in REMOVED_NAME_REVIEW.items():
         if key in failures and key not in after:
@@ -134,6 +186,7 @@ def config_guards(baseline, generated):
         failures['CONFIG_ZRAM_DEF_COMP'] = {'required': '"lz4"', 'after': after.get('CONFIG_ZRAM_DEF_COMP')}
     if after.get('CONFIG_HZ') != '250':
         failures['CONFIG_HZ'] = {'required': '250', 'after': after.get('CONFIG_HZ')}
+    comparison['reviewed_memory_profile_changes'] = memory_review
     comparison['reviewed_removed_name_mappings'] = reviewed
     comparison['build_guard_failures'] = failures
     comparison['build_config_guards_passed'] = not failures
@@ -165,7 +218,7 @@ def defined_symbols(nm_output):
             symbols.add(fields[-1])
     missing = sorted(REQUIRED_SYMBOLS - symbols)
     if missing:
-        raise ValueError('Missing defined NFLOG symbols: ' + ', '.join(missing))
+        raise ValueError('Missing required kernel symbols: ' + ', '.join(missing))
     return sorted(REQUIRED_SYMBOLS)
 
 

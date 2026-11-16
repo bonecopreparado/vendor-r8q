@@ -1,0 +1,100 @@
+{
+  "status": "STATIC_R8Q_REFERENCE_CONTRACT_PASSED_RUNTIME_UNCONFIRMED",
+  "references": {
+    "lineage-23.2": {
+      "LineageOS/android_device_samsung_r8q": "27bf887e7cbcda29aa047bd4fcd1760e515cd921",
+      "LineageOS/android_device_samsung_sm8250-common": "7a4f1a3feaada10fef3d5afcc4f212817fcd4f84"
+    },
+    "lineage-24.0": {
+      "LineageOS/android_device_samsung_r8q": "47316f913bd4684417442f7eb975ef1f280227d8",
+      "LineageOS/android_device_samsung_sm8250-common": "576897d7c84c391b326ebd8b109062e0219b3096"
+    }
+  },
+  "property_evidence_source": "tracked_baseline_not_runtime",
+  "selectors": {
+    "ro.hardware.gatekeeper": "mdfpp",
+    "ro.hardware.keystore": "mdfpp"
+  },
+  "shipping_api": "29",
+  "gatekeeper_coexistence": "QTI_default_and_Samsung_MDFPP_retained_and_valid",
+  "strongbox": "declared_vendor_instance_not_removed",
+  "default_keymaster": {
+    "name": "vendor.keymaster-4-0",
+    "executable": "/vendor/bin/hw/android.hardware.keymaster@4.0-service",
+    "interfaces": [
+      [
+        "android.hardware.keymaster@4.0::IKeymasterDevice",
+        "default"
+      ]
+    ],
+    "source": "etc/init/android.hardware.keymaster@4.0-service.rc"
+  },
+  "security_services": [
+    {
+      "name": "vendor.gatekeeper-1-0",
+      "executable": "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service",
+      "interfaces": [
+        [
+          "android.hardware.gatekeeper@1.0::IGatekeeper",
+          "mdfpp"
+        ]
+      ],
+      "source": "etc/init/android.hardware.gatekeeper@1.0-service-mdfpp.rc"
+    },
+    {
+      "name": "gatekeeper-1-0",
+      "executable": "/vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti",
+      "interfaces": [],
+      "source": "etc/init/android.hardware.gatekeeper@1.0-service-qti.rc"
+    },
+    {
+      "name": "vendor.keymaster-4-0",
+      "executable": "/vendor/bin/hw/android.hardware.keymaster@4.0-service",
+      "interfaces": [
+        [
+          "android.hardware.keymaster@4.0::IKeymasterDevice",
+          "default"
+        ]
+      ],
+      "source": "etc/init/android.hardware.keymaster@4.0-service.rc"
+    },
+    {
+      "name": "keymaster-sb-4-0",
+      "executable": "/vendor/bin/hw/android.hardware.keymaster@4.0-strongbox-service-qti",
+      "interfaces": [],
+      "source": "etc/init/android.hardware.keymaster@4.0-strongbox-service-qti.rc"
+    },
+    {
+      "name": "vendor.qseecomd",
+      "executable": "/vendor/bin/qseecomd",
+      "interfaces": [],
+      "source": "etc/init/qseecomd.rc"
+    },
+    {
+      "name": "qseecom-service",
+      "executable": "/vendor/bin/hw/vendor.qti.hardware.qseecom@1.0-service",
+      "interfaces": [],
+      "source": "etc/init/vendor.qti.hardware.qseecom@1.0-service.rc"
+    }
+  ],
+  "input_hashes": {
+    "fstab": "fb924728b97b045ab9ecbece00da802cbd06aeb947aefa2aacb3ddbdd0a48873",
+    "build.prop": "b48b7dc2e976c20bac56027b6fd6f24938d29d0856acd59144d005d860e51e40",
+    "etc/init/android.hardware.gatekeeper@1.0-service-mdfpp.rc": "66c51b8c0da2edcfc090f802c09f874a333180882258de88d56e85e5ff1dc520",
+    "etc/init/android.hardware.gatekeeper@1.0-service-qti.rc": "740cec97862d8f457f205d424c218a6d9b31e25acd3fec8075fe9076cdeb93da",
+    "etc/init/android.hardware.keymaster@4.0-service.rc": "f8f7a87f5dbd2116f3d3c5ff047d1f09dbc083d8c4044d107df5ad7d95e26b5b",
+    "etc/init/android.hardware.keymaster@4.0-strongbox-service-qti.rc": "c3aa917a2ae8c7d76d6cecbe671a3f43051dc734cdbebd93056a320ef723358a",
+    "etc/init/qseecomd.rc": "9023d41ed1320a89e9b4b891f00a8376888259d9549b71baebe095f97eef6ad7",
+    "etc/init/vendor.qti.hardware.qseecom@1.0-service.rc": "fe3a6b4c1fbd70e60f8688be4f580f08ab3bb7949189aabea0750db5d001db79",
+    "etc/vintf/manifest.xml": "5649288b789a3646cdaa8c00be2d86a239a65a0128051b751885537d2af845c7"
+  },
+  "runtime_boot_confirmed": false,
+  "limits": [
+    "Main Vendor manifest is checked; this is not merged VINTF resolution.",
+    "Init service options do not prove binary ABI or successful registration.",
+    "Upstream Samsung wrapper differs from the prebuilt stock service; replacing it requires ABI/build validation.",
+    "Lineage 24 uses FBEv2, metadata encryption and EROFS Vendor; copying those settings would change this port filesystem/crypto contract.",
+    "No files, policy, properties, encryption or firmware are changed by this audit."
+  ],
+  "baseline_archive_sha256": "320fab260c5b571fb3cde1288d30d67b904ef7c5381e4b1d73715ddf2867699e"
+}
