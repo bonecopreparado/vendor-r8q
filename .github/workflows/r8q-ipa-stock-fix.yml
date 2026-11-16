@@ -1,0 +1,66 @@
+name: Test and publish the P1r4 device-stock IPA fix
+on:
+  push:
+    branches: [r8q-ipa-stock-fix-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-ipa-stock-fix-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      ZIP_NAME: R8Q-P1r4-IPA-STOCK-FIX-EXPERIMENTAL.zip
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install the Android shell implementation
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh
+      - name: Check installer syntax and execute its failure-path fixtures
+        run: |
+          /bin/mksh -n tools/ipa_stock_fix/installer.sh
+          python3 -m unittest discover -s ci-r8q/tests -p test_ipa_stock_fix.py -v
+      - name: Package the flashable addon and checksum
+        run: python3 tools/package_ipa_stock_fix.py --output output
+      - name: Attest this exact flashable ZIP
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: output/${{ env.ZIP_NAME }}
+      - name: Publish the direct recovery ZIP and instructions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: p1r4-ipa-stock-fix-${{ github.run_number }}-${{ github.run_attempt }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" output/IPA-STOCK-FIX.intoto.jsonl
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          digest=Path('output/'+os.environ['ZIP_NAME']+'.sha256').read_text().split()[0]
+          notes=('Experimental addon for the already installed R8Q P1r4 ROM. Hardware boot is not yet confirmed.\n\n'
+                 'Uses the matching Samsung-signed IPA already present in the device APNHLOS. '
+                 'Only three active Vendor firmware files are replaced; the original files are backed up. '
+                 'Kernel and SUSFS remain unchanged. Different stock firmware hashes are refused.\n\n'
+                 'Install the ZIP asset directly in TWRP/OrangeFox with Vendor mounted; keep it compressed. '
+                 'Reboot Recovery first, then System once. No Format Data is needed.\n\n'
+                 'SHA256: `'+digest+'`.\n\n'
+                 '[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'
+                 +Path('output/README-ENGLISH.txt').read_text())
+          Path('output/RELEASE-NOTES.md').write_text(notes)
+          PY
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'P1r4 Samsung IPA authentication fix - experimental addon' --notes-file output/RELEASE-NOTES.md \
+            "output/$ZIP_NAME" "output/$ZIP_NAME.sha256" output/README-ENGLISH.txt output/IPA-STOCK-FIX.intoto.jsonl \
+            reports/p1/ipa-stock-fix-20261116/offline-verification.json
