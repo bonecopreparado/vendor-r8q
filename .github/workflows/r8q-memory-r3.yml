@@ -1,7 +1,7 @@
 name: Package cumulative R8Q memory R3 recovery addon
 on:
   push:
-    branches: [r8q-memory-r3-20261116, r8q-memory-r3-fix-20261117]
+    branches: [r8q-memory-r3-20261116, r8q-memory-r3-fix-20261117, r8q-memory-r3-docfix-20261117]
   workflow_dispatch:
 permissions:
   contents: read

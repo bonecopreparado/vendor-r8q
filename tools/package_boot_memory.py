@@ -48,8 +48,10 @@ R2 may remain applied if the subsequent kernel component fails.
 Power interruption may still require restoring boot from recovery/stock.
 
 Data/Metadata/EFS/Persist/bootloader/APNHLOS are not flashed or formatted.
-Only the private backup directory is created in Data. The existing Super,
-DTBO, recovery and all user-media directories are unchanged. If a guard fails,
+Only the private backup directory is created in Data. Boot and the reviewed
+Vendor files/labels inside Super are modified. The Super partition layout,
+its other logical partitions, DTBO, recovery and user-media directories are
+preserved. If a guard fails,
 send recovery.log; do not bypass it. No successful hardware boot is claimed.
 '''
 
