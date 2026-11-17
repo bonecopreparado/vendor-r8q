@@ -3,6 +3,7 @@
  * Build: aarch64-linux-android29-clang -D_FILE_OFFSET_BITS=64 -static -Os -s
  *        -Wall -Wextra -Werror single_zip_helper.c -o r8q-zipread
  */
+#define _GNU_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #define _FILE_OFFSET_BITS 64
 #include <errno.h>
@@ -13,12 +14,85 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <linux/fs.h>
 #include <unistd.h>
 _Static_assert(sizeof(off_t)>=8,"64-bit file offsets are required");
 
 static int fd;
 static uint64_t archive_size;
 static void die(const char *message) { fprintf(stderr,"r8q-zipread: %s\n",message); exit(2); }
+
+/* No device data writes. Flush a completed shell write, then bypass page cache
+ * during bounded, aligned readback. Test files require a compile-time build. */
+#ifdef R8Q_BLOCK_IO_FIXTURES
+#define BLOCK_READ_FLAGS 0
+static const char block_mode[]="R8Q_BLOCK_IO_FIXTURE_V1";
+#else
+#define BLOCK_READ_FLAGS O_DIRECT
+static const char block_mode[]="R8Q_BLOCK_IO_DIRECT_V1";
+#endif
+static uint64_t decimal64(const char *text) {
+    if(!*text || strlen(text)>20 || (text[0]=='0' && text[1]))die("noncanonical block range");
+    for(const char *p=text;*p;p++)if(*p<'0'||*p>'9')die("invalid block range");
+    errno=0;char *end;unsigned long long n=strtoull(text,&end,10);
+    if(errno || *end || n>INT64_MAX)die("block range overflow");
+    return (uint64_t)n;
+}
+static int block_fd(const char *path,int flags,uint64_t *capacity,int *is_block) {
+    int handle=open(path,flags|O_CLOEXEC|O_NOFOLLOW);struct stat st;
+    if(handle<0 || fstat(handle,&st))die("cannot open/stat readback target");
+    *is_block=S_ISBLK(st.st_mode);
+    if(*is_block) {
+        if(ioctl(handle,BLKGETSIZE64,capacity))die("cannot read block capacity");
+#ifdef R8Q_BLOCK_IO_FIXTURES
+    } else if(S_ISREG(st.st_mode) && st.st_size>=0) {
+        *capacity=(uint64_t)st.st_size;
+#endif
+    } else die("readback target must be a block device");
+    if(*capacity!=UINT64_C(10292822016) && *capacity!=UINT64_C(67108864) &&
+       *capacity!=UINT64_C(10485760))die("unexpected r8q target capacity");
+    return handle;
+}
+static int block_command(int argc,char **argv) {
+    if(argc==2 && !strcmp(argv[1],"--block-io-version")){puts(block_mode);return 1;}
+    int flush=argc==3 && !strcmp(argv[1],"--flush-block");
+    int readback=argc==5 && !strcmp(argv[1],"--read-block");
+    if(!flush && !readback)return 0;
+    uint64_t capacity=0;int is_block=0;
+    int handle=block_fd(argv[2],flush?O_RDWR:(O_RDONLY|BLOCK_READ_FLAGS),&capacity,&is_block);
+    if(flush) {
+        if(fdatasync(handle))die("block write flush failed");
+        if(is_block && ioctl(handle,BLKFLSBUF,0))die("block page-cache invalidation failed");
+    } else {
+        uint64_t offset=decimal64(argv[3]),left=decimal64(argv[4]);
+        if(!left || (offset|left)%4096 || offset>capacity || left>capacity-offset)
+            die("unaligned/out-of-bounds block readback");
+        void *allocated=NULL;
+        if(posix_memalign(&allocated,4096,1048576))die("readback buffer allocation failed");
+        unsigned char *buffer=allocated;
+        while(left) {
+            size_t chunk=left>1048576?1048576:(size_t)left,done=0;
+            while(done<chunk) {
+                ssize_t n=pread(handle,buffer+done,chunk-done,(off_t)(offset+done));
+                if(n<0 && errno==EINTR)continue;
+                if(n<=0 || (size_t)n%4096)die("fresh block read failed or was unaligned");
+                done+=(size_t)n;
+            }
+            done=0;
+            while(done<chunk) {
+                ssize_t n=write(STDOUT_FILENO,buffer+done,chunk-done);
+                if(n<0 && errno==EINTR)continue;
+                if(n<=0)die("readback output failed");
+                done+=(size_t)n;
+            }
+            offset+=chunk;left-=chunk;
+        }
+        free(allocated);
+    }
+    if(close(handle))die("readback target close failed");
+    return 1;
+}
 static uint16_t u16(const unsigned char *p) { return (uint16_t)(p[0]|(uint16_t)p[1]<<8); }
 static uint32_t u32(const unsigned char *p) { return (uint32_t)u16(p)|(uint32_t)u16(p+2)<<16; }
 static uint64_t u64(const unsigned char *p) { return (uint64_t)u32(p)|(uint64_t)u32(p+4)<<32; }
@@ -126,6 +200,7 @@ static struct entry lookup(const char *wanted,uint64_t *central_start) {
     return answer;
 }
 int main(int argc,char **argv) {
+    if(block_command(argc,argv))return 0;
     int size_only=argc==4 && !strcmp(argv[1],"--size");
     if(argc==2 && !strcmp(argv[1],"--version")){puts("r8q-zipread 2 ZIP64 stored, 64-bit pread, CRC32");return 0;}
     if((!size_only&&argc!=3)||(size_only&&argc!=4))die("usage: r8q-zipread [--size] ZIP MEMBER");

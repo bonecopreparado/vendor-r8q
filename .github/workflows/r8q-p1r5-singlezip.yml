@@ -1,0 +1,193 @@
+name: Build complete P1r5 ROM with R2 firmware and verified SUSFS memory kernel
+on:
+  push:
+    branches: ['r8q-p1r5-single-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r8q-p1r5-complete
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+      ZIP_NAME: HyperOS4-R8Q-P1r5-SINGLE-EXPERIMENTAL.zip
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate the planned upload name before rebuilding images
+        run: /usr/bin/python3 ci-r8q/tools/upload_rom_gofile.py "output/$ZIP_NAME" --check-name-only
+      - name: Free unused hosted-runner SDK space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          docker image prune -af >/dev/null
+          df -h "$GITHUB_WORKSPACE"
+      - name: Prepare reviewed filesystem and native build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex autoconf automake libtool pkg-config liblz4-dev uuid-dev e2fsprogs mksh python3-brotli python3-zstandard qemu-user libdeflate0 liblz4-1 liblzma5 libselinux1 libuuid1 libxxhash0 libzstd1
+          curl -fsSL --max-time 120 https://deb.debian.org/debian/pool/main/e/erofs-utils/erofs-utils_1.8.6-1_amd64.deb -o /tmp/erofs-utils.deb
+          printf '%s  %s\n' 81042b8c0c3eb63699aa7d0763dceedc675a747d9f5cfebf914b4160233f411e /tmp/erofs-utils.deb | sha256sum -c -
+          dpkg-deb -x /tmp/erofs-utils.deb tools/image-tools/root
+          mkdir -p tools/image-tools/bin build output
+          for tool in dump.erofs fsck.erofs; do ln -s ../root/usr/bin/$tool tools/image-tools/bin/$tool; done
+          for tool in debugfs e2fsck; do ln -s "$(command -v "$tool")" tools/image-tools/bin/$tool; done
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -x "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" ]; then
+            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          fi
+          "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -D_FILE_OFFSET_BITS=64 -static -Os -s -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread
+          SDK_ROOT="$SDK_ROOT" /usr/bin/python3 - <<'PY'
+          import os
+          from pathlib import Path
+          ndk=Path(os.environ['SDK_ROOT'])/'ndk/27.2.12479018'
+          notices=[ndk/n for n in ('NOTICE','NOTICE.toolchain') if (ndk/n).is_file()]
+          if not notices:raise SystemExit('Android NDK copyright notices missing')
+          Path('build/android-ndk-notices.txt').write_bytes(b'\n\n'.join(p.read_bytes() for p in notices))
+          PY
+          cc -D_FILE_OFFSET_BITS=64 -O2 -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread-host
+          qemu-aarch64 build/r8q-zipread --version
+          qemu-aarch64 build/r8q-zipread --block-io-version
+      - name: Build pinned EROFS writer with plain symlink targets for the old kernel
+        run: /usr/bin/python3 ci-r8q/tools/build_legacy_erofs.py
+      - name: Verify source tests and real ZIP64 / mksh fixtures
+        run: |
+          /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread --emulator /usr/bin/qemu-aarch64 --report reports/p1/reader-runtime/arm64.json
+          /usr/bin/python3 -m unittest discover -s ci-r8q/tests -v
+          /usr/bin/python3 ci-r8q/regression/rebuild_erofs_fixture.py
+          /usr/bin/python3 ci-r8q/regression/tmpdir_heredoc_tests.py
+          /usr/bin/python3 ci-r8q/regression/single_zip_installer_tests.py
+      - name: Fetch the completed exact-source memory kernel; independently verify its Image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 ci-r8q/tools/fetch_memory_kernel.py --output ci-kernel
+      - name: Build the pinned native diagnostic helper and preserve its real notices
+        run: python3 tools/display_probe/build_probe.py --output ci-native-probe
+      - name: Build matching modern policy compiler and context checker
+        run: |
+          bash ci-r8q/tools/build_secilc.sh
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_contexts.c .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
+      - name: Fetch reviewed official VINTF host tool and record known baseline
+        run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
+      - name: Rebuild P1r5 retaining the P1r1 optional-mapping experiment
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
+      - name: Build one complete ZIP and verify every stored member and image
+        id: package
+        run: |
+          /usr/bin/python3 tools/package_p1_single.py --helper build/r8q-zipread --host-helper build/r8q-zipread-host --ndk-notice build/android-ndk-notices.txt --images-manifest reports/p1/ci-build/package-images.json --output "output/$ZIP_NAME"
+          /usr/bin/python3 tools/verify_zip_runtime.py --zip "output/$ZIP_NAME" --helper build/r8q-zipread --emulator /usr/bin/qemu-aarch64 --report output/P1r5-ARM64-readback.json
+          /usr/bin/python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('output/P1-SINGLE-build-report.json').read_text())
+          runtime=json.loads(Path('output/P1r5-ARM64-readback.json').read_text())
+          assert runtime['sha256']==r['sha256'] and runtime['bytes']==r['bytes']
+          assert runtime['elf_machine']==183 and runtime['emulator'] and len(runtime['chunks'])==22
+          assert runtime['helper_sha256']==r['helper_sha256']
+          r['native_arm64_readback']=True
+          Path('output/P1-SINGLE-build-report.json').write_text(json.dumps(r,indent=2)+'\n')
+          assert r['native_host_readback'] and not r['external_payloads_required']
+          assert r['build_label']=='P1r5' and len(r['omitted_optional_mappings'])==23
+          import zipfile
+          with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME']) as z:
+              manifest=json.loads(z.read('P1-MANIFEST.json'))
+              evidence=manifest['revision_evidence']
+              assert evidence['susfs_enabled'] is True and evidence['hardware_boot_confirmed'] is False
+              assert evidence['diagnostic_namespace']=='/metadata/r8q-bootdiag-v6'
+              assert 'extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip' in z.namelist()
+              assert evidence['stock_firmware_preflight_required'] is True
+              assert evidence['direct_storage_readback_required'] is True
+              assert len(evidence['vendor_security']['firmware']['files'])==12
+              assert len(evidence['vendor_security']['labels']['changes'])==11
+              for suffix in ('','.sha256'):
+                  member='extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip'+suffix
+                  Path('output',member.split('/')[-1]).write_bytes(z.read(member))
+          
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('sha256='+r['sha256']+'\n')
+          PY
+      - name: Attest the exact full ZIP digest
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-name: HyperOS4-R8Q-P1r5-SINGLE-EXPERIMENTAL.zip
+          subject-digest: sha256:${{ steps.package.outputs.sha256 }}
+      - name: Upload the single full ZIP to GoFile
+        env:
+          GOFILE_TOKEN: ${{ secrets.GOFILE_TOKEN }}
+        run: /usr/bin/python3 ci-r8q/tools/upload_rom_gofile.py "output/$ZIP_NAME" --result output/gofile-rom.json
+      - name: Publish complete-ROM download metadata and the separate collector
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
+          RELEASE_TAG: p1r5-complete-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
+          python3 - <<'PYNOTES'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('output/gofile-rom.json').read_text())
+          assert r['remote_size_checked'] and r['remote_md5_checked']
+          notes=('Complete experimental ROM for S20 FE Snapdragon r8q G780G/G781B. Hardware boot remains unconfirmed.\n\n'
+                 '[Download ONE complete recovery ZIP]('+r['download_page']+')\n\n'
+                 'Size: '+str(r['size'])+' bytes. SHA256: `'+r['sha256']+'`.\n\n'
+                 'Includes the exact R2 Samsung IPA/IPA UC firmware and Vendor labels inside Super, '
+                 'the fully compiled MEMCG/PSI/v1-freezer kernel with KernelSU/SUSFS and NFLOG preserved, '
+                 'the existing scheduler/display/ueventd fixes and V6 diagnostic capture. '
+                 'No old P1r4 installation, R2/R3 addon, ENABLE step or external payload directory is needed.\n\n'
+                 'Requires an unlocked bootloader, compatible custom recovery and already-disabled vbmeta (flags=3). '
+                 'The ZIP writes only Super, DTBO and boot. Userdata is not formatted. '
+                 'The exact stock APNHLOS profile is checked read-only before any image write. '
+                 'Writes are flushed and read back through O_DIRECT. '
+                 'Use internal storage or exFAT/USB: FAT32 cannot hold the ZIP above 4 GiB.\n\n'
+                 'Known VINTF/legacy HAL findings remain. LMKD camopt crash resolution and Android boot are unconfirmed.\n\n'
+                 '[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'
+                 +Path('output/P1-TESTER-ENGLISH.txt').read_text())
+          Path('output/P1-RELEASE-NOTES.md').write_text(notes)
+          PYNOTES
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'P1r5 complete ROM - R2 firmware and memory kernel with SUSFS' --notes-file output/P1-RELEASE-NOTES.md \
+            "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json \
+            output/gofile-rom.json output/P1-SINGLE.intoto.jsonl output/P1r5-ARM64-readback.json \
+            output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip.sha256
+      - name: Save small current-build evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: P1r5-SINGLE-BUILD-REPORTS-NOT-FLASHABLE
+          path: |
+            output/*.json
+            output/*.jsonl
+            output/*.txt
+            output/*.sha256
+            reports/p1/ci-build/**/*.json
+            reports/p1/ci-build/**/*.log
+            reports/p1/reader-runtime/*.json
+            tools/erofs-legacy/PROVENANCE.json
+            ci-vintf/gate.json
+            ci-kernel/PROVENANCE.json
+            ci-native-probe/summary.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Preserve only a fully verified ROM if delivery fails
+        if: failure() && steps.package.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: P1r5-VERIFIED-ROM-DELIVERY-RETRY-NOT-DIRECT-FLASH
+          path: |
+            output/${{ env.ZIP_NAME }}
+            output/${{ env.ZIP_NAME }}.sha256
+            output/P1-SINGLE-build-report.json
+            output/P1-TESTER-ENGLISH.txt
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error

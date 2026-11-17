@@ -45,7 +45,7 @@ def helper_blob(path,require_arm64):
 def load_images(path,root=ROOT):
     manifest=json.loads(Path(path).read_text());rows=manifest['images']
     boot_expected=FIXED['boot']
-    if manifest.get('build_label')=='P1r4':
+    if manifest.get('build_label')in ('P1r4','P1r5'):
         from p1r3_materials import collect
         boot_expected,_,_=collect(manifest,root)
     if {r.get('partition')for r in rows}!=set(CAPACITIES) or len(rows)!=3:raise ValueError('Exactly super, boot and dtbo are required')
@@ -128,9 +128,9 @@ all compressed hashes, gzip CRCs, raw hashes and partition readbacks remain.
 
 def variant_metadata(manifest):
     label=manifest.get('build_label','P1');omitted=manifest.get('omitted_optional_mappings',[])
-    if label not in ('P1','P1r1','P1r2','P1r4') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
+    if label not in ('P1','P1r1','P1r2','P1r4','P1r5') or not isinstance(omitted,list):raise ValueError('Unknown package variant')
     if label=='P1' and omitted:raise ValueError('Baseline cannot omit mappings')
-    if label in ('P1r1','P1r2','P1r4'):
+    if label in ('P1r1','P1r2','P1r4','P1r5'):
         seen=set()
         for row in omitted:
             if not isinstance(row,dict):raise ValueError('Optional mapping evidence is not an object')
@@ -147,10 +147,13 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
     output=Path(output);root=Path(root)
     build_label,omitted=variant_metadata(dict(build_label=build_label,omitted_optional_mappings=list(omitted_optional_mappings)))
     extras={};revision_evidence=None
-    if build_label=='P1r4':
+    if build_label in ('P1r4','P1r5'):
         if not isinstance(revision_manifest,dict):raise ValueError('P1r4 requires complete independently verified revision inputs')
         from p1r3_materials import collect
         boot_expected,extras,revision_evidence=collect(revision_manifest,root)
+        if build_label=='P1r5':
+            from p1r5_materials import bind
+            revision_evidence.update(bind(revision_manifest,root,images))
         boot=[row for row in images if row['partition']=='boot']
         if len(boot)!=1 or boot[0]['sha256']!=boot_expected:raise ValueError('Actual boot image differs from regenerated P1r4 kernel evidence')
     elif revision_manifest is not None:
@@ -164,6 +167,8 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
         raise ValueError('Output and success sidecars must be new files; use a fresh packaging directory')
     output.parent.mkdir(parents=True,exist_ok=True)
     blob=helper_blob(helper,require_arm64)
+    if build_label=='P1r5' and (blob.count(b'R8Q_BLOCK_IO_DIRECT_V1')!=1 or b'R8Q_BLOCK_IO_FIXTURE_V1'in blob):
+        raise ValueError('P1r5 requires the production direct-I/O ZIP helper')
     if require_arm64 and not ndk_notices:raise ValueError('Static Android helper requires corresponding NDK notices')
     license_data=(root/'LICENSE').read_bytes()
     notice_data=(root/'THIRD_PARTY_NOTICES.md').read_bytes()
@@ -194,7 +199,7 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
             'and package publication/verification. It does not establish the\n'
             'cause of the previous bootloop or confirm a boot fix.\n\n'
             'IMPORTANT: boot is not confirmed.')
-    if build_label=='P1r4':
+    if build_label in ('P1r4','P1r5'):
         instructions=instructions.replace('IMPORTANT: boot is not confirmed.',
             'P1r4 corrects the observed kernel scheduler capacity/CPU-index crash.\n'
             'P1r4 includes the compiled NFLOG/SUSFS kernel, group32 display correction,\n'
@@ -215,6 +220,9 @@ def build(output,helper,images,root=ROOT,require_arm64=True,host_helper=None,ndk
    .tar.gz privately; preserve recovery.log if collection fails.'''
         if instructions.count(old)!=1:raise ValueError('Reviewed clean-install instructions changed')
         instructions=instructions.replace(old,new)
+    if build_label=='P1r5':
+        from p1r5_instructions import INSTRUCTIONS as full_instructions
+        instructions=full_instructions.replace('ROM-FILE.zip',output.name)
     manifest=dict(name='HyperOS4-R8Q-'+build_label+'-SINGLE-EXPERIMENTAL',status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,
                   build_label=build_label,omitted_optional_mappings=omitted,
                   known_host_vintf_status='LEGACY_KERNEL_FCM_HAL_CONTRACTS_UNRESOLVED',
@@ -307,7 +315,7 @@ def main():
     revision=json.loads(args.images_manifest.read_text())
     label,omitted=variant_metadata(revision)
     report=build(args.output,args.helper,load_images(args.images_manifest),host_helper=args.host_helper,ndk_notices=args.ndk_notice,
-                 build_label=label,omitted_optional_mappings=omitted,revision_manifest=revision if label=='P1r4'else None)
+                 build_label=label,omitted_optional_mappings=omitted,revision_manifest=revision if label in ('P1r4','P1r5')else None)
     print(json.dumps(report,indent=2))
 
 if __name__=='__main__':main()

@@ -35,7 +35,7 @@ def write_json(path, data):
 
 def select_build_label(requested, omit_optional_mappings):
     label=requested or ('P1r1' if omit_optional_mappings else 'P1')
-    if label not in ('P1','P1r1','P1r2','P1r4'):
+    if label not in ('P1','P1r1','P1r2','P1r4','P1r5'):
         raise ValueError('Unsupported build label')
     if (label!='P1') != bool(omit_optional_mappings):
         raise ValueError('Build label does not match optional mapping policy')
@@ -153,7 +153,8 @@ def independent_super(image_path, report_path):
             rows.append(row)
     write_json(WORK/'super-independent-readback.json',dict(
         status='INDEPENDENT_SUPER_HASHES_MATCH_NOT_BOOT_TESTED',partitions=rows,
-        reader_provenance=json.loads((reference/'lp-source.json').read_text())))
+        reader_provenance=json.loads((reference/'lp-source.json').read_text()),
+        super_image_sha256=digest(image_path)))
 
 
 def main():
@@ -168,7 +169,7 @@ def main():
     ap.add_argument('--minimum-free-gib',type=int,default=32)
     ap.add_argument('--omit-optional-mappings',action='store_true',
                     help='P1r1 experiment: remove only system_ext/product SELinux mapping files')
-    ap.add_argument('--build-label',choices=('P1','P1r1','P1r2','P1r4'),
+    ap.add_argument('--build-label',choices=('P1','P1r1','P1r2','P1r4','P1r5'),
                     help='Package revision; must agree with the selected mapping policy')
     ap.add_argument('--kernel-image',type=Path)
     ap.add_argument('--kernel-summary',type=Path)
@@ -176,7 +177,7 @@ def main():
     args=ap.parse_args()
     build_label=select_build_label(args.build_label,args.omit_optional_mappings)
     current_kernel=None
-    if build_label=='P1r4':
+    if build_label in ('P1r4','P1r5'):
         if not all((args.kernel_image,args.kernel_summary,args.diagnostic_probe_dir,args.host_tools,args.legacy_kernel_symlinks)):
             raise ValueError('P1r4 requires a linked SUSFS kernel, trusted summary, native diagnostic build, VINTF tools and legacy symlink mode')
         sys.path.insert(0,str(ROOT/'tools/kernel_nflog/susfs22'))
@@ -238,11 +239,11 @@ def main():
     boot_digest=BOOT_SHA
     kernel_inputs=None
     kernel_repack=None
-    if build_label=='P1r4':
+    if build_label in ('P1r4','P1r5'):
         import repack_verified
         original_boot=boot
         candidate,kernel_repack=repack_verified.repack(boot.read_bytes(),args.kernel_image.read_bytes(),current_kernel)
-        boot=ROOT/'candidates/p0/boot-r8q-hyperos-p1r3.img'
+        boot=ROOT/'candidates/p0'/('boot-r8q-hyperos-'+build_label.lower()+'.img')
         with boot.open('xb')as stream:stream.write(candidate)
         boot_digest=kernel_repack['candidate_boot_sha256']
         verify_named_file(boot,boot_digest,67108864)
@@ -255,7 +256,7 @@ def main():
     run('tools/prepare_p1_plans.py',*variant_args)
     plans=ROOT/'patches/0007-policy-integration';out=ROOT/'candidates/p1';out.mkdir()
     diagnostic_stage=None
-    if build_label=='P1r4':
+    if build_label in ('P1r4','P1r5'):
         staged=ROOT/'patches/0008-boot-fixes'
         run('tools/display_group/prepare_image_plans.py','--plans',plans,'--output',staged,
             '--diagnostic-probe-dir',args.diagnostic_probe_dir)
@@ -263,6 +264,12 @@ def main():
         diagnostic_stage=json.loads((staged/'STAGING-RESULT.json').read_text())
         if not diagnostic_stage.get('diagnostics'):
             raise ValueError('P1r4 diagnostic staging evidence missing')
+    firmware_stage=None
+    if build_label=='P1r5':
+        from vendor_security.full_rom import stage
+        target=ROOT/'patches/0009-p1r5-security'
+        firmware_stage=stage(plans,target)
+        plans=target
     erofs_parts=('system','system_ext','product') if args.omit_optional_mappings else ('system','system_ext')
     # Recreate the exact previously shipped system with the stock writer once,
     # bind the logged NID to a path, then discard only this derived baseline.
@@ -287,7 +294,14 @@ def main():
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),'--report',report)
         run('tools/verify_ext4_tree_diff.py','--before',ROOT/'extracted/r8q'/(part+'.img'),
             '--after',out/(part+'.img'),'--build-report',report,'--report',WORK/(part+'-tree-diff.json'))
-    vendor_label_repair = repair_rebuilt_vendor_labels(out/'vendor.img', WORK) if build_label == 'P1r4' else None
+    vendor_label_repair = repair_rebuilt_vendor_labels(out/'vendor.img', WORK) if build_label in ('P1r4','P1r5') else None
+    vendor_firmware=None
+    if build_label=='P1r5':
+        from vendor_security.full_rom import inspect
+        vendor_firmware=inspect(out/'vendor.img')
+        if vendor_firmware['image_sha256']!=vendor_label_repair['candidate_sha256']:
+            raise ValueError('Firmware proof is not bound to the repaired Vendor')
+        write_json(WORK/'vendor-firmware.json',vendor_firmware)
     product=out/'product.img' if args.omit_optional_mappings else ROOT/'extracted/hyperos/product.img'
     run('tools/verify_p1_policy.py','--checker',ROOT/'build/check-contexts','--require-checker',
         '--product',product,'--output',WORK/'policy',*variant_args)
@@ -298,7 +312,7 @@ def main():
         host=args.host_tools.resolve();pin=json.loads((ROOT/'ci-r8q/pins/official-otatools.json').read_text())
         verify_named_file(host/'bin/checkvintf',pin['checkvintf_sha256'])
         link=ROOT/'tools/p1-host/aosp';link.parent.mkdir(parents=True,exist_ok=False);link.symlink_to(host,target_is_directory=True)
-        kernel_args=['--kernel-image',args.kernel_image,'--kernel-summary',args.kernel_summary]if build_label=='P1r4'else[]
+        kernel_args=['--kernel-image',args.kernel_image,'--kernel-summary',args.kernel_summary]if build_label in ('P1r4','P1r5')else[]
         run('tools/verify_p1_vintf.py','--product',product,'--output',WORK/'vintf',*kernel_args)
     composition=dict(reviewed)
     composition['partitions']=[dict(row)for row in reviewed['partitions']]
@@ -316,7 +330,8 @@ def main():
             omitted+=removed
     composition.update(status='P1_REBUILT_HOST_CHECKED_NOT_BOOT_TESTED',boot_confirmed=False,
                        build_label=build_label,omitted_optional_mappings=omitted,
-                       vendor_label_repair=vendor_label_repair)
+                       vendor_label_repair=vendor_label_repair,
+                       vendor_firmware=vendor_firmware,firmware_stage=firmware_stage)
     plan=WORK/'composition.json';write_json(plan,composition)
     super_image=out/'super-r8q-hyperos-p1.img';super_report=WORK/'super-build.json'
     run('tools/build_super_p1.py','--plan',plan,'--output',super_image,'--report',super_report)
@@ -327,9 +342,10 @@ def main():
     write_json(WORK/'package-images.json',dict(name='HyperOS4-R8Q-'+build_label,
         build_label=build_label,omitted_optional_mappings=omitted,
         kernel_repack=kernel_repack,kernel_repack_inputs=kernel_inputs,
-        vendor_label_repair=vendor_label_repair,
+        vendor_label_repair=vendor_label_repair,vendor_firmware=vendor_firmware,
+        firmware_stage=firmware_stage,
         diagnostic_stage=diagnostic_stage,
-        diagnostic_probe_dir=str(args.diagnostic_probe_dir.resolve().relative_to(ROOT))if build_label=='P1r4'else None,
+        diagnostic_probe_dir=str(args.diagnostic_probe_dir.resolve().relative_to(ROOT))if build_label in ('P1r4','P1r5')else None,
         status='EXPERIMENTAL_BOOT_TEST_NOT_STABLE',boot_confirmed=False,images=images,
         limits=['Host kernel/FCM4/HAL compatibility findings remain; no stable ROM claim.',
                 'Raw ext4/LP hashes are computed per build because filesystem bookkeeping timestamps may differ.']))

@@ -75,3 +75,13 @@ independent readback of the candidate super, outside the image builder.
 The complete Apache-2.0 text is retained at
 `patches/0005-vintf-adaptation/reference/NOTICE`, alongside the pinned AOSP
 FCM4 diagnostic-only reference and its source provenance.
+
+## P1r5 Samsung IPA firmware
+
+`tools/vendor_security/stock-programs.json` contains only the two SHA-pinned
+Samsung-signed IPA/IPA UC ELF programs validated for the R2 repair. They are
+original stock firmware binaries, with their embedded public signing
+certificates; no calibration, EFS, device logs or personal files are included.
+These proprietary firmware programs retain their original owners and notices;
+the project license does not relicense them. Their split files and immutable
+code portions are checked against `tools/vendor_security/profile.json`.

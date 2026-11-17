@@ -19,7 +19,7 @@ def input_file(root,name,limit):
     return path
 
 
-def collector_bytes(root):
+def collector_bytes(root,build_label='P1r4'):
     sys.path.insert(0,str(root/'tools/bootdiag_v6'))
     import render
     readme=b'''R8Q BOOTDIAG V6 COLLECT-ONLY - NOT A ROM
@@ -32,6 +32,7 @@ privately; a PARTIAL archive is still useful. Keep the archive compressed.
 Mount Data/storage if requested. If collection fails, preserve recovery.log.
 This collector does not enable diagnostics, flash partitions or erase captures.
 '''
+    readme=readme.replace(b'P1r4',build_label.encode())
     members={'META-INF/com/google/android/update-binary':(render.render_collector(),0o755),
              'META-INF/com/google/android/updater-script':(b'# Read-only V6 diagnostic collection.\n',0o644),
              'README-ENGLISH.txt':(readme,0o644),'LICENSE.txt':((root/'LICENSE').read_bytes(),0o644)}
@@ -49,7 +50,7 @@ This collector does not enable diagnostics, flash partitions or erase captures.
 
 def collect(manifest,root):
     root=Path(root)
-    if manifest.get('build_label')!='P1r4':raise ValueError('Expected explicit P1r4 manifest')
+    if manifest.get('build_label')not in ('P1r4','P1r5'):raise ValueError('Expected explicit linked-kernel manifest')
     inputs=manifest.get('kernel_repack_inputs')
     if not isinstance(inputs,dict)or set(inputs)!={'source_boot_file','kernel_file','summary_file'}:
         raise ValueError('Missing real kernel/repack inputs')
@@ -83,7 +84,7 @@ def collect(manifest,root):
         path=input_file(root,'patches/0008-boot-fixes/zip-extra/'+name,6*1024**2)
         if path.read_bytes()!=data:raise ValueError('Staged native license differs')
         extras['licenses/display-probe/'+Path(name).name]=data
-    collector=collector_bytes(root)
+    collector=collector_bytes(root,manifest['build_label'])
     name='extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip'
     extras[name]=collector
     extras[name+'.sha256']=(sha(collector)+'  '+Path(name).name+'\n').encode()

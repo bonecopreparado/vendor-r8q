@@ -10,7 +10,7 @@ def replace_once(text,old,new):
     return text.replace(old,new)
 
 def template(root=ROOT,build_label='P1'):
-    if build_label not in ('P1','P1r1','P1r2','P1r4'):raise ValueError('Unknown experimental build label')
+    if build_label not in ('P1','P1r1','P1r2','P1r4','P1r5'):raise ValueError('Unknown experimental build label')
     parent=(root/'delivery/Ready-P0r8/installer-template-ready.sh').read_bytes()
     if hashlib.sha256(parent).hexdigest()!=PARENT_SHA:raise ValueError('P0r8 template identity changed')
     s=parent.decode()
@@ -24,7 +24,7 @@ def template(root=ROOT,build_label='P1'):
     s=s.replace('ui_print "Altera somente super, boot e dtbo. Nao formata userdata."',
                 'ui_print "Altera somente super, boot e dtbo. Nao formata userdata."\n'
                 'ui_print "P1: kernel/FCM/HAL compatibility work remains. This is an experimental boot test."')
-    if build_label in ('P1r1','P1r2','P1r4'):
+    if build_label in ('P1r1','P1r2','P1r4','P1r5'):
         s=s.replace('ui_print "P1: kernel/FCM/HAL compatibility work remains. This is an experimental boot test."',
                     'ui_print "'+build_label+': system_ext/product SELinux mappings omitted; system mappings retained."\n'
                     'ui_print "Experimental test only. Kernel/FCM/HAL compatibility work remains."')
@@ -80,6 +80,9 @@ P0R7_PAYLOAD_ROWS
 ''',"""printf '%s\\n' '@@PAYLOAD_ROWS@@' > "$WORK/payload.rows"
 """)
     if 'PAYLOAD_DIR' in s:raise ValueError('External payload dependency remains')
+    if build_label=='P1r5':
+        from p1r5_installer import upgrade
+        s=upgrade(s)
     return s
 
 if __name__=='__main__':print(template(),end='')
