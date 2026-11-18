@@ -104,6 +104,15 @@ with tempfile.TemporaryDirectory(prefix='r8q-single-harness-') as td:
             assert r['exit']==0 and len(r['changed'])==3 and r['prefix_preserved'] and r['super_body_matches'],r
         else:assert r['exit']!=0 and not r['changed'] and r['prefix_preserved'],r
         print(name,'PASS',flush=True)
+    for name, simulate, success in [('unmount_already_gone', 2, True),
+                                    ('unmount_state_unreadable', 3, False)]:
+        r=namespace['run_case'](name,mount='/vendor/firmware-modem',unmount_fail=simulate)
+        results.append(r)
+        print(json.dumps(r),flush=True)
+        if success:
+            assert r['exit']==0 and len(r['changed'])==3 and r['prefix_preserved'] and r['super_body_matches'],r
+        else:
+            assert r['exit']!=0 and not r['changed'] and 'Nao foi possivel conferir a montagem' in r['stdout'],r
     power=[('low_battery',dict(battery_capacity='19'),False),
            ('charging_twenty',dict(battery_capacity='20',battery_status='Charging'),True),
            ('unplug_during_preflight',dict(battery_capacity='49',battery_status='Charging',second_status='Discharging'),False),

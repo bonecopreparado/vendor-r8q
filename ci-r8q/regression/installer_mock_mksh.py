@@ -88,7 +88,14 @@ sys.exit(p.returncode)
 ''')
   exe('gzip','exec python3 "'+str(wrapper)+'" "$@"\n')
   exe('sha256sum','/usr/bin/sha256sum "$@"\nrc=$?\n[ ! -f "$COUNTERS/hash-failure" ] || exit 134\nexit "$rc"\n')
-  exe('umount','[ "${UNMOUNT_FAIL:-}" != 1 ] || exit 9\n: > "$MOUNTS"\nprintf "1 0 0:2 / / rw - tmpfs tmpfs rw\\n" > "$MOUNTINFO"\n')
+  exe('umount','''[ "${UNMOUNT_FAIL:-}" != 1 ] || exit 9
+: > "$MOUNTS"
+printf "1 0 0:2 / / rw - tmpfs tmpfs rw\\n" > "$MOUNTINFO"
+case "${UNMOUNT_FAIL:-}" in
+ 2) exit 9 ;;
+ 3) rm -f "$MOUNTS"; exit 9 ;;
+esac
+''')
   script=SOURCE.read_text().replace('/dev/block/bootdevice/by-name/',str(target)+'/').replace('[ -b "$1" ]','[ -f "$1" ]')
   script=script.replace('@@PAYLOAD_ROWS@@','\n'.join(' '.join(map(str,row)) for row in rows))
   script=script.replace('[ "$row_count" -eq 22 ]','[ "$row_count" -eq 4 ]')

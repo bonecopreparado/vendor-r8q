@@ -70,6 +70,17 @@ ui_print "Single ZIP: native 64-bit stored-member reader is ready."
     start=s.index('while read -r part name rawbytes rawsha cbytes csha offset readbacksha; do\n    R8Q_ZIP_REAL="$PAYLOAD_DIR/$name"')
     end=s.index('# Named mounts are unmounted below.',start)
     s=s[:start]+'# All member data resides in the local ZIP protected by the mount guard above.\n'+s[end:]
+    s=replace_once(s,
+        '        umount "$target" || abort "Nao foi possivel desmontar $target; nenhuma imagem foi escrita."\n',
+        '''        if ! umount "$target"; then
+            mounted_now="$(R8Q_MOUNT_TARGET="$target" awk '
+                BEGIN { path=ENVIRON["R8Q_MOUNT_TARGET"] }
+                $2==path || index($2,path "/")==1 {print $2}
+            ' /proc/mounts)" || abort "Nao foi possivel conferir a montagem de $target; nenhuma imagem foi escrita."
+            [ -z "$mounted_now" ] || abort "Nao foi possivel desmontar $target; nenhuma imagem foi escrita."
+            ui_print "Montagem ja liberada: $target."
+        fi
+''')
     s=s.replace('ui_print "P0 gravada e hashes de retorno conferidos."',
                 'ui_print "'+build_label+' written; every readback hash matched. Boot remains unconfirmed."')
     # Avoid mksh's here-document backing-file creation in recovery entirely.
