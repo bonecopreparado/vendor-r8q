@@ -1,0 +1,179 @@
+name: R8Q next test - host build and compatibility gates
+on:
+  push:
+    branches: ['codex/r8q-next-test-3bfa2a2']
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: r8q-next-test-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  review:
+    name: Build and verify r8q review images
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      actions: read
+    env:
+      MKSH_BINARY: /bin/mksh
+      R8Q_TEST_REPORT: ${{ github.workspace }}/reports/p1/single-zip-tests
+    outputs:
+      host_compatible: ${{ steps.images.outputs.host_compatible }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check the exact revision
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Free unused hosted-runner SDK space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          docker image prune -af >/dev/null
+          df -h "$GITHUB_WORKSPACE"
+      - name: Prepare reviewed filesystem and native build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends build-essential flex autoconf automake libtool pkg-config liblz4-dev uuid-dev e2fsprogs mksh python3-brotli python3-zstandard qemu-user libdeflate0 liblz4-1 liblzma5 libselinux1 libuuid1 libxxhash0 libzstd1
+          curl -fsSL --max-time 120 https://deb.debian.org/debian/pool/main/e/erofs-utils/erofs-utils_1.8.6-1_amd64.deb -o /tmp/erofs-utils.deb
+          printf '%s  %s\n' 81042b8c0c3eb63699aa7d0763dceedc675a747d9f5cfebf914b4160233f411e /tmp/erofs-utils.deb | sha256sum -c -
+          dpkg-deb -x /tmp/erofs-utils.deb tools/image-tools/root
+          mkdir -p tools/image-tools/bin build output
+          for tool in dump.erofs fsck.erofs; do ln -s ../root/usr/bin/$tool tools/image-tools/bin/$tool; done
+          for tool in debugfs e2fsck; do ln -s "$(command -v "$tool")" tools/image-tools/bin/$tool; done
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -x "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" ]; then
+            "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          fi
+          "$SDK_ROOT/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang" -D_FILE_OFFSET_BITS=64 -static -Os -s -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread
+          SDK_ROOT="$SDK_ROOT" /usr/bin/python3 - <<'PY'
+          import os
+          from pathlib import Path
+          ndk=Path(os.environ['SDK_ROOT'])/'ndk/27.2.12479018'
+          notices=[ndk/n for n in ('NOTICE','NOTICE.toolchain') if (ndk/n).is_file()]
+          if not notices:raise SystemExit('Android NDK copyright notices missing')
+          Path('build/android-ndk-notices.txt').write_bytes(b'\n\n'.join(p.read_bytes() for p in notices))
+          PY
+          cc -D_FILE_OFFSET_BITS=64 -O2 -Wall -Wextra -Werror tools/single_zip_helper.c -o build/r8q-zipread-host
+          qemu-aarch64 build/r8q-zipread --version
+          qemu-aarch64 build/r8q-zipread --block-io-version
+      - name: Build pinned EROFS writer with plain symlink targets for the old kernel
+        run: /usr/bin/python3 ci-r8q/tools/build_legacy_erofs.py
+      - name: Verify source tests and real ZIP64 / mksh fixtures
+        run: |
+          command -v mksh mke2fs debugfs e2fsck qemu-aarch64
+          /usr/bin/python3 ci-r8q/regression/zip_reader_runtime.py --helper build/r8q-zipread --emulator /usr/bin/qemu-aarch64 --report reports/p1/reader-runtime/arm64.json
+          /usr/bin/python3 -m unittest discover -s ci-r8q/tests -v
+          /usr/bin/python3 ci-r8q/regression/rebuild_erofs_fixture.py
+          /usr/bin/python3 ci-r8q/regression/tmpdir_heredoc_tests.py
+          /usr/bin/python3 ci-r8q/regression/single_zip_installer_tests.py
+      - name: Fetch the completed exact-source memory kernel; independently verify its Image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 ci-r8q/tools/fetch_memory_kernel.py --output ci-kernel
+      - name: Build the pinned native diagnostic helper and preserve its real notices
+        run: python3 tools/display_probe/build_probe.py --output ci-native-probe
+      - name: Build matching modern policy compiler and context checker
+        run: |
+          bash ci-r8q/tools/build_secilc.sh
+          cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_contexts.c .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
+      - name: Fetch reviewed official VINTF host tool and record known baseline
+        run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
+      - name: Rebuild review images from the current commit
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
+      - name: Verify images and record the limits of this run
+        id: images
+        run: |
+          /usr/bin/python3 - <<'PY'
+          from hashlib import file_digest
+          from pathlib import Path
+          import json
+          import os
+
+          reports = Path('reports/p1/ci-build')
+          manifest = json.loads((reports / 'package-images.json').read_text())
+          expected = {
+              'super': ('candidates/p1/super-r8q-hyperos-p1.img', 10292822016),
+              'boot': ('candidates/p0/boot-r8q-hyperos-p1r5.img', 67108864),
+              'dtbo': ('candidates/p0/dtbo-r8q-p0.img', 10485760),
+          }
+          images = manifest['images']
+          assert sorted(row['partition'] for row in images) == sorted(expected)
+          for row in images:
+              path = Path(row['file'])
+              expected_path, size = expected[row['partition']]
+              assert row['file'] == expected_path
+              assert not path.is_symlink() and path.is_file()
+              assert path.stat().st_size == row['bytes'] == size
+              with path.open('rb') as image:
+                  assert file_digest(image, 'sha256').hexdigest() == row['sha256']
+          boot = manifest['kernel_repack']
+          assert boot['candidate_boot_sha256'] == next(row['sha256'] for row in images if row['partition'] == 'boot')
+          assert boot['build_verification']['susfs_enabled']
+          assert boot['removed_inherited_boot_state'].count('androidboot.selinux=permissive') == 1
+          assert boot['removed_inherited_boot_state'].count('ro.boot.verifiedbootstate=green') == 5
+          assert len(manifest['vendor_firmware']['files']) == 12
+          assert len(manifest['vendor_label_repair']['changes']) == 11
+          assert manifest['diagnostic_stage']['diagnostics']['namespace'] == '/metadata/r8q-bootdiag-v6'
+          host = json.loads((reports / 'vintf/result.json').read_text())['host_compatible']
+          assert isinstance(host, bool)
+          review = {
+              'status': 'REVIEW_ONLY_NOT_FLASHABLE',
+              'commit': os.environ['GITHUB_SHA'],
+              'run': os.environ['GITHUB_RUN_ID'],
+              'attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'base': '3bfa2a23ab912ea91b71c7574e357d7ea31b589a',
+              'images': images,
+              'kernel_sha256': boot['kernel_sha256'],
+              'vintf_host_compatible': host,
+              'variants': {'SM-G781B': 'NOT_TESTED_ON_DEVICE', 'SM-G780G': 'NOT_TESTED_ON_DEVICE'},
+              'bootdiag_enforcing_verified': False,
+              'boot_confirmed': False,
+              'flashable_zip_created': False,
+          }
+          (reports / 'next-test-review.json').write_text(json.dumps(review, indent=2) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('host_compatible=' + str(host).lower() + '\n')
+          PY
+      - name: Archive host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-NEXT-REVIEW-NOT-FLASHABLE-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            reports/p1/ci-build/**/*.json
+            reports/p1/ci-build/**/*.log
+            reports/p1/reader-runtime/*.json
+            reports/p1/single-zip-tests/*.json
+            tools/erofs-legacy/PROVENANCE.json
+            ci-vintf/gate.json
+            ci-kernel/PROVENANCE.json
+            ci-native-probe/summary.json
+          if-no-files-found: error
+          retention-days: 14
+
+  flashable-gate:
+    name: Gate for a flashable candidate
+    needs: review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    env:
+      HOST_COMPATIBLE: ${{ needs.review.outputs.host_compatible }}
+    steps:
+      - name: Record unresolved compatibility gates
+        run: |
+          if [ "$HOST_COMPATIBLE" != true ]; then
+            echo "::error::VINTF is incompatible for the rebuilt images."
+          fi
+          echo "::error::SM-G781B and SM-G780G need separate validation of the target profile and recovery."
+          echo "::error::BOOTDIAG behavior in enforcing still needs validation; collect recovery logs directly."
+          echo "Review evidence is available in the build job artifact. No flashable ZIP was created."
+          exit 1
