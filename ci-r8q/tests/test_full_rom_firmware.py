@@ -54,7 +54,10 @@ class ImageTests(unittest.TestCase):
             old_names={row['name']for row in profile['data']}
             for name,data in files.items():
                 if name in old_names:data=('old:'+name).encode()
-                local=r/'data';local.write_bytes(data);fs.command('write '+str(local)+' /firmware/'+name,writable=True)
+                local=r/'data'
+                local.write_bytes(data)
+                local.chmod(0o644)
+                fs.command('write '+str(local)+' /firmware/'+name,writable=True)
                 fs.command('ea_set /firmware/'+name+' user.keep keep-metadata',writable=True)
                 for row in profile['data']:
                     if row['name']==name:row['old_sha256']=hashlib.sha256(data).hexdigest()
