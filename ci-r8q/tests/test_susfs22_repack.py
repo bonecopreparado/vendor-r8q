@@ -34,6 +34,25 @@ class Tests(unittest.TestCase):
         self.assertIs(evidence['hardware_boot_confirmed'],False)
         self.assertIs(evidence['old_dtb_compatibility_confirmed'],False)
 
+    def test_repack_removes_boot_state_even_when_token_spans_header_fields(self):
+        original = bytearray(self.original())
+        initial = b'androidboot.selinux=permissive repeated=one repeated=two padding='
+        cmdline = initial.ljust(500, b'x')
+        cmdline += b' androidboot.verifiedbootstate=green ro.boot.verifiedbootstate=green rootwait'
+        original[repack.CMDLINE] = cmdline[:512]
+        original[repack.EXTRA_CMDLINE] = cmdline[512:].ljust(1024, b'\0')
+        kernel, report = linked.fixture()
+        with patch.object(repack, 'BOOT_BYTES', len(original)), patch.object(repack, 'BOOT_SHA', repack.sha(original)):
+            candidate, proof = repack.repack(original, kernel, report)
+        actual = candidate[repack.CMDLINE].split(b'\0', 1)[0] + candidate[repack.EXTRA_CMDLINE].split(b'\0', 1)[0]
+        expected = cmdline.split(b' ')[1:4] + [b'rootwait']
+        self.assertEqual(actual.split(b' '), expected)
+        self.assertEqual(proof['removed_inherited_boot_state'], [
+            'androidboot.selinux=permissive', 'androidboot.verifiedbootstate=green',
+            'ro.boot.verifiedbootstate=green',
+        ])
+        self.assertFalse(proof['cmdline_preserved'])
+
     def test_unknown_source_or_invalid_compile_record_is_refused(self):
         original=self.original();kernel,report=linked.fixture()
         with self.assertRaisesRegex(ValueError,'exact shipped'):

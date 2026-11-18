@@ -1,4 +1,4 @@
-"""Replace only the kernel in the exact shipped boot after independent checks.
+"""Repack the verified kernel and remove inherited boot-state overrides.
 
 The current source deliberately uses text_offset=0 instead of the old 0x80000.
 No raw Image header is edited. Bootloader/old-DTB compatibility still requires
@@ -19,10 +19,34 @@ from build_boot_candidate import sections,boot_id,align
 
 BOOT_BYTES=67108864
 BOOT_SHA='4283ccbecbf3087bbd520dce1e50e5e449b1f70c4d959e8ee7f24b3ebfde9301'
+CMDLINE = slice(64, 576)
+EXTRA_CMDLINE = slice(608, 1632)
 
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+def remove_inherited_boot_state(header):
+    # Android boot v2 may split a single token between these two fields.
+    arguments = bytearray()
+    for field in (CMDLINE, EXTRA_CMDLINE):
+        arguments.extend(header[field].partition(b'\0')[0])
+    kept = []
+    removed = []
+    for token in arguments.split(b' '):
+        key, _, value = token.partition(b'=')
+        if ((key == b'androidboot.selinux' and value == b'permissive')
+                or key in (b'ro.boot.verifiedbootstate', b'androidboot.verifiedbootstate')):
+            removed.append(token.decode('ascii'))
+        else:
+            kept.append(token)
+    if removed:
+        command_line = b' '.join(kept).strip(b' ')
+        primary_size = CMDLINE.stop - CMDLINE.start
+        extra_size = EXTRA_CMDLINE.stop - EXTRA_CMDLINE.start
+        header[CMDLINE] = command_line[:primary_size].ljust(primary_size, b'\0')
+        header[EXTRA_CMDLINE] = command_line[primary_size:].ljust(extra_size, b'\0')
+    return removed
 
 
 def repack(original,kernel,summary):
@@ -44,6 +68,7 @@ def repack(original,kernel,summary):
     header=bytearray(original[:parts['page']])
     struct.pack_into('<I',header,8,len(kernel))
     header[576:608]=boot_id(parts)
+    removed_boot_state = remove_inherited_boot_state(header)
     candidate=bytearray(header)
     for name in ('kernel','ramdisk','second','recovery_dtbo','dtb'):
         candidate.extend(parts[name])
@@ -59,14 +84,19 @@ def repack(original,kernel,summary):
     if any(check[name]!=data for name,data in preserved.items()):
         raise ValueError('A preserved boot section changed')
     changed=[i for i,(a,b)in enumerate(zip(original[:parts['page']],candidate[:parts['page']]))if a!=b]
-    if any(i not in range(8,12) and i not in range(576,608) for i in changed):
+    allowed = set(range(8, 12)) | set(range(576, 608))
+    if removed_boot_state:
+        for field in (CMDLINE, EXTRA_CMDLINE):
+            allowed.update(range(field.start, field.stop))
+    if any(i not in allowed for i in changed):
         raise ValueError('Unexpected boot header change')
     report=dict(status='VERIFIED_SUSFS22_KERNEL_REPACK_NOT_HARDWARE_TESTED',
         source_boot_sha256=BOOT_SHA,candidate_boot_sha256=sha(candidate),bytes=BOOT_BYTES,
         kernel_sha256=sha(kernel),kernel_bytes=len(kernel),build_verification=evidence,
         preserved_sections={name:dict(bytes=len(data),sha256=sha(data))for name,data in preserved.items()},
         changed_header_offsets=changed,raw_image_header_rewritten=False,
-        text_offset_before=0x80000,text_offset_after=0,load_addresses_and_cmdline_preserved=True,
+        text_offset_before=0x80000,text_offset_after=0,load_addresses_preserved=True,
+        cmdline_preserved=not removed_boot_state, removed_inherited_boot_state=removed_boot_state,
         userdata_or_vbmeta_modified=False,hardware_boot_confirmed=False,
         bootloader_loading_path_confirmed=False,old_dtb_compatibility_confirmed=False)
     return candidate,report
