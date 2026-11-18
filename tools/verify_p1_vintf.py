@@ -4,6 +4,21 @@ import argparse,hashlib,importlib.util,json,os,shutil,subprocess,sys
 
 ROOT=Path(__file__).resolve().parents[1]
 
+def classify_actual_run(row):
+    exit_code = row['exit']
+    tokens = set(row['stdout'].splitlines())
+    if exit_code == 0 and 'COMPATIBLE' in tokens and 'INCOMPATIBLE' not in tokens:
+        return 'COMPATIBLE'
+    if exit_code == 65 and 'INCOMPATIBLE' in tokens and 'COMPATIBLE' not in tokens:
+        return 'INCOMPATIBLE'
+    known_missing_matrix = (
+        'ERROR: No such file or directory: Cannot find framework matrix at FCM version 4. Looked in:'
+    )
+    if (exit_code == 70 and row['name'] == 'actual-p1-no-kernel'
+            and known_missing_matrix in row['stderr']):
+        return 'KNOWN_NO_KERNEL_FCM4_METADATA_ERROR'
+    raise ValueError(f"Unexpected checkvintf result for {row['name']} (exit {exit_code}); see raw report")
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--output',type=Path,default=ROOT/'reports/p1/vintf-actual')
     ap.add_argument('--product',type=Path,default=ROOT/'extracted/hyperos/product.img')
@@ -68,13 +83,14 @@ def main():
         result=subprocess.run(argv,capture_output=True,text=True,timeout=90,
                               env=os.environ|{'LD_LIBRARY_PATH':str(binary.parent.parent/'lib64')})
         row=dict(name=name,argv=argv,exit=result.returncode,stdout=result.stdout,stderr=result.stderr)
-        (out/(name+'.json')).write_text(json.dumps(row,indent=2)+'\n');results.append(row)
-        if result.returncode<0:raise ValueError('Host tool crashed')
+        (out/(name+'.json')).write_text(json.dumps(row,indent=2)+'\n')
+        row['outcome'] = classify_actual_run(row)
+        results.append(row)
     report=dict(status='ACTUAL_P1_VINTF_HOST_CHECK_COMPLETE_NOT_BOOT_TESTED',boot_confirmed=False,
                 host_compatible=all(r['exit']==0 for r in results),images=images,actual_xml_files=records,
                 source_apex_kernel_bundle_sha256=bundle_sha,tool_sha256=pin['checkvintf_sha256'],
                 kernel_input=kernel_input,
-                runs=[dict(name=r['name'],exit=r['exit'])for r in results],
+                runs=[dict(name=r['name'],exit=r['exit'],outcome=r['outcome'])for r in results],
                 limits=['Factory APEX activation model is retained; the exact checked kernel/configuration is recorded in kernel_input.',
                         'Full EROFS logical comparison proves factory APEX bytes did not change; actual APEX activation remains a runtime assumption.',
                         'No vendor versions, target FCM, kernel requirements or HAL declarations were removed or spoofed.'])

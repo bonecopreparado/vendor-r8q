@@ -14,6 +14,32 @@ ROOT=Path(__file__).resolve().parents[2]
 spec=importlib.util.spec_from_file_location('r8q_checkvintf_runner',ROOT/'ci-r8q/tools/run_checkvintf.py')
 runner=importlib.util.module_from_spec(spec);spec.loader.exec_module(runner)
 
+actual_spec=importlib.util.spec_from_file_location('r8q_actual_vintf',ROOT/'tools/verify_p1_vintf.py')
+actual=importlib.util.module_from_spec(actual_spec);actual_spec.loader.exec_module(actual)
+
+
+class ActualVintfTests(unittest.TestCase):
+    def test_known_baseline_stays_incompatible(self):
+        stderr = 'ERROR: No such file or directory: Cannot find framework matrix at FCM version 4. Looked in:'
+        row = dict(name='actual-p1-no-kernel', exit=70, stdout='', stderr=stderr)
+        self.assertEqual(actual.classify_actual_run(row), 'KNOWN_NO_KERNEL_FCM4_METADATA_ERROR')
+        row = dict(name='actual-p1-with-kernel', exit=65, stdout='INCOMPATIBLE\n', stderr='')
+        self.assertEqual(actual.classify_actual_run(row), 'INCOMPATIBLE')
+
+    def test_success_requires_explicit_tool_result(self):
+        row = dict(name='actual-p1-with-kernel', exit=0, stdout='COMPATIBLE\n', stderr='')
+        self.assertEqual(actual.classify_actual_run(row), 'COMPATIBLE')
+        with self.assertRaises(ValueError):
+            actual.classify_actual_run(dict(row, stdout=''))
+
+    def test_unexpected_results_fail(self):
+        row = dict(name='actual-p1-with-kernel', stdout='', stderr='')
+        for status in (-11, 64, 65, 66, 70, 127):
+            with self.subTest(status=status), self.assertRaises(ValueError):
+                actual.classify_actual_run(dict(row, exit=status))
+        with self.assertRaises(ValueError):
+            actual.classify_actual_run(dict(row, name='actual-p1-no-kernel', exit=70))
+
 
 class CheckVintfRunnerTests(unittest.TestCase):
     def classify(self,rc,stdout='',matching=True,extra=None):
