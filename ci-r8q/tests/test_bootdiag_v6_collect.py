@@ -88,6 +88,41 @@ class Tests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Unexpected Download directory', result.stdout)
 
+    def toybox_gzip(self, r, corrupt=False):
+        # Reject -t like recovery Toybox. Mutate the trailer before decoding
+        # to prove a bad gzip is rejected, rather than accepting lost status.
+        wrapper = r/'bin/gzip'
+        program = """#!/usr/bin/env python3
+import os, sys
+from pathlib import Path
+if '-t' in sys.argv:
+    sys.exit(2)
+"""
+        if corrupt:
+            program += """p=Path(sys.argv[-1])
+data=bytearray(p.read_bytes())
+data[-8] ^= 1
+p.write_bytes(data)
+"""
+        program += "os.execv('/usr/bin/gzip', ['gzip'] + sys.argv[1:])\n"
+        wrapper.write_text(program)
+        wrapper.chmod(0o755)
+
+    def test_recovery_gzip_without_test_option_still_verifies_archive(self):
+        r = self.fixture()
+        self.toybox_gzip(r)
+        result = self.execute(r)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        with tarfile.open(self.archive(r), 'r:gz') as archive:
+            self.assertTrue(archive.extractfile('r8q-logs-v6/recovery.log').read())
+
+    def test_decoder_crc_failure_prevents_publication(self):
+        r = self.fixture()
+        self.toybox_gzip(r, corrupt=True)
+        result = self.execute(r)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
+
     def twrp(self, r, **changes):
         props={'ro.product.device':'r8q','ro.bootmode':'unknown',
                'ro.twrp.boot':'1','init.svc.recovery':'running','ro.twrp.fastbootd':'0'}
