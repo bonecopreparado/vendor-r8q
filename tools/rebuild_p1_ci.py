@@ -160,6 +160,7 @@ def independent_super(image_path, report_path):
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--legacy-kernel-symlinks',action='store_true')
+    ap.add_argument('--boot-trace', action='store_true', help='Add bounded init milestones to the system log')
     ap.add_argument('--discard-downloads',action='store_true',
                     help='CI only: delete the two verified downloaded archives after source image verification')
     ap.add_argument('--host-tools',type=Path,
@@ -284,6 +285,10 @@ def main():
             raise ValueError('Logged symlink NID was not reproduced in the exact P1r2 system')
         print('EXACT P1r2 LEGACY SYMLINK FAILURE:',json.dumps(old['legacy_symlink_issues']),flush=True)
         baseline.unlink()
+    if args.boot_trace:
+        from boot_trace import INIT_RC, stage
+        from prepare_p1_plans import read
+        write_json(WORK/'boot-trace.json', stage(plans, read('system', INIT_RC)))
     for part in erofs_parts:
         run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos'/(part+'.img'),
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),

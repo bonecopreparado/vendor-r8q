@@ -1,7 +1,7 @@
-name: Build complete P1r5 ROM with R2 firmware and verified SUSFS memory kernel
+name: Build complete experimental P1r5 ROM with R8QTRACE
 on:
   push:
-    branches: ['r8q-p1r5-single-*']
+    branches: ['r8q-p1r5-single-r8qtrace']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       attestations: write
     env:
       MKSH_BINARY: /bin/mksh
-      ZIP_NAME: HyperOS4-R8Q-P1r5-SINGLE-EXPERIMENTAL.zip
+      ZIP_NAME: HyperOS4-R8Q-P1r5-R8QTRACE-SINGLE-EXPERIMENTAL.zip
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -79,7 +79,7 @@ jobs:
       - name: Fetch reviewed official VINTF host tool and record known baseline
         run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
       - name: Rebuild P1r5 retaining the P1r1 optional-mapping experiment
-        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --boot-trace --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
       - name: Build one complete ZIP and verify every stored member and image
         id: package
         run: |
@@ -97,6 +97,17 @@ jobs:
           Path('output/P1-SINGLE-build-report.json').write_text(json.dumps(r,indent=2)+'\n')
           assert r['native_host_readback'] and not r['external_payloads_required']
           assert r['build_label']=='P1r5' and len(r['omitted_optional_mappings'])==23
+          baseline = {
+              'boot': '71d1eacc41d04db7f8084694708462d1f1fa71bcd513949e80d662c9d188b910',
+              'dtbo': '3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468',
+          }
+          images = {item['partition']: item['sha256'] for item in r['images']}
+          assert all(images[name] == digest for name, digest in baseline.items())
+          reports = Path('reports/p1/ci-build')
+          trace = json.loads((reports / 'boot-trace.json').read_text())
+          system = json.loads((reports / 'system-build.json').read_text())
+          assert trace['sha256'] == 'bd5c9823600c6e62747455ead154efe76681e8b72b5abc0946f9adb07e240888'
+          assert [row['sha256'] for row in system['changes'] if row['path'] == trace['path']] == [trace['sha256']]
           import zipfile
           with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME']) as z:
               manifest=json.loads(z.read('P1-MANIFEST.json'))
@@ -118,7 +129,7 @@ jobs:
         id: attest
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
         with:
-          subject-name: HyperOS4-R8Q-P1r5-SINGLE-EXPERIMENTAL.zip
+          subject-name: HyperOS4-R8Q-P1r5-R8QTRACE-SINGLE-EXPERIMENTAL.zip
           subject-digest: sha256:${{ steps.package.outputs.sha256 }}
       - name: Upload the single full ZIP to GoFile
         env:
@@ -129,7 +140,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
           ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
-          RELEASE_TAG: p1r5-complete-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r5-r8qtrace-experimental-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
           python3 - <<'PYNOTES'
@@ -149,16 +160,20 @@ jobs:
                  'The exact stock APNHLOS profile is checked read-only before any image write. '
                  'Writes are flushed and read back through O_DIRECT. '
                  'Use internal storage or exFAT/USB: FAT32 cannot hold the ZIP above 4 GiB.\n\n'
-                 'Known VINTF/legacy HAL findings remain. LMKD camopt crash resolution and Android boot are unconfirmed.\n\n'
+                 'R8QTRACE writes early Android init milestones to the kernel log. This is a diagnostic build. '
+                 'Known VINTF/legacy HAL findings remain and Android boot is unconfirmed.\n\n'
+                 'If stuck on the logo after 3 minutes, go directly to recovery and use the '
+                 '[plain TAR collector](https://github.com/bonecopreparado/vendor-r8q/actions/runs/44952982601/artifacts/14726626069). '
+                 'Send the TAR including last_kmsg.\n\n'
                  '[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'
                  +Path('output/P1-TESTER-ENGLISH.txt').read_text())
           Path('output/P1-RELEASE-NOTES.md').write_text(notes)
           PYNOTES
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r5 complete ROM - R2 firmware and memory kernel with SUSFS' --notes-file output/P1-RELEASE-NOTES.md \
+            --title 'P1r5 R8QTRACE - experimental boot diagnostics' --notes-file output/P1-RELEASE-NOTES.md \
             "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json \
             output/gofile-rom.json output/P1-SINGLE.intoto.jsonl output/P1r5-ARM64-readback.json \
-            output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip.sha256
+            reports/p1/ci-build/boot-trace.json
       - name: Save small current-build evidence only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
