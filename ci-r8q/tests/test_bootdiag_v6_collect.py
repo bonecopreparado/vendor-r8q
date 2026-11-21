@@ -13,7 +13,10 @@ spec.loader.exec_module(render)
 
 class Tests(unittest.TestCase):
     execute=old.Tests.execute
-    archive=old.Tests.archive
+    def archive(self, r):
+        archives = list((r/'sdcard/Download').glob('*.tar'))
+        self.assertEqual(len(archives), 1)
+        return archives[0]
 
     def fixture(self,**options):
         # Reuse the actual recovery fixture/path redirection, substituting only
@@ -40,7 +43,7 @@ class Tests(unittest.TestCase):
         archive=self.archive(r)
         self.assertIn('V6',archive.name)
         self.assertNotIn('PARTIAL',archive.name)
-        with tarfile.open(archive,'r:gz') as tar:
+        with tarfile.open(archive,'r:') as tar:
             path='r8q-logs-v6/r8q-bootdiag-v6/capture.A1B2C3/crash-late.txt'
             self.assertEqual(tar.extractfile(path).read(),b'late Android fatal evidence')
         self.assertEqual(before,{p:p.read_bytes() for p in (r/'metadata').rglob('*') if p.is_file()})
@@ -49,7 +52,7 @@ class Tests(unittest.TestCase):
         r=self.fixture(storage_mounted=False)
         result=self.execute(r)
         self.assertNotEqual(result.returncode,0)
-        self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
+        self.assertFalse(list((r/'sdcard/Download').glob('*.tar')))
 
     def external_storage(self, r, options='rw'):
         external = r / 'external_sd'
@@ -67,10 +70,10 @@ class Tests(unittest.TestCase):
         external = self.external_storage(r)
         result = self.execute(r)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        archives = list((external/'Download').glob('*.tar.gz'))
+        archives = list((external/'Download').glob('*.tar'))
         self.assertEqual(len(archives), 1)
-        self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
-        with tarfile.open(archives[0], 'r:gz') as archive:
+        self.assertFalse(list((r/'sdcard/Download').glob('*.tar')))
+        with tarfile.open(archives[0], 'r:') as archive:
             self.assertTrue(archive.extractfile('r8q-logs-v6/recovery.log').read())
 
     def test_readonly_sd_does_not_receive_download_directory(self):
@@ -88,40 +91,15 @@ class Tests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Unexpected Download directory', result.stdout)
 
-    def toybox_gzip(self, r, corrupt=False):
-        # Reject -t like recovery Toybox. Mutate the trailer before decoding
-        # to prove a bad gzip is rejected, rather than accepting lost status.
-        wrapper = r/'bin/gzip'
-        program = """#!/usr/bin/env python3
-import os, sys
-from pathlib import Path
-if '-t' in sys.argv:
-    sys.exit(2)
-"""
-        if corrupt:
-            program += """p=Path(sys.argv[-1])
-data=bytearray(p.read_bytes())
-data[-8] ^= 1
-p.write_bytes(data)
-"""
-        program += "os.execv('/usr/bin/gzip', ['gzip'] + sys.argv[1:])\n"
-        wrapper.write_text(program)
-        wrapper.chmod(0o755)
-
-    def test_recovery_gzip_without_test_option_still_verifies_archive(self):
+    def test_recovery_with_unusable_gzip_still_collects(self):
         r = self.fixture()
-        self.toybox_gzip(r)
+        gzip = r/'bin/gzip'
+        gzip.write_text('#!/bin/sh\nexit 2\n')
+        gzip.chmod(0o755)
         result = self.execute(r)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        with tarfile.open(self.archive(r), 'r:gz') as archive:
+        with tarfile.open(self.archive(r), 'r:') as archive:
             self.assertTrue(archive.extractfile('r8q-logs-v6/recovery.log').read())
-
-    def test_decoder_crc_failure_prevents_publication(self):
-        r = self.fixture()
-        self.toybox_gzip(r, corrupt=True)
-        result = self.execute(r)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
 
     def twrp(self, r, **changes):
         props={'ro.product.device':'r8q','ro.bootmode':'unknown',
@@ -141,7 +119,7 @@ p.write_bytes(data)
             r=self.fixture();self.twrp(r,**changes)
             result=self.execute(r)
             self.assertNotEqual(result.returncode,0,result.stdout+result.stderr)
-            self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
+            self.assertFalse(list((r/'sdcard/Download').glob('*.tar')))
 
 
 if __name__=='__main__':unittest.main()

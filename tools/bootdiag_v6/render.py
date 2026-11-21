@@ -94,12 +94,17 @@ done
     script = script[:start] + storage + script[end:]
     script = script.replace('df -Pk /sdcard/Download', 'df -Pk "$DESTINATION"')
     script = script.replace('OUTPUT=/sdcard/Download/', 'OUTPUT=$DESTINATION/')
-    # Toybox gzip in some recoveries supports full decompression, but not -t.
-    # Consume the complete stream and retain the decoder's CRC/length status.
-    if script.count('gzip -t ') != 2:
-        raise ValueError('Reviewed gzip verification calls changed')
-    script = script.replace('gzip -t "$WORK/test.tar.gz"',
-                            'gzip -dc "$WORK/test.tar.gz" > /dev/null')
-    script = script.replace('gzip -t "$ARCHIVE"',
-                            'gzip -dc "$ARCHIVE" > /dev/null')
+    # Use plain tar on recoveries whose gzip applet cannot verify archives.
+    script = ''.join(line for line in script.splitlines(keepends=True)
+                     if not line.startswith('gzip -t '))
+    for old, new in (
+        ('tar gzip sha256sum', 'tar sha256sum'),
+        ('tar/gzip features', 'tar features'),
+        ('tar -czf', 'tar -cf'),
+        ('tar -tzf', 'tar -tf'),
+        ('tar -xOzf', 'tar -xOf'),
+        ('.tar.gz', '.tar'),
+        ('gzip archives', 'TAR archives'),
+    ):
+        script = script.replace(old, new)
     return script.encode()

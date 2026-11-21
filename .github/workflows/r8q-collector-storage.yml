@@ -26,7 +26,7 @@ jobs:
           import os
           root = Path.cwd()
           data = collector_bytes(root, 'P1r5')
-          name = 'R8Q-BOOTDIAG-V6-STORAGE-COLLECT-ONLY.zip'
+          name = 'R8Q-BOOTDIAG-V6-TAR-COLLECT-ONLY.zip'
           out = root/'output'
           out.mkdir()
           (out/name).write_bytes(data)
@@ -39,7 +39,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: R8Q-BOOTDIAG-V6-STORAGE-COLLECT-ONLY
+          name: R8Q-BOOTDIAG-V6-TAR-COLLECT-ONLY
           path: output/*
           if-no-files-found: error
           retention-days: 14
