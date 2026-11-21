@@ -1,7 +1,7 @@
 name: R8Q next test - host build and compatibility gates
 on:
   push:
-    branches: ['codex/r8q-next-test-3bfa2a2']
+    branches: ['codex/r8q-boot-trace-a5b329b']
 
 permissions:
   contents: read
@@ -87,7 +87,7 @@ jobs:
       - name: Fetch reviewed official VINTF host tool and record known baseline
         run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
       - name: Rebuild review images from the current commit
-        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --boot-trace --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
       - name: Verify images and record the limits of this run
         id: images
         run: |
@@ -122,6 +122,9 @@ jobs:
           assert len(manifest['vendor_firmware']['files']) == 12
           assert len(manifest['vendor_label_repair']['changes']) == 11
           assert manifest['diagnostic_stage']['diagnostics']['namespace'] == '/metadata/r8q-bootdiag-v6'
+          trace = json.loads((reports / 'boot-trace.json').read_text())
+          system = json.loads((reports / 'system-build.json').read_text())
+          assert [item['sha256'] for item in system['changes'] if item['path'] == trace['path']] == [trace['sha256']]
           host = json.loads((reports / 'vintf/result.json').read_text())['host_compatible']
           assert isinstance(host, bool)
           review = {
@@ -132,6 +135,7 @@ jobs:
               'base': '3bfa2a23ab912ea91b71c7574e357d7ea31b589a',
               'images': images,
               'kernel_sha256': boot['kernel_sha256'],
+              'boot_trace': trace,
               'vintf_host_compatible': host,
               'variants': {'SM-G781B': 'NOT_TESTED_ON_DEVICE', 'SM-G780G': 'NOT_TESTED_ON_DEVICE'},
               'bootdiag_enforcing_verified': False,
