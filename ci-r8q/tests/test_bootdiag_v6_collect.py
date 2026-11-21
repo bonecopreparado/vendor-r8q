@@ -51,6 +51,43 @@ class Tests(unittest.TestCase):
         self.assertNotEqual(result.returncode,0)
         self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
 
+    def external_storage(self, r, options='rw'):
+        external = r / 'external_sd'
+        external.mkdir()
+        with (r/'proc/mounts').open('a') as stream:
+            stream.write(f'/dev/block/mmcblk0p1 {external} vfat {options} 0 0\n')
+        script = r/'run.sh'
+        text = script.read_text().replace('/external_sd', str(external))
+        # Retain the absolute mount candidate and its corresponding allowlist.
+        script.write_text(text)
+        return external
+
+    def test_unmounted_internal_uses_mounted_sd_and_preserves_capture(self):
+        r = self.fixture(storage_mounted=False)
+        external = self.external_storage(r)
+        result = self.execute(r)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        archives = list((external/'Download').glob('*.tar.gz'))
+        self.assertEqual(len(archives), 1)
+        self.assertFalse(list((r/'sdcard/Download').glob('*.tar.gz')))
+        with tarfile.open(archives[0], 'r:gz') as archive:
+            self.assertTrue(archive.extractfile('r8q-logs-v6/recovery.log').read())
+
+    def test_readonly_sd_does_not_receive_download_directory(self):
+        r = self.fixture(storage_mounted=False)
+        external = self.external_storage(r, options='ro')
+        result = self.execute(r)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((external/'Download').exists())
+
+    def test_sd_symlink_download_is_refused(self):
+        r = self.fixture(storage_mounted=False)
+        external = self.external_storage(r)
+        (external/'Download').symlink_to(r/'tmp', target_is_directory=True)
+        result = self.execute(r)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Unexpected Download directory', result.stdout)
+
     def twrp(self, r, **changes):
         props={'ro.product.device':'r8q','ro.bootmode':'unknown',
                'ro.twrp.boot':'1','init.svc.recovery':'running','ro.twrp.fastbootd':'0'}

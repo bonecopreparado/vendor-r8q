@@ -1,0 +1,45 @@
+name: Verify recovery collector storage fallback
+on:
+  push:
+    branches: ['codex/r8q-collector-storage']
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  collector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s ci-r8q/tests -p 'test_bootdiag_v*_collect.py' -v
+      - name: Package and read back recovery collector
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, io, json, sys, zipfile
+          sys.path.insert(0, 'tools')
+          from p1r3_materials import collector_bytes
+          import os
+          root = Path.cwd()
+          data = collector_bytes(root, 'P1r5')
+          name = 'R8Q-BOOTDIAG-V6-STORAGE-COLLECT-ONLY.zip'
+          out = root/'output'
+          out.mkdir()
+          (out/name).write_bytes(data)
+          digest = hashlib.sha256((out/name).read_bytes()).hexdigest()
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              assert z.testzip() is None and len(z.namelist()) == len(set(z.namelist()))
+              assert '/external_sd' in z.read('META-INF/com/google/android/update-binary').decode()
+          (out/(name+'.sha256')).write_text(digest+'  '+name+'\n')
+          (out/'build.json').write_text(json.dumps(dict(commit=os.environ['GITHUB_SHA'],run=os.environ['GITHUB_RUN_ID'],kind='COLLECTOR_ONLY_NOT_ROM',sha256=digest,bytes=len(data),device_tested=False),indent=2))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: R8Q-BOOTDIAG-V6-STORAGE-COLLECT-ONLY
+          path: output/*
+          if-no-files-found: error
+          retention-days: 14

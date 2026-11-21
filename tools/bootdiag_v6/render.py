@@ -64,4 +64,34 @@ fi''')
     if script.count(anchor)!=1:
         raise ValueError('Reviewed nonempty Android evidence guard changed')
     script=script.replace(anchor,'case "$leaf" in crash-late.txt|boot.log|composer-native-early.txt')
+    start = script.index('[ -d /sdcard ] || abort')
+    end = script.index('free="$(df -Pk /sdcard/Download', start)
+    storage = '''# Select already-mounted persistent storage before creating Download.
+# An empty recovery /sdcard in RAM must never receive the archive.
+DESTINATION=
+for candidate in /sdcard /external_sd /usb_otg; do
+    [ -d "$candidate" ] || continue
+    resolved="$(readlink -f "$candidate")" || continue
+    storage_row="$(R8Q_STORAGE_TARGET="$resolved" awk 'BEGIN {target=ENVIRON["R8Q_STORAGE_TARGET"]}
+        { point=$2; if (point=="/" || target==point || index(target,point "/")==1) {
+            if (length(point)>best) {best=length(point);row=point " " $3 " " $4}
+        }} END {if(!best)exit 1;print row}' /proc/mounts)" || abort "Cannot inspect recovery storage mounts."
+    set -- $storage_row
+    [ "$#" -eq 3 ] || abort "Unexpected storage mount record."
+    case "$1" in /data|/data/media|/data/media/*|/sdcard|/external_sd|/usb_otg|/storage/*|/mnt/media_rw/*) ;; *) continue;; esac
+    case "$2" in ext4|f2fs|vfat|exfat|fuse|fuseblk|sdcardfs|esdfs) ;; *) continue;; esac
+    case ",$3," in *,rw,*) ;; *) continue;; esac
+    DESTINATION=$resolved/Download
+    if [ -e "$DESTINATION" ] || [ -L "$DESTINATION" ]; then
+        [ -d "$DESTINATION" ] && [ ! -L "$DESTINATION" ] || abort "Unexpected Download directory."
+    else
+        mkdir "$DESTINATION" || abort "Cannot create Download directory on mounted storage."
+    fi
+    break
+done
+[ -n "$DESTINATION" ] || abort "No writable mounted user storage. Mount internal storage, SD or USB first."
+'''
+    script = script[:start] + storage + script[end:]
+    script = script.replace('df -Pk /sdcard/Download', 'df -Pk "$DESTINATION"')
+    script = script.replace('OUTPUT=/sdcard/Download/', 'OUTPUT=$DESTINATION/')
     return script.encode()
