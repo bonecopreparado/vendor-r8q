@@ -1,7 +1,7 @@
-name: Package the R8Q LATEFS mount-wait boot diagnostics
+name: Package the R8Q LATEFS storage service logs
 on:
   push:
-    branches: [r8q-mount-wait-addon]
+    branches: [r8q-vold-log-addon]
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 7fac1b8faa9f862f5044c369c14b6d1ece6772c2
+          ref: 6f2b0f942e6bc0b56a291800bc11acc07a8d4170
           path: ci-previous-source
           persist-credentials: false
       - name: Prepare and test the production recovery helper
@@ -65,7 +65,7 @@ jobs:
           python3 ci-previous-source/tools/kernel_nflog/susfs22/repack_verified.py \
             --source candidates/p0/boot-r8q-hyperos-p0.img --kernel ci-previous-kernel/Image \
             --summary ci-previous-kernel/summary.json --output build/previous.img --report build/previous-repack.json
-          printf '%s  %s\n' f2426c1e58560f6a604c0885a6e5d22d4915cf48baf889f723f3686a2b17bf14 build/previous.img | sha256sum -c -
+          printf '%s  %s\n' 1586cb9dd7f4cb8d5d18bf342b18ca4e6a77a0f82f4390414a5d63bffc82ac4f build/previous.img | sha256sum -c -
       - name: Resolve the exact current diagnostic kernel
         env:
           GH_TOKEN: ${{ github.token }}
@@ -86,25 +86,25 @@ jobs:
       - name: Publish the verified boot packages
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: p1r5-late-fs-mount-wait-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r5-late-fs-vold-log-${{ github.run_number }}-${{ github.run_attempt }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/mount-wait.intoto.jsonl
           cat > build/release.md <<'NOTES'
-          Install **MOUNT-WAIT** in recovery over the exact previously installed P1r5 LATEFS. The ZIP needs only the boot partition and temporary recovery RAM. It verifies the current boot digest and verifies the flash by a fresh direct readback.
+          Install **VOLD-LOG** in recovery over the exact previously installed P1r5 LATEFS MOUNT-WAIT. The ZIP needs only the boot partition and temporary recovery RAM. It verifies the current boot digest and verifies the flash by a fresh direct readback.
 
-          The diagnostic kernel records brief stack snapshots of init, vdc, vold and keystore2 while the observed mount_all --late call is pending. After three minutes on the Samsung logo, return to recovery and send a fresh TAR from the same collector. Hardware boot is unconfirmed.
+          The diagnostic kernel records bounded early init, vdc and vold messages as R8QVOLD and includes exit status fields in the mount-wait stack snapshots. After three minutes on the Samsung logo, return to recovery and send a fresh TAR from the same collector. Hardware boot is unconfirmed.
 
-          **RESTORE-BOOT** puts the exact LATEFS boot back after this diagnostic. Keep the rollback ZIP and working stock restoration files accessible. Verify the SHA-256 before installing either ZIP.
+          **RESTORE-MOUNT-WAIT** puts the exact MOUNT-WAIT boot back after this diagnostic. Keep the rollback ZIP and working stock restoration files accessible. Verify the SHA-256 before installing either ZIP.
           NOTES
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r5 LATEFS mount-wait diagnostics' --notes-file build/release.md \
+            --title 'P1r5 LATEFS storage service logs' --notes-file build/release.md \
             output/*.zip output/*.sha256 output/mount-wait-build.json output/mount-wait.intoto.jsonl
       - name: Keep the verified packages available if publishing fails
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: failure() && steps.packaged.outcome == 'success'
         with:
-          name: R8Q-MOUNT-WAIT-DELIVERY-RETRY
+          name: R8Q-VOLD-LOG-DELIVERY-RETRY
           path: |
             output/*.zip
             output/*.sha256

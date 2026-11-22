@@ -11,11 +11,11 @@ import time
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import fetch_verified_kernel as trusted
 sys.path.insert(0,str(trusted.ROOT/'tools'))
-SOURCE_COMMIT = '55d17b0053d9ee47c3f71edafc482933e303ee99'
+SOURCE_COMMIT = '0fc3f65af331c896e5404e2e7b12c8e78cc3dd72'
 
-BRANCH = 'r8q-mount-wait-kernel'
+BRANCH = 'r8q-vold-log-kernel'
 WORKFLOW = '.github/workflows/r8q-memory-kernel-review.yml'
-ARTIFACT = 'R8Q-MOUNT-WAIT-KERNEL-OFFLINE-REVIEW'
+ARTIFACT = 'R8Q-VOLD-LOG-KERNEL-OFFLINE-REVIEW'
 
 
 def valid_run(run):
