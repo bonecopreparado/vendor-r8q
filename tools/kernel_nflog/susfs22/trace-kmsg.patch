@@ -1,16 +1,17 @@
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -46,6 +46,9 @@
+@@ -46,6 +46,10 @@
  #include <linux/sched/clock.h>
  #include <linux/sched/debug.h>
  #include <linux/sched/task_stack.h>
 +#include <linux/sched/signal.h>
 +#include <linux/sched/task.h>
 +#include <linux/workqueue.h>
++#include <linux/timekeeping.h>
  
  #include <linux/uaccess.h>
  #include <asm/sections.h>
-@@ -845,76 +848,131 @@
+@@ -845,76 +849,185 @@
  	char buf[CONSOLE_EXT_LOG_MAX];
  };
  
@@ -62,9 +63,10 @@
 +	pr_warn("R8QMOUNT sample=%u tasks=%u\n", ++r8q_mount_samples, count);
 +	for (i = 0; i < count; i++) {
 +		task = saved[i];
-+		pr_warn("R8QMOUNT task=%s pid=%d tgid=%d state=%ld\n",
++		pr_warn("R8QMOUNT task=%s pid=%d tgid=%d state=%ld exit_state=%d exit_code=%d\n",
 +			task->comm, task_pid_nr(task), task_tgid_nr(task),
-+			READ_ONCE(task->state));
++			READ_ONCE(task->state), READ_ONCE(task->exit_state),
++			READ_ONCE(task->exit_code));
 +		if (READ_ONCE(task->state) & (TASK_INTERRUPTIBLE | TASK_UNINTERRUPTIBLE))
 +			sched_show_task(task);
 +		put_task_struct(task);
@@ -88,9 +90,8 @@
 +	}
 +}
 +
-+static bool r8qtrace_from_vendor_init(void)
++static bool r8qtrace_context(const char *expected)
 +{
-+	static const char expected[] = "u:r:vendor_init:s0";
 +	char *context = NULL;
 +	u32 secid, length;
 +	bool allowed;
@@ -99,10 +100,62 @@
 +	if (!secid || security_secid_to_secctx(secid, &context, &length))
 +		return false;
 +
-+	allowed = context && length == sizeof(expected) &&
-+		  !memcmp(context, expected, sizeof(expected));
++	allowed = context && length == strlen(expected) + 1 &&
++		  !memcmp(context, expected, length);
 +	security_release_secctx(context, length);
 +	return allowed;
++}
++
++/* Retain only early storage diagnostics from the existing SELinux domains. */
++static atomic_t r8q_storage_messages = ATOMIC_INIT(0);
++
++static void r8q_storage_log(char *record, size_t length, bool from_init)
++{
++	const char *origin;
++	char *payload, *end;
++	unsigned long priority;
++	size_t i;
++
++	if (ktime_get_boottime_seconds() >= 180 || record[0] != '<' ||
++	    record[1] < '0' || record[1] > '9')
++		return;
++
++	record[length] = '\0';
++	priority = simple_strtoul(record + 1, &end, 10);
++	if (*end != '>' || end - record > 4 || priority > 191)
++		return;
++	payload = end + 1;
++	if (!*payload)
++		return;
++
++	if (from_init) {
++		if ((priority & 7) > LOGLEVEL_WARNING ||
++		    strncmp(payload, "init: ", 6) ||
++		    (!strstr(payload, "vold") && !strstr(payload, "vdc") &&
++		     !strstr(payload, "keystore2") && !strstr(payload, "mount_all")))
++			return;
++		origin = "init";
++	} else if (!strncmp(payload, "vold: ", 6) &&
++		   (priority & 7) <= LOGLEVEL_WARNING &&
++		   r8qtrace_context("u:r:vold:s0")) {
++		origin = "vold";
++	} else if (!strncmp(payload, "vdc: ", 5) &&
++		   r8qtrace_context("u:r:vdc:s0")) {
++		origin = "vdc";
++	} else {
++		return;
++	}
++
++	if (atomic_read(&r8q_storage_messages) >= 96 ||
++	    atomic_inc_return(&r8q_storage_messages) > 96)
++		return;
++	while (length && (record[length - 1] == '\n' || record[length - 1] == '\r'))
++		record[--length] = '\0';
++	for (i = payload - record; i < length; i++) {
++		if (record[i] < ' ' || record[i] > '~')
++			record[i] = ' ';
++	}
++	pr_warn("R8QVOLD origin=%s pid=%d %s\n", origin, task_pid_nr(current), payload);
 +}
 +
  static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
@@ -129,13 +182,15 @@
 +	if (!copy_from_iter_full(message, len, from))
 +		return from_init ? -EFAULT : (ssize_t)len;
 +
-+	if (memcmp(message, prefix, sizeof(prefix) - 1))
++	if (memcmp(message, prefix, sizeof(prefix) - 1)) {
++		r8q_storage_log(message, len, from_init);
 +		return len;
++	}
 +
 +	if (!from_init &&
 +	    (len < sizeof(vendor_prefix) ||
 +	     memcmp(message, vendor_prefix, sizeof(vendor_prefix) - 1) ||
-+	     !r8qtrace_from_vendor_init()))
++	     !r8qtrace_context("u:r:vendor_init:s0")))
 +		return len;
 +
 +	for (i = sizeof(prefix) - 1; i < len; i++) {
