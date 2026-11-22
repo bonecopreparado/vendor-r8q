@@ -1,0 +1,113 @@
+name: Package the R8Q LATEFS mount-wait boot diagnostics
+on:
+  push:
+    branches: [r8q-mount-wait-addon]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+      attestations: write
+    env:
+      MKSH_BINARY: /bin/mksh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 7fac1b8faa9f862f5044c369c14b6d1ece6772c2
+          path: ci-previous-source
+          persist-credentials: false
+      - name: Prepare and test the production recovery helper
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends mksh qemu-user
+          python3 -m unittest discover -s ci-r8q/tests -p test_boot_io.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p test_mount_wait_installer.py -v
+          python3 -m unittest discover -s ci-r8q/tests -p 'test_susfs22*.py' -v
+          mkdir -p build output
+          sdk="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          ndk="$sdk/ndk/27.2.12479018"
+          compiler="$ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang"
+          if [ ! -x "$compiler" ]; then
+              "$sdk/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          fi
+          "$compiler" -static -Os -s -Wall -Wextra -Werror tools/boot_memory/boot_io.c -o build/r8q-bootio
+          test "$(qemu-aarch64 build/r8q-bootio --version)" = R8Q_BOOTIO_PRODUCTION_BLOCK_ONLY_V1
+          truncate -s 67108864 build/regular-fixture.img
+          if qemu-aarch64 build/r8q-bootio --check build/regular-fixture.img; then
+              echo 'Production helper accepted a regular file'; exit 1
+          fi
+          NDK="$ndk" python3 - <<'PY'
+          from pathlib import Path
+          import os
+          ndk=Path(os.environ['NDK'])
+          notices=[ndk/name for name in ('NOTICE','NOTICE.toolchain') if (ndk/name).is_file()]
+          if not notices:
+              raise SystemExit('Expected NDK notices')
+          Path('build/android-ndk-notices.txt').write_bytes(b'\n\n'.join(path.read_bytes() for path in notices))
+          PY
+      - name: Reproduce the exact previous release boot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 ci-previous-source/ci-r8q/tools/fetch_memory_kernel.py --output ci-previous-kernel
+          python3 tools/audit_boot_kernel_input.py
+          python3 ci-previous-source/tools/kernel_nflog/susfs22/repack_verified.py \
+            --source candidates/p0/boot-r8q-hyperos-p0.img --kernel ci-previous-kernel/Image \
+            --summary ci-previous-kernel/summary.json --output build/previous.img --report build/previous-repack.json
+          printf '%s  %s\n' f2426c1e58560f6a604c0885a6e5d22d4915cf48baf889f723f3686a2b17bf14 build/previous.img | sha256sum -c -
+      - name: Resolve the exact current diagnostic kernel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 ci-r8q/tools/fetch_memory_kernel.py --output ci-kernel --wait-minutes 30
+      - name: Verify boot images, package both directions and check scripts
+        id: packaged
+        run: |
+          python3 tools/package_mount_wait.py --source candidates/p0/boot-r8q-hyperos-p0.img \
+            --previous build/previous.img --image ci-kernel/Image --summary ci-kernel/summary.json \
+            --helper build/r8q-bootio --provenance ci-kernel/PROVENANCE.json \
+            --ndk-notice build/android-ndk-notices.txt --output output
+          for zip in output/*.zip; do unzip -p "$zip" META-INF/com/google/android/update-binary | mksh -n; done
+      - name: Attest the diagnostic and rollback packages
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: output/*.zip
+      - name: Publish the verified boot packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: p1r5-late-fs-mount-wait-${{ github.run_number }}-${{ github.run_attempt }}
+          ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: |
+          cp "$ATTESTATION_BUNDLE" output/mount-wait.intoto.jsonl
+          cat > build/release.md <<'NOTES'
+          Install **MOUNT-WAIT** in recovery over the exact previously installed P1r5 LATEFS. The ZIP needs only the boot partition and temporary recovery RAM. It verifies the current boot digest and verifies the flash by a fresh direct readback.
+
+          The diagnostic kernel records brief stack snapshots of init, vdc, vold and keystore2 while the observed mount_all --late call is pending. After three minutes on the Samsung logo, return to recovery and send a fresh TAR from the same collector. Hardware boot is unconfirmed.
+
+          **RESTORE-BOOT** puts the exact LATEFS boot back after this diagnostic. Keep the rollback ZIP and working stock restoration files accessible. Verify the SHA-256 before installing either ZIP.
+          NOTES
+          gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
+            --title 'P1r5 LATEFS mount-wait diagnostics' --notes-file build/release.md \
+            output/*.zip output/*.sha256 output/mount-wait-build.json output/mount-wait.intoto.jsonl
+      - name: Keep the verified packages available if publishing fails
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure() && steps.packaged.outcome == 'success'
+        with:
+          name: R8Q-MOUNT-WAIT-DELIVERY-RETRY
+          path: |
+            output/*.zip
+            output/*.sha256
+            output/*.json
+          if-no-files-found: ignore
+          retention-days: 5
