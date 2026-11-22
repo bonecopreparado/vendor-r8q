@@ -1,9 +1,93 @@
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -845,76 +845,56 @@
+@@ -46,6 +46,9 @@
+ #include <linux/sched/clock.h>
+ #include <linux/sched/debug.h>
+ #include <linux/sched/task_stack.h>
++#include <linux/sched/signal.h>
++#include <linux/sched/task.h>
++#include <linux/workqueue.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/sections.h>
+@@ -845,76 +848,131 @@
  	char buf[CONSOLE_EXT_LOG_MAX];
  };
  
++/* Capture a few blocked-task stacks during the observed late /data stall. */
++static atomic_t r8q_mount_active = ATOMIC_INIT(0);
++static unsigned int r8q_mount_samples;
++static void r8q_mount_sample(struct work_struct *work);
++static DECLARE_DELAYED_WORK(r8q_mount_work, r8q_mount_sample);
++
++static bool r8q_mount_task(struct task_struct *group)
++{
++	char comm[TASK_COMM_LEN];
++
++	if (task_pid_nr(group) == 1)
++		return true;
++	get_task_comm(comm, group);
++	return !strcmp(comm, "vdc") || !strcmp(comm, "vold") ||
++	       !strcmp(comm, "keystore2");
++}
++
++static void r8q_mount_sample(struct work_struct *work)
++{
++	struct task_struct *group, *task, *saved[12];
++	unsigned int count = 0, i;
++
++	if (!atomic_read(&r8q_mount_active))
++		return;
++
++	/* Prioritize process leaders before including their binder workers. */
++	rcu_read_lock();
++	for_each_process(group) {
++		if (count >= ARRAY_SIZE(saved))
++			break;
++		if (r8q_mount_task(group)) {
++			get_task_struct(group);
++			saved[count++] = group;
++		}
++	}
++	for_each_process_thread(group, task) {
++		if (count < ARRAY_SIZE(saved) && task != group &&
++		    r8q_mount_task(group) &&
++		    (READ_ONCE(task->state) & (TASK_INTERRUPTIBLE | TASK_UNINTERRUPTIBLE))) {
++			get_task_struct(task);
++			saved[count++] = task;
++		}
++	}
++	rcu_read_unlock();
++
++	pr_warn("R8QMOUNT sample=%u tasks=%u\n", ++r8q_mount_samples, count);
++	for (i = 0; i < count; i++) {
++		task = saved[i];
++		pr_warn("R8QMOUNT task=%s pid=%d tgid=%d state=%ld\n",
++			task->comm, task_pid_nr(task), task_tgid_nr(task),
++			READ_ONCE(task->state));
++		if (READ_ONCE(task->state) & (TASK_INTERRUPTIBLE | TASK_UNINTERRUPTIBLE))
++			sched_show_task(task);
++		put_task_struct(task);
++	}
++	pr_warn("R8QMOUNT end sample=%u\n", r8q_mount_samples);
++	if (r8q_mount_samples < 3 && atomic_read(&r8q_mount_active))
++		schedule_delayed_work(&r8q_mount_work, msecs_to_jiffies(35000));
++}
++
++static void r8q_mount_mark(const char *message)
++{
++	static const char begin[] = "<4>R8QTRACE vendor mount-all:begin ";
++	static const char end[] = "<4>R8QTRACE vendor mount-all:end ";
++
++	if (!strncmp(message, begin, sizeof(begin) - 1) &&
++	    atomic_cmpxchg(&r8q_mount_active, 0, 1) == 0)
++		schedule_delayed_work(&r8q_mount_work, msecs_to_jiffies(8000));
++	else if (!strncmp(message, end, sizeof(end) - 1)) {
++		atomic_set(&r8q_mount_active, 0);
++		cancel_delayed_work(&r8q_mount_work);
++	}
++}
++
 +static bool r8qtrace_from_vendor_init(void)
 +{
 +	static const char expected[] = "u:r:vendor_init:s0";
@@ -61,6 +145,7 @@
 +
 +	message[len] = '\0';
 +	pr_warn("%s\n", message + 3);
++	r8q_mount_mark(message);
  	return len;
 -
 -	if (!user || len > LOG_LINE_MAX)

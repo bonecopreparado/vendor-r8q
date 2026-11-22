@@ -17,7 +17,8 @@ STUBS = r'''
 typedef uint32_t u32;
 struct kiocb { int unused; };
 struct iov_iter { const char *data; size_t count; bool readable; };
-static int current, logs;
+static int current, logs, marks;
+static void r8q_mount_mark(const char *message) { assert(message); marks++; }
 static u32 caller_sid;
 static const char *caller_context;
 static char captured[520];
@@ -61,9 +62,11 @@ static void check(const char *message, const char *expected)
 {
     struct iov_iter input = {message, strlen(message), true};
     int previous_logs = logs;
+    int previous_marks = marks;
 
     assert(devkmsg_write(NULL, &input) == (ssize_t)input.count);
     assert(logs == previous_logs + (expected != NULL));
+    assert(marks == previous_marks + (expected != NULL));
     if (expected)
         assert(!strcmp(captured, expected));
 }

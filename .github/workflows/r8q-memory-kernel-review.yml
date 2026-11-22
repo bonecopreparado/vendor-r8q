@@ -1,12 +1,12 @@
-name: Verify the R8Q late-fs trace kernel transport
+name: Verify R8Q late-fs blocked-task sampling
 on:
   push:
-    branches: [r8q-late-fs-kernel]
+    branches: [r8q-mount-wait-kernel]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: r8q-late-fs-kernel
+  group: r8q-mount-wait-kernel
   cancel-in-progress: false
 jobs:
   kernel:
@@ -54,6 +54,7 @@ jobs:
           offset = symbols['devkmsg_write'] - symbols['_text']
           image = (p/'Image').read_bytes()
           assert 0 < offset < len(image) - 8
+          assert 'r8q_mount_sample' in symbols and b'R8QMOUNT sample=' in image
           assert image[offset:offset + 8] != bytes.fromhex('200840f9c0035fd6')
           (p/'independent-memory-verification.json').write_text(json.dumps(result,indent=2)+'\n')
           PY
@@ -67,7 +68,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: R8Q-LATE-FS-KERNEL-OFFLINE-REVIEW
+          name: R8Q-MOUNT-WAIT-KERNEL-OFFLINE-REVIEW
           path: reports/current-kernel-build/
           retention-days: 30
           overwrite: true
