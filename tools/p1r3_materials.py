@@ -26,8 +26,8 @@ def collector_bytes(root,build_label='P1r4'):
 
 The P1r4 ROM already includes V6 diagnostics. After a boot attempt, return
 directly to TWRP or OrangeFox and install this collector ZIP. It copies logs to the
-Download folder and displays the resulting .tar.gz path. Send that archive
-privately; a PARTIAL archive is still useful. Keep the archive compressed.
+Download folder and displays the resulting .tar path. Send that archive
+privately; a PARTIAL archive is still useful.
 
 Mount Data/storage if requested. If collection fails, preserve recovery.log.
 This collector does not enable diagnostics, flash partitions or erase captures.

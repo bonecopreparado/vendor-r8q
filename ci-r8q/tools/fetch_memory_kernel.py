@@ -11,11 +11,11 @@ import time
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import fetch_verified_kernel as trusted
 sys.path.insert(0,str(trusted.ROOT/'tools'))
-from package_boot_memory import SOURCE_COMMIT
+SOURCE_COMMIT = '4c19d89f8e60031855185ded02d470ab2331c1d0'
 
-BRANCH = 'r8q-memory-controllers-20261116'
+BRANCH = 'r8q-trace-kmsg-pid1'
 WORKFLOW = '.github/workflows/r8q-memory-kernel-review.yml'
-ARTIFACT = 'R8Q-MEMORY-SUSFS22-OFFLINE-REVIEW-NOT-FLASHABLE'
+ARTIFACT = 'R8QTRACE-KMSG-KERNEL-OFFLINE-REVIEW'
 
 
 def valid_run(run):

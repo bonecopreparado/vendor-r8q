@@ -1,7 +1,7 @@
-name: Build complete experimental P1r5 ROM with R8QTRACE
+name: Build P1r5 with the R8QTRACE kernel transport
 on:
   push:
-    branches: ['r8q-p1r5-single-r8qtrace']
+    branches: ['r8q-p1r5-single-r8qtrace-kmsg']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       attestations: write
     env:
       MKSH_BINARY: /bin/mksh
-      ZIP_NAME: HyperOS4-R8Q-P1r5-R8QTRACE-SINGLE-EXPERIMENTAL.zip
+      ZIP_NAME: HyperOS4-R8Q-P1r5-R8QTRACE-KMSG-SINGLE-EXPERIMENTAL.zip
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -69,7 +69,7 @@ jobs:
       - name: Fetch the completed exact-source memory kernel; independently verify its Image
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 ci-r8q/tools/fetch_memory_kernel.py --output ci-kernel
+        run: python3 ci-r8q/tools/fetch_memory_kernel.py --output ci-kernel --wait-minutes 25
       - name: Build the pinned native diagnostic helper and preserve its real notices
         run: python3 tools/display_probe/build_probe.py --output ci-native-probe
       - name: Build matching modern policy compiler and context checker
@@ -97,24 +97,26 @@ jobs:
           Path('output/P1-SINGLE-build-report.json').write_text(json.dumps(r,indent=2)+'\n')
           assert r['native_host_readback'] and not r['external_payloads_required']
           assert r['build_label']=='P1r5' and len(r['omitted_optional_mappings'])==23
-          baseline = {
-              'boot': '71d1eacc41d04db7f8084694708462d1f1fa71bcd513949e80d662c9d188b910',
-              'dtbo': '3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468',
-          }
           images = {item['partition']: item['sha256'] for item in r['images']}
-          assert all(images[name] == digest for name, digest in baseline.items())
+          assert images['dtbo'] == '3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468'
+          assert images['boot'] != '71d1eacc41d04db7f8084694708462d1f1fa71bcd513949e80d662c9d188b910'
+          kernel = json.loads(Path('ci-kernel/PROVENANCE.json').read_text())
+          assert kernel['embedded_config_sha256'] == '693bbb603e7d4084986f76dfc6cc373ddedacee86f8e468fa7d7ed16ab5daab0'
           reports = Path('reports/p1/ci-build')
           trace = json.loads((reports / 'boot-trace.json').read_text())
           system = json.loads((reports / 'system-build.json').read_text())
           assert trace['sha256'] == 'bd5c9823600c6e62747455ead154efe76681e8b72b5abc0946f9adb07e240888'
           assert [row['sha256'] for row in system['changes'] if row['path'] == trace['path']] == [trace['sha256']]
-          import zipfile
+          import io, zipfile
           with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME']) as z:
               manifest=json.loads(z.read('P1-MANIFEST.json'))
               evidence=manifest['revision_evidence']
+              assert evidence['kernel_repack']['kernel_sha256'] == kernel['kernel_sha256']
               assert evidence['susfs_enabled'] is True and evidence['hardware_boot_confirmed'] is False
               assert evidence['diagnostic_namespace']=='/metadata/r8q-bootdiag-v6'
-              assert 'extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip' in z.namelist()
+              with zipfile.ZipFile(io.BytesIO(z.read('extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip'))) as collector:
+                  script = collector.read('META-INF/com/google/android/update-binary')
+                  assert b'tar -cf ' in script and b'gzip -t' not in script
               assert evidence['stock_firmware_preflight_required'] is True
               assert evidence['direct_storage_readback_required'] is True
               assert len(evidence['vendor_security']['firmware']['files'])==12
@@ -129,7 +131,7 @@ jobs:
         id: attest
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
         with:
-          subject-name: HyperOS4-R8Q-P1r5-R8QTRACE-SINGLE-EXPERIMENTAL.zip
+          subject-name: HyperOS4-R8Q-P1r5-R8QTRACE-KMSG-SINGLE-EXPERIMENTAL.zip
           subject-digest: sha256:${{ steps.package.outputs.sha256 }}
       - name: Upload the single full ZIP to GoFile
         env:
@@ -140,7 +142,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
           ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
-          RELEASE_TAG: p1r5-r8qtrace-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r5-r8qtrace-kmsg-experimental-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
           python3 - <<'PYNOTES'
@@ -160,20 +162,21 @@ jobs:
                  'The exact stock APNHLOS profile is checked read-only before any image write. '
                  'Writes are flushed and read back through O_DIRECT. '
                  'Use internal storage or exFAT/USB: FAT32 cannot hold the ZIP above 4 GiB.\n\n'
-                 'R8QTRACE writes early Android init milestones to the kernel log. This is a diagnostic build. '
+                 'This kernel accepts bounded R8QTRACE events from Android init and retains its existing filter for other writes. '
                  'Known VINTF/legacy HAL findings remain and Android boot is unconfirmed.\n\n'
                  'If stuck on the logo after 3 minutes, go directly to recovery and use the '
-                 '[plain TAR collector](https://github.com/bonecopreparado/vendor-r8q/actions/runs/44952982601/artifacts/14726626069). '
+                 'plain TAR collector attached below. '
                  'Send the TAR including last_kmsg.\n\n'
                  '[Build provenance]('+os.environ['ATTESTATION_URL']+')\n\n'
                  +Path('output/P1-TESTER-ENGLISH.txt').read_text())
           Path('output/P1-RELEASE-NOTES.md').write_text(notes)
           PYNOTES
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r5 R8QTRACE - experimental boot diagnostics' --notes-file output/P1-RELEASE-NOTES.md \
+            --title 'P1r5 R8QTRACE KMSG - experimental boot diagnostics' --notes-file output/P1-RELEASE-NOTES.md \
             "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json \
             output/gofile-rom.json output/P1-SINGLE.intoto.jsonl output/P1r5-ARM64-readback.json \
-            reports/p1/ci-build/boot-trace.json
+            reports/p1/ci-build/boot-trace.json ci-kernel/PROVENANCE.json \
+            output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip.sha256
       - name: Save small current-build evidence only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

@@ -38,11 +38,12 @@ files first; any clean-data preparation must be a deliberate separate recovery
 operation after backup. Do not repeat Format Data as a speculative boot fix.
 
 LOGS
-If stuck/restarting, allow about two minutes and return directly to recovery.
+If stuck/restarting, allow about three minutes and return directly to recovery.
 Extract ONLY extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip from the downloaded ROM,
-then install that small collector after the boot attempt. Send its .tar.gz
+or download it from the release assets, then install it after the boot attempt.
+Send its .tar
 privately, plus recovery.log and fresh last_kmsg/pstore if collection fails.
-V6 capture is already installed by this ROM. No separate ENABLE is needed.
+R8QTRACE writes init milestones to last_kmsg. No separate ENABLE is needed.
 
 WHAT IS VERIFIED
 All source and payload hashes; actual kernel Image/configuration/link symbols;
