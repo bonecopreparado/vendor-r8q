@@ -1,12 +1,12 @@
-name: Verify the R8QTRACE kernel transport
+name: Verify the R8Q late-fs trace kernel transport
 on:
   push:
-    branches: [r8q-trace-kmsg-pid1]
+    branches: [r8q-late-fs-kernel]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: r8q-trace-kmsg-pid1
+  group: r8q-late-fs-kernel
   cancel-in-progress: false
 jobs:
   kernel:
@@ -67,7 +67,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: R8QTRACE-KMSG-KERNEL-OFFLINE-REVIEW
+          name: R8Q-LATE-FS-KERNEL-OFFLINE-REVIEW
           path: reports/current-kernel-build/
           retention-days: 30
           overwrite: true

@@ -1,7 +1,26 @@
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -847,74 +847,31 @@
+@@ -845,76 +845,56 @@
+ 	char buf[CONSOLE_EXT_LOG_MAX];
+ };
  
++static bool r8qtrace_from_vendor_init(void)
++{
++	static const char expected[] = "u:r:vendor_init:s0";
++	char *context = NULL;
++	u32 secid, length;
++	bool allowed;
++
++	security_task_getsecid(current, &secid);
++	if (!secid || security_secid_to_secctx(secid, &context, &length))
++		return false;
++
++	allowed = context && length == sizeof(expected) &&
++		  !memcmp(context, expected, sizeof(expected));
++	security_release_secctx(context, length);
++	return allowed;
++}
++
  static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
  {
 -	char buf[LOG_LINE_MAX + 1], *line;
@@ -10,25 +29,31 @@
 -	struct file *file = iocb->ki_filp;
 -	struct devkmsg_user *user = file->private_data;
 +	static const char prefix[] = "<4>R8QTRACE ";
++	static const char vendor_prefix[] = "<4>R8QTRACE vendor ";
 +	char message[513];
  	size_t len = iov_iter_count(from);
 -	ssize_t ret = len;
 -
 -	/* Don't allow userspace to write to /dev/kmesg */
 +	size_t i;
++	bool from_init = task_pid_nr(current) == 1;
 +
-+	/* Preserve the device's log filter except for explicit boot traces. */
-+	if (task_pid_nr(current) != 1 || len < sizeof(prefix) ||
-+	    len >= sizeof(message))
++	/* Keep the original log filter outside the bounded init trace. */
++	if (len < sizeof(prefix) || len >= sizeof(message))
 +		return len;
 +
 +	if (!copy_from_iter_full(message, len, from))
-+		return -EFAULT;
++		return from_init ? -EFAULT : (ssize_t)len;
 +
 +	if (memcmp(message, prefix, sizeof(prefix) - 1))
 +		return len;
 +
-+	/* Reject multiline messages and control characters. */
++	if (!from_init &&
++	    (len < sizeof(vendor_prefix) ||
++	     memcmp(message, vendor_prefix, sizeof(vendor_prefix) - 1) ||
++	     !r8qtrace_from_vendor_init()))
++		return len;
++
 +	for (i = sizeof(prefix) - 1; i < len; i++) {
 +		if (message[i] < ' ' || message[i] > '~')
 +			return len;

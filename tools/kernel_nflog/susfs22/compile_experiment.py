@@ -86,6 +86,7 @@ def apply(source, evidence, env):
     build.audit.run(command + ['--check', TRACE_PATCH], evidence / 'trace-kmsg-check.log', env)
     build.audit.run(command + [TRACE_PATCH], evidence / 'trace-kmsg-apply.log', env)
     verify(source,env)
+    build.audit.run([sys.executable, HERE/'test_trace_kmsg.py', source], evidence/'trace-kmsg-test.log', env)
     # Exercise the real patched ownership statements before starting a long
     # build; no patched kernel binary or Android ELF is executed on the host.
     build.audit.run([sys.executable,HERE/'test_ownership.py',source],evidence/'susfs22-ownership-test.log',env)
