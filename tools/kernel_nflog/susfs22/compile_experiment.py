@@ -22,6 +22,9 @@ PATCH_SHA = 'c4509c96daf851b425861a3b3acefb43d634b4d6a87fce33a9cb098e53125720'
 ROWS = PINS['files']
 NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
 TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None} | {memory_compat.PINS['path']})
+TRACE_PINS = json.loads((HERE / 'trace-kmsg-pins.json').read_text())
+TRACE_PATCH = HERE / 'trace-kmsg.patch'
+TRACKED = sorted([*TRACKED, TRACE_PINS['path']])
 SUSFS_SYMBOLS=frozenset((
     'susfs_init','susfs_start_sdcard_monitor_fn','susfs_add_sus_path',
     'susfs_add_sus_path_loop','susfs_is_inode_sus_path','susfs_add_sus_map',
@@ -32,7 +35,8 @@ def expected_overlay():
     return dict(status='EXPERIMENTAL_SUSFS22_SOURCE_NOT_HARDWARE_TESTED',
                 original_compatibility=original.expected_report(),susfs22=PINS,
                 susfs_disabled=False,boot_image_created=False,
-                memory_compatibility=memory_compat.expected_report())
+                memory_compatibility=memory_compat.expected_report(),
+                trace_kmsg=TRACE_PINS)
 
 
 def sha(path):
@@ -43,6 +47,8 @@ def sha(path):
 
 def verify(source, env):
     memory_compat.verify(source)
+    if sha(source / TRACE_PINS['path']) != TRACE_PINS['after_sha256']:
+        raise ValueError('Boot trace source differs')
     for row in ROWS:
         if sha(source/row['path']) != row['after_sha256']:
             raise ValueError('Derived SUSFS source differs: '+row['path'])
@@ -73,6 +79,12 @@ def apply(source, evidence, env):
     build.audit.run(command+['--check',PATCH],evidence/'susfs22-check.log',env)
     build.audit.run(command+[PATCH],evidence/'susfs22-apply.log',env)
     memory_compat.apply(source,evidence,env,build.audit)
+    if (TRACE_PINS['source_commit'] != build.audit.SOURCE_COMMIT
+        or sha(TRACE_PATCH) != TRACE_PINS['patch_sha256']
+        or sha(source / TRACE_PINS['path']) != TRACE_PINS['before_sha256']):
+        raise ValueError('Boot trace patch or upstream printk source differs')
+    build.audit.run(command + ['--check', TRACE_PATCH], evidence / 'trace-kmsg-check.log', env)
+    build.audit.run(command + [TRACE_PATCH], evidence / 'trace-kmsg-apply.log', env)
     verify(source,env)
     # Exercise the real patched ownership statements before starting a long
     # build; no patched kernel binary or Android ELF is executed on the host.

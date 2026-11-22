@@ -1,0 +1,7 @@
+{
+  "source_commit": "a265508933bbecb682e45e3b956d95bf4426d60b",
+  "path": "kernel/printk/printk.c",
+  "before_sha256": "e7f0ee086e82334a2ec1e30c4d99d1d676613b2ba60b6cb1c4f7c1789fe40d87",
+  "after_sha256": "73485d2e052ae98597b005ac323625851352da1eeceddbd8e11cb9c1da1cffae",
+  "patch_sha256": "6cdf6c21aba3fb34c8f2647889a9906048be364f7c1a8b693e1b43a9d539c541"
+}

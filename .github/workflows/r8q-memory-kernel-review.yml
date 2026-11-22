@@ -1,12 +1,12 @@
-name: Review r8q memory controllers with SUSFS and SELinux preserved
+name: Verify the R8QTRACE kernel transport
 on:
   push:
-    branches: [r8q-memory-controllers-20261116]
+    branches: [r8q-trace-kmsg-pid1]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: r8q-memory-controllers-review
+  group: r8q-trace-kmsg-pid1
   cancel-in-progress: false
 jobs:
   kernel:
@@ -48,6 +48,13 @@ jobs:
           import verify_linked
           p=Path('reports/current-kernel-build')
           result=verify_linked.verify((p/'Image').read_bytes(),json.loads((p/'summary.json').read_text()))
+          assert result['embedded_config_sha256'] == '693bbb603e7d4084986f76dfc6cc373ddedacee86f8e468fa7d7ed16ab5daab0'
+          symbols = {name: int(address, 16) for address, kind, name in
+                     (line.split(maxsplit=2) for line in (p/'System.map').read_text().splitlines())}
+          offset = symbols['devkmsg_write'] - symbols['_text']
+          image = (p/'Image').read_bytes()
+          assert 0 < offset < len(image) - 8
+          assert image[offset:offset + 8] != bytes.fromhex('200840f9c0035fd6')
           (p/'independent-memory-verification.json').write_text(json.dumps(result,indent=2)+'\n')
           PY
       - name: Save verified compiler even when a later compile fails
@@ -60,7 +67,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: R8Q-MEMORY-SUSFS22-OFFLINE-REVIEW-NOT-FLASHABLE
+          name: R8QTRACE-KMSG-KERNEL-OFFLINE-REVIEW
           path: reports/current-kernel-build/
           retention-days: 30
           overwrite: true
