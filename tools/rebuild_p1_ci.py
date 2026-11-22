@@ -286,9 +286,9 @@ def main():
         print('EXACT P1r2 LEGACY SYMLINK FAILURE:',json.dumps(old['legacy_symlink_issues']),flush=True)
         baseline.unlink()
     if args.boot_trace:
-        from boot_trace import INIT_RC, stage
+        from boot_trace import stage
         from prepare_p1_plans import read
-        write_json(WORK/'boot-trace.json', stage(plans, read('system', INIT_RC)))
+        write_json(WORK/'boot-trace.json', stage(plans, read))
     for part in erofs_parts:
         run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos'/(part+'.img'),
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),

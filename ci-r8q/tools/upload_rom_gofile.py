@@ -7,7 +7,8 @@ ROM_NAMES=frozenset(('HyperOS4-R8Q-P1-SINGLE-EXPERIMENTAL.zip',
                      'HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip',
                      'HyperOS4-R8Q-P1r4-SINGLE-EXPERIMENTAL.zip',
                      'HyperOS4-R8Q-P1r5-SINGLE-EXPERIMENTAL.zip',
-                     'HyperOS4-R8Q-P1r5-R8QTRACE-KMSG-SINGLE-EXPERIMENTAL.zip'))
+                     'HyperOS4-R8Q-P1r5-R8QTRACE-KMSG-SINGLE-EXPERIMENTAL.zip',
+                     'HyperOS4-R8Q-P1r5-LATEFS-SINGLE-EXPERIMENTAL.zip'))
 
 def validate_name(name):
     if name not in ROM_NAMES:raise ValueError('Only a reviewed P1/P1r1/P1r2/P1r4/P1r5 ROM ZIP name is accepted')

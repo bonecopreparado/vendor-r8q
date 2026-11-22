@@ -1,7 +1,7 @@
-name: Build P1r5 with the R8QTRACE kernel transport
+name: Build P1r5 with late-fs telemetry
 on:
   push:
-    branches: ['r8q-p1r5-single-r8qtrace-kmsg']
+    branches: ['r8q-p1r5-single-late-fs']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       attestations: write
     env:
       MKSH_BINARY: /bin/mksh
-      ZIP_NAME: HyperOS4-R8Q-P1r5-R8QTRACE-KMSG-SINGLE-EXPERIMENTAL.zip
+      ZIP_NAME: HyperOS4-R8Q-P1r5-LATEFS-SINGLE-EXPERIMENTAL.zip
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -104,9 +104,22 @@ jobs:
           assert kernel['embedded_config_sha256'] == '693bbb603e7d4084986f76dfc6cc373ddedacee86f8e468fa7d7ed16ab5daab0'
           reports = Path('reports/p1/ci-build')
           trace = json.loads((reports / 'boot-trace.json').read_text())
-          system = json.loads((reports / 'system-build.json').read_text())
-          assert trace['sha256'] == 'bd5c9823600c6e62747455ead154efe76681e8b72b5abc0946f9adb07e240888'
-          assert [row['sha256'] for row in system['changes'] if row['path'] == trace['path']] == [trace['sha256']]
+          assert trace['sink'] == '/dev/kmsg' and 'late-fs' in trace['events']
+          expected_paths = {
+              ('system', '/system/etc/init/hw/init.rc'),
+              ('vendor', '/etc/init/hw/init.target.rc'),
+              ('vendor', '/etc/init/pa_daemon_qsee.rc'),
+          }
+          assert len(trace['files']) == len(expected_paths)
+          assert {(row['partition'], row['path']) for row in trace['files']} == expected_paths
+          readback = {
+              part: {row['path']: row for row in json.loads((reports / f'{part}-build.json').read_text())['changes']}
+              for part in ('system', 'vendor')
+          }
+          for trace_file in trace['files']:
+              row = readback[trace_file['partition']][trace_file['path']]
+              assert row['sha256'] == trace_file['sha256']
+              assert row['old_sha256'] == trace_file['old_sha256']
           import io, zipfile
           with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME']) as z:
               manifest=json.loads(z.read('P1-MANIFEST.json'))
@@ -131,7 +144,7 @@ jobs:
         id: attest
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
         with:
-          subject-name: HyperOS4-R8Q-P1r5-R8QTRACE-KMSG-SINGLE-EXPERIMENTAL.zip
+          subject-name: HyperOS4-R8Q-P1r5-LATEFS-SINGLE-EXPERIMENTAL.zip
           subject-digest: sha256:${{ steps.package.outputs.sha256 }}
       - name: Upload the single full ZIP to GoFile
         env:
@@ -142,7 +155,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
           ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
-          RELEASE_TAG: p1r5-r8qtrace-kmsg-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r5-late-fs-experimental-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
           python3 - <<'PYNOTES'
@@ -162,7 +175,8 @@ jobs:
                  'The exact stock APNHLOS profile is checked read-only before any image write. '
                  'Writes are flushed and read back through O_DIRECT. '
                  'Use internal storage or exFAT/USB: FAT32 cannot hold the ZIP above 4 GiB.\n\n'
-                 'This kernel accepts bounded R8QTRACE events from Android init and retains its existing filter for other writes. '
+                 'R8QTRACE brackets the late-fs service waits, /data mount and QSEE readiness. '
+                 'The kernel only records the bounded init and vendor_init trace paths. '
                  'Known VINTF/legacy HAL findings remain and Android boot is unconfirmed.\n\n'
                  'If stuck on the logo after 3 minutes, go directly to recovery and use the '
                  'plain TAR collector attached below. '
@@ -172,7 +186,7 @@ jobs:
           Path('output/P1-RELEASE-NOTES.md').write_text(notes)
           PYNOTES
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r5 R8QTRACE KMSG - experimental boot diagnostics' --notes-file output/P1-RELEASE-NOTES.md \
+            --title 'P1r5 LATEFS - experimental boot diagnostics' --notes-file output/P1-RELEASE-NOTES.md \
             "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json \
             output/gofile-rom.json output/P1-SINGLE.intoto.jsonl output/P1r5-ARM64-readback.json \
             reports/p1/ci-build/boot-trace.json ci-kernel/PROVENANCE.json \

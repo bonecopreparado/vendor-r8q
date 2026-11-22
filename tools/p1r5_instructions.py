@@ -43,7 +43,7 @@ Extract ONLY extras/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip from the downloaded ROM,
 or download it from the release assets, then install it after the boot attempt.
 Send its .tar
 privately, plus recovery.log and fresh last_kmsg/pstore if collection fails.
-R8QTRACE writes init milestones to last_kmsg. No separate ENABLE is needed.
+R8QTRACE writes init milestones and late-fs wait/mount checkpoints to last_kmsg. No separate ENABLE is needed.
 
 WHAT IS VERIFIED
 All source and payload hashes; actual kernel Image/configuration/link symbols;
