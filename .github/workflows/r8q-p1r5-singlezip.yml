@@ -1,7 +1,7 @@
-name: Build P1r5 with late-fs telemetry
+name: Build P1r5 with Samsung Keymaster TEE
 on:
   push:
-    branches: ['r8q-p1r5-single-late-fs']
+    branches: ['r8q-p1r5-single-keymaster-tee']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       attestations: write
     env:
       MKSH_BINARY: /bin/mksh
-      ZIP_NAME: HyperOS4-R8Q-P1r5-LATEFS-SINGLE-EXPERIMENTAL.zip
+      ZIP_NAME: HyperOS4-R8Q-P1r5-KEYMASTER-TEE-SINGLE-EXPERIMENTAL.zip
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -78,8 +78,12 @@ jobs:
           cc -Wall -Wextra -Werror -I.deps/selinux/libsepol/include ci-r8q/tools/check_contexts.c .deps/selinux/libsepol/src/libsepol.a -o build/check-contexts
       - name: Fetch reviewed official VINTF host tool and record known baseline
         run: /usr/bin/python3 ci-r8q/tools/run_checkvintf.py --output ci-vintf
-      - name: Rebuild P1r5 retaining the P1r1 optional-mapping experiment
-        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --boot-trace --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
+      - name: Fetch the official LineageOS r8q OTA
+        run: |
+          curl -fLSs --retry 2 --max-time 600 https://mirrorbits.lineageos.org/full/r8q/20261121/lineage-24.0-20261121-nightly-r8q-signed.zip -o build/lineage-r8q.zip
+          printf '%s  %s\n' 8fcf4ffdf47d549aa8fd0e30e31872aa45074cb6081a09b8b4f8cbe81e1711f4 build/lineage-r8q.zip | sha256sum -c -
+      - name: Build P1r5 with the verified Samsung TEE backend
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --boot-trace --keymaster-lineage-ota build/lineage-r8q.zip --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
       - name: Build one complete ZIP and verify every stored member and image
         id: package
         run: |
@@ -99,7 +103,7 @@ jobs:
           assert r['build_label']=='P1r5' and len(r['omitted_optional_mappings'])==23
           images = {item['partition']: item['sha256'] for item in r['images']}
           assert images['dtbo'] == '3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468'
-          assert images['boot'] != '71d1eacc41d04db7f8084694708462d1f1fa71bcd513949e80d662c9d188b910'
+          assert images['boot'] == '808b033a7091879f9dc0be3a5d2d6ed50b9386ceefa7bfb84fb3c2bf0cef1162'
           kernel = json.loads(Path('ci-kernel/PROVENANCE.json').read_text())
           assert kernel['embedded_config_sha256'] == '693bbb603e7d4084986f76dfc6cc373ddedacee86f8e468fa7d7ed16ab5daab0'
           reports = Path('reports/p1/ci-build')
@@ -120,6 +124,13 @@ jobs:
               row = readback[trace_file['partition']][trace_file['path']]
               assert row['sha256'] == trace_file['sha256']
               assert row['old_sha256'] == trace_file['old_sha256']
+          tee = json.loads((reports / 'keymaster-tee.json').read_text())
+          assert len(tee['files']) == 4 and tee['resolved_legacy_symbol'] == 'sk_delete'
+          for row in tee['files']:
+              packed = readback['vendor'][row['path']]
+              assert packed['sha256'] == row['sha256'] and packed['old_sha256'] == row['old_sha256']
+          assert readback['vendor']['/bin/hw/android.hardware.keymaster@4.0-service']['metadata']['xattrs']['security.selinux'].startswith(
+              b'u:object_r:hal_keymaster_default_exec:s0'.hex())
           import io, zipfile
           with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME']) as z:
               manifest=json.loads(z.read('P1-MANIFEST.json'))
@@ -144,7 +155,7 @@ jobs:
         id: attest
         uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
         with:
-          subject-name: HyperOS4-R8Q-P1r5-LATEFS-SINGLE-EXPERIMENTAL.zip
+          subject-name: HyperOS4-R8Q-P1r5-KEYMASTER-TEE-SINGLE-EXPERIMENTAL.zip
           subject-digest: sha256:${{ steps.package.outputs.sha256 }}
       - name: Upload the single full ZIP to GoFile
         env:
@@ -155,7 +166,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
           ATTESTATION_URL: ${{ steps.attest.outputs.attestation-url }}
-          RELEASE_TAG: p1r5-late-fs-experimental-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r5-keymaster-tee-experimental-${{ github.run_number }}-${{ github.run_attempt }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/P1-SINGLE.intoto.jsonl
           python3 - <<'PYNOTES'
@@ -175,8 +186,9 @@ jobs:
                  'The exact stock APNHLOS profile is checked read-only before any image write. '
                  'Writes are flushed and read back through O_DIRECT. '
                  'Use internal storage or exFAT/USB: FAT32 cannot hold the ZIP above 4 GiB.\n\n'
-                 'R8QTRACE brackets the late-fs service waits, /data mount and QSEE readiness. '
-                 'The kernel only records the bounded init and vendor_init trace paths. '
+                 'The Samsung TEE service and two backend libraries come from the verified r8q LineageOS 24.0 nightly. '
+                 'Its bundled libcrypto-v33 provides the legacy sk_delete symbol missing in the port system crypto. '
+                 'The original Keymaster entrypoint path and label are preserved. '
                  'Known VINTF/legacy HAL findings remain and Android boot is unconfirmed.\n\n'
                  'If stuck on the logo after 3 minutes, go directly to recovery and use the '
                  'plain TAR collector attached below. '
@@ -186,10 +198,10 @@ jobs:
           Path('output/P1-RELEASE-NOTES.md').write_text(notes)
           PYNOTES
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r5 LATEFS - experimental boot diagnostics' --notes-file output/P1-RELEASE-NOTES.md \
+            --title 'P1r5 KEYMASTER-TEE - experimental' --notes-file output/P1-RELEASE-NOTES.md \
             "output/$ZIP_NAME.sha256" output/P1-TESTER-ENGLISH.txt output/P1-SINGLE-build-report.json \
             output/gofile-rom.json output/P1-SINGLE.intoto.jsonl output/P1r5-ARM64-readback.json \
-            reports/p1/ci-build/boot-trace.json ci-kernel/PROVENANCE.json \
+            reports/p1/ci-build/boot-trace.json reports/p1/ci-build/keymaster-tee.json ci-kernel/PROVENANCE.json \
             output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip output/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip.sha256
       - name: Save small current-build evidence only
         if: always()

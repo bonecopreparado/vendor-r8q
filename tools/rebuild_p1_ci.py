@@ -160,6 +160,7 @@ def independent_super(image_path, report_path):
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--legacy-kernel-symlinks',action='store_true')
+    ap.add_argument('--keymaster-lineage-ota', type=Path)
     ap.add_argument('--boot-trace', action='store_true', help='Add bounded init milestones to the system log')
     ap.add_argument('--discard-downloads',action='store_true',
                     help='CI only: delete the two verified downloaded archives after source image verification')
@@ -289,6 +290,13 @@ def main():
         from boot_trace import stage
         from prepare_p1_plans import read
         write_json(WORK/'boot-trace.json', stage(plans, read))
+    if args.keymaster_lineage_ota:
+        if build_label != 'P1r5':
+            raise ValueError('Samsung Keymaster replacement requires the reviewed P1r5 profile')
+        from vendor_security.keymaster_tee import stage
+        from prepare_p1_plans import read
+        erofs = ROOT/'tools/image-tools/bin/dump.erofs'
+        write_json(WORK/'keymaster-tee.json', stage(plans, args.keymaster_lineage_ota, read, erofs))
     for part in erofs_parts:
         run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos'/(part+'.img'),
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),

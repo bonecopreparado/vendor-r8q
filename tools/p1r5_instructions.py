@@ -6,6 +6,7 @@ Hardware boot is NOT confirmed. Keep a working Samsung stock restoration kit.
 This is the complete ROM, including R2 Samsung IPA/IPA UC firmware and Vendor
 label repairs, the compiled MEMCG/PSI/v1-freezer kernel with KernelSU/SUSFS and
 NFLOG preserved, the existing scheduler/display/ueventd fixes and V6 diagnostics.
+The Samsung TEE Keymaster service uses its separate legacy crypto provider.
 No separate R2, R3, ENABLE ZIP, payload directory or installer creation is needed.
 SELinux options are preserved; this build does not force permissive.
 

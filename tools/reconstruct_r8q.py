@@ -55,8 +55,8 @@ class BrotliReader:
         if not self.decoder.is_finished():
             raise ValueError('Truncated Brotli stream')
 
-def reconstruct(archive, part, output):
-    base = 'Color os build/' + part
+def reconstruct(archive, part, output, *, prefix='Color os build/'):
+    base = prefix + part
     transfer = archive.read(base+'.transfer.list').decode('ascii').splitlines()
     if transfer[0] != '4':
         raise ValueError('Expected v4 full OTA transfer list')
