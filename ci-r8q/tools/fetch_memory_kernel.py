@@ -11,11 +11,11 @@ import time
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import fetch_verified_kernel as trusted
 sys.path.insert(0,str(trusted.ROOT/'tools'))
-SOURCE_COMMIT = '80fd3830478095a4cdeae4e1e708f30b9ca5cef8'
+SOURCE_COMMIT = '1354a099bb6b5635b4fac0e35beecfa66f7711e0'
 
-BRANCH = 'r8q-keystore-log-kernel'
+BRANCH = 'r8q-tee-hal-log-kernel'
 WORKFLOW = '.github/workflows/r8q-memory-kernel-review.yml'
-ARTIFACT = 'R8Q-KEYSTORE-LOG-KERNEL-OFFLINE-REVIEW'
+ARTIFACT = 'R8Q-TEE-HAL-LOG-KERNEL-OFFLINE-REVIEW'
 
 
 def valid_run(run):

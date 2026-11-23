@@ -1,7 +1,7 @@
-name: Package the R8Q LATEFS early keystore logs
+name: Package the R8Q TEE registration diagnostic
 on:
   push:
-    branches: [r8q-keystore-log-addon]
+    branches: [r8q-tee-hal-log-addon]
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 619bc34c46a4f6c4c0ab76594466fb5296da3fcc
+          ref: f1351e4a92f1db4e1dfcf167acb0e8f443547350
           path: ci-previous-source
           persist-credentials: false
       - name: Prepare and test the production recovery helper
@@ -65,7 +65,7 @@ jobs:
           python3 ci-previous-source/tools/kernel_nflog/susfs22/repack_verified.py \
             --source candidates/p0/boot-r8q-hyperos-p0.img --kernel ci-previous-kernel/Image \
             --summary ci-previous-kernel/summary.json --output build/previous.img --report build/previous-repack.json
-          printf '%s  %s\n' 0d1263cb81848ae5b935d89df1224f42f6160e452950dd627550901926cd66c2 build/previous.img | sha256sum -c -
+          printf '%s  %s\n' 808b033a7091879f9dc0be3a5d2d6ed50b9386ceefa7bfb84fb3c2bf0cef1162 build/previous.img | sha256sum -c -
       - name: Resolve the exact current diagnostic kernel
         env:
           GH_TOKEN: ${{ github.token }}
@@ -86,25 +86,25 @@ jobs:
       - name: Publish the verified boot packages
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: p1r5-late-fs-keystore-log-${{ github.run_number }}-${{ github.run_attempt }}
+          RELEASE_TAG: p1r5-tee-hal-log-${{ github.run_number }}-${{ github.run_attempt }}
           ATTESTATION_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
         run: |
           cp "$ATTESTATION_BUNDLE" output/mount-wait.intoto.jsonl
           cat > build/release.md <<'NOTES'
-          Install **KEYSTORE-LOG** in recovery over the exact previously installed P1r5 LATEFS VOLD-LOG. The ZIP needs only the boot partition and temporary recovery RAM. It verifies the current boot digest and verifies the flash by a fresh direct readback.
+          Install **TEE-HAL-LOG** over P1r5 KEYMASTER-TEE on Snapdragon r8q. Check its .zip.sha256 before sideload. The installer checks the existing boot and verifies the new image by direct readback.
 
-          The diagnostic kernel includes bounded keystore warnings and fatal messages sent to the Android log socket under R8QKEYSTORE. It retains the existing mount-wait and storage diagnostics. After three minutes on the Samsung logo, return to recovery and send a fresh TAR from the same collector. Hardware boot is unconfirmed.
+          This boot-only diagnostic records Samsung Keymaster registration, HIDL manager availability, early linker errors and the legacy Keystore discovery result. Hardware boot and the capture of each event still need a device test. Reboot to recovery once, then System. After three minutes at the logo, return to recovery and run the same [V6 collector](https://github.com/bonecopreparado/vendor-r8q/releases/download/p1r5-keymaster-tee-experimental-5-1/R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip). Send the new TAR. No Format Data is needed.
 
-          **RESTORE-VOLD-LOG** puts the exact VOLD-LOG boot back after this diagnostic. Keep the rollback ZIP and working stock restoration files accessible. Verify the SHA-256 before installing either ZIP.
+          **RESTORE-KEYSTORE-LOG** restores the boot supplied by the full KEYMASTER-TEE release after this test.
           NOTES
           gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
-            --title 'P1r5 LATEFS early keystore logs' --notes-file build/release.md \
+            --title 'P1r5 Keymaster and HIDL diagnostic' --notes-file build/release.md \
             output/*.zip output/*.sha256 output/mount-wait-build.json output/mount-wait.intoto.jsonl
       - name: Keep the verified packages available if publishing fails
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: failure() && steps.packaged.outcome == 'success'
         with:
-          name: R8Q-KEYSTORE-LOG-DELIVERY-RETRY
+          name: R8Q-TEE-HAL-LOG-DELIVERY-RETRY
           path: |
             output/*.zip
             output/*.sha256

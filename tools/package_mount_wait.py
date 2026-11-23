@@ -14,15 +14,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools/kernel_nflog/susfs22'))
 import repack_verified as repack
 
-BASE_BOOT = '0d1263cb81848ae5b935d89df1224f42f6160e452950dd627550901926cd66c2'
-SOURCE_COMMIT = '80fd3830478095a4cdeae4e1e708f30b9ca5cef8'
+BASE_BOOT = '808b033a7091879f9dc0be3a5d2d6ed50b9386ceefa7bfb84fb3c2bf0cef1162'
+SOURCE_COMMIT = '1354a099bb6b5635b4fac0e35beecfa66f7711e0'
 BOOT_BYTES = repack.BOOT_BYTES
-README = """For the exact P1r5 LATEFS VOLD-LOG already installed on Snapdragon r8q only.
-Install R8Q-P1r5-LATEFS-KEYSTORE-LOG.zip in recovery, then reboot once into
-recovery and finally into System. If stuck, wait about three minutes and
-send a fresh TAR from the same collector. This preserves early keystore warnings and abort details in last_kmsg. Android boot remains unverified.
-Keep R8Q-P1r5-LATEFS-RESTORE-VOLD-LOG.zip accessible to restore the previous boot
-image after testing. Neither ZIP requires Data mounted.
+README = """For Snapdragon r8q with P1r5 KEYMASTER-TEE and its original boot image.
+Install R8Q-P1r5-LATEFS-TEE-HAL-LOG.zip in TWRP via Install or ADB Sideload.
+Reboot into Recovery once, then select System. If stuck at the Samsung logo
+for three minutes, return to Recovery and run R8Q-BOOTDIAG-V6-COLLECT-ONLY.zip.
+Send the new TAR, including one marked PARTIAL. This test records Keymaster
+registration and HIDL service discovery in last_kmsg. The device must
+still test the trace. Formatting Data is unnecessary.
+R8Q-P1r5-LATEFS-RESTORE-KEYSTORE-LOG.zip restores the previous boot image.
 """
 
 
@@ -92,7 +94,7 @@ def main():
             parser.error('Invalid input size or file: ' + str(path))
     previous = args.previous.read_bytes()
     if len(previous) != BOOT_BYTES or sha(previous) != BASE_BOOT:
-        raise ValueError('Reproduced previous boot differs from the published LATEFS VOLD-LOG release')
+        raise ValueError('Reproduced previous boot differs from the published KEYMASTER-TEE boot')
     kernel = args.image.read_bytes()
     provenance = json.loads(args.provenance.read_text())
     if provenance.get('source_commit') != SOURCE_COMMIT or provenance.get('kernel_sha256') != sha(kernel):
@@ -117,8 +119,8 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     outputs = []
     for action, suffix, before, target in (
-        ('diagnostic', 'KEYSTORE-LOG', BASE_BOOT, candidate),
-        ('restore', 'RESTORE-VOLD-LOG', sha(candidate), previous),
+        ('diagnostic', 'TEE-HAL-LOG', BASE_BOOT, candidate),
+        ('restore', 'RESTORE-KEYSTORE-LOG', sha(candidate), previous),
     ):
         path = args.output / f'R8Q-P1r5-LATEFS-{suffix}.zip'
         outputs.append(emit(path, before, target, helper, args.ndk_notice.read_bytes(), action,
