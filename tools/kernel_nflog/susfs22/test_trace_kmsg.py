@@ -108,6 +108,14 @@ int main(void)
     current = 1;
     check("<3>init: Service vold exited", "R8QVOLD origin=init pid=1 init: Service vold exited\n");
     check("<3>init: unrelated error", NULL);
+    check("<6>init: starting service 'vendor.keymaster-4-0'...",
+          "R8QTEE origin=init init: starting service 'vendor.keymaster-4-0'...\n");
+    check("<6>init: Service 'hwservicemanager' exited with status 1",
+          "R8QTEE origin=init init: Service 'hwservicemanager' exited with status 1\n");
+    check("<6>init: unrelated service 'other' exited", NULL);
+    current = 80;
+    caller_context = "u:r:hal_keymaster_default:s0";
+    check("<6>init: starting service 'vendor.keymaster-4-0'...", NULL);
     current = 43;
     caller_context = NULL;
     check("<4>R8QTRACE vendor invalid-context", NULL);

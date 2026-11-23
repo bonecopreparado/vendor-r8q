@@ -1,12 +1,12 @@
-name: Verify R8Q early keystore diagnostics
+name: Verify R8Q early TEE and HIDL diagnostics
 on:
   push:
-    branches: [r8q-keystore-log-kernel]
+    branches: [r8q-tee-hal-log-kernel]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: r8q-keystore-log-kernel
+  group: r8q-tee-hal-log-kernel
   cancel-in-progress: false
 jobs:
   kernel:
@@ -56,6 +56,7 @@ jobs:
           assert 0 < offset < len(image) - 8
           assert 'r8q_mount_sample' in symbols and b'R8QMOUNT sample=' in image
           assert b'R8QVOLD origin=' in image and b'R8QKEYSTORE pid=' in image
+          assert b'R8QTEE origin=' in image and b'Skipping keymaster compat' in image
           assert image[offset:offset + 8] != bytes.fromhex('200840f9c0035fd6')
           (p/'independent-memory-verification.json').write_text(json.dumps(result,indent=2)+'\n')
           PY
@@ -69,7 +70,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: R8Q-KEYSTORE-LOG-KERNEL-OFFLINE-REVIEW
+          name: R8Q-TEE-HAL-LOG-KERNEL-OFFLINE-REVIEW
           path: reports/current-kernel-build/
           retention-days: 30
           overwrite: true

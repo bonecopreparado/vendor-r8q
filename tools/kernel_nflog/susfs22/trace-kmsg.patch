@@ -11,7 +11,7 @@
  
  #include <linux/uaccess.h>
  #include <asm/sections.h>
-@@ -845,76 +849,185 @@
+@@ -845,76 +849,201 @@
  	char buf[CONSOLE_EXT_LOG_MAX];
  };
  
@@ -108,6 +108,7 @@
 +
 +/* Retain only early storage diagnostics from the existing SELinux domains. */
 +static atomic_t r8q_storage_messages = ATOMIC_INIT(0);
++static atomic_t r8q_hal_init_messages = ATOMIC_INIT(0);
 +
 +static void r8q_storage_log(char *record, size_t length, bool from_init)
 +{
@@ -127,6 +128,21 @@
 +	payload = end + 1;
 +	if (!*payload)
 +		return;
++
++	/* Keep init's service transitions independent of the vold budget. */
++	if (from_init && (priority & 7) <= 6 && !strncmp(payload, "init: ", 6) &&
++	    (strstr(payload, "'vendor.keymaster-4-0'") || strstr(payload, "'hwservicemanager'") ||
++	     strstr(payload, "'qseecom-service'") || strstr(payload, "'vendor.qseecomd'"))) {
++		if (atomic_read(&r8q_hal_init_messages) < 48 &&
++		    atomic_inc_return(&r8q_hal_init_messages) <= 48) {
++			for (i = payload - record; i < length; i++) {
++				if (record[i] < ' ' || record[i] > '~')
++					record[i] = ' ';
++			}
++			pr_warn("R8QTEE origin=init %s\n", payload);
++		}
++		return;
++	}
 +
 +	if (from_init) {
 +		if ((priority & 7) > LOGLEVEL_WARNING ||

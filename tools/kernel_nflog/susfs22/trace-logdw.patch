@@ -8,55 +8,125 @@
  #include <linux/freezer.h>
  #include <linux/file.h>
  
-@@ -1651,6 +1652,67 @@
+@@ -1651,6 +1652,143 @@
   *	Send AF_UNIX data.
   */
  
-+/* The early keystore abort precedes the recovery-readable Android logs. */
-+static atomic_t r8q_keystore_messages = ATOMIC_INIT(0);
++/* Early Keymaster discovery takes place before /data and the log collector. */
++enum r8q_log_source {
++	R8Q_OTHER, R8Q_KEYSTORE, R8Q_COMPAT, R8Q_SAMSUNG_KM,
++	R8Q_STRONGBOX, R8Q_HWSM, R8Q_QSEE, R8Q_TEE, R8Q_SOURCE_COUNT
++};
++static const char * const r8q_contexts[R8Q_SOURCE_COUNT] = {
++	[R8Q_KEYSTORE] = "u:r:keystore:s0",
++	[R8Q_SAMSUNG_KM] = "u:r:hal_keymaster_default:s0",
++	[R8Q_STRONGBOX] = "u:r:vendor_hal_keymaster_qti:s0",
++	[R8Q_HWSM] = "u:r:hwservicemanager:s0",
++	[R8Q_QSEE] = "u:r:vendor_hal_qseecom_default:s0",
++	[R8Q_TEE] = "u:r:tee:s0",
++};
++static const char * const r8q_names[R8Q_SOURCE_COUNT] = {
++	[R8Q_COMPAT] = "compat", [R8Q_SAMSUNG_KM] = "samsung",
++	[R8Q_STRONGBOX] = "qti", [R8Q_HWSM] = "hwservicemanager",
++	[R8Q_QSEE] = "qsee-service", [R8Q_TEE] = "qsee-daemon",
++};
++static atomic_t r8q_log_counts[R8Q_SOURCE_COUNT];
 +
-+static bool r8q_keystore_domain(void)
++static enum r8q_log_source r8q_log_owner(void)
 +{
-+	static const char expected[] = "u:r:keystore:s0";
 +	char *context = NULL;
 +	u32 secid, length;
-+	bool matches;
++	enum r8q_log_source i, owner = R8Q_OTHER;
 +
 +	security_task_getsecid(current, &secid);
 +	if (!secid || security_secid_to_secctx(secid, &context, &length))
-+		return false;
-+	matches = context && length == sizeof(expected) &&
-+		  !memcmp(context, expected, sizeof(expected));
++		return R8Q_OTHER;
++	for (i = R8Q_KEYSTORE; context && i < R8Q_SOURCE_COUNT; i++) {
++		if (r8q_contexts[i] && length == strlen(r8q_contexts[i]) + 1 &&
++		    !memcmp(context, r8q_contexts[i], length)) {
++			owner = i;
++			break;
++		}
++	}
 +	security_release_secctx(context, length);
-+	return matches;
++	return owner;
 +}
 +
-+static void r8q_keystore_log(const struct sock *peer, const struct sk_buff *skb)
++/* Select service discovery, dynamic linker errors and startup status.
++ * Never forward arbitrary messages emitted by the hardware crypto services.
++ */
++static const char *r8q_hal_status(enum r8q_log_source owner,
++				  const char *tag, const char *msg, int priority)
++{
++	if (owner == R8Q_COMPAT) {
++		if (strstr(msg, "Skipping keymaster compat") ||
++		    strstr(msg, "found android.hardware.keymaster@") ||
++		    strstr(msg, "failed to create compat KeyMint device") ||
++		    strstr(msg, "Cannot list manifest for android.hardware.keymaster") ||
++		    strstr(msg, "KeystoreCompatService::getKeyMintDevice("))
++			return msg;
++		return NULL;
++	}
++	if (!strcmp(tag, "linker") && (strstr(msg, "CANNOT LINK EXECUTABLE") ||
++	    strstr(msg, "cannot locate symbol") || strstr(msg, "not accessible for the namespace")))
++		return msg;
++	if (!strcmp(tag, "libc") && strstr(msg, "Fatal signal"))
++		return msg;
++	if (owner == R8Q_HWSM) {
++		if (strstr(msg, "hwservicemanager is ready") || strstr(msg, "HIDL is not supported") ||
++		    strstr(msg, "Failed to set \"hwservicemanager.") ||
++		    strstr(msg, "android.hardware.keymaster@") ||
++		    strstr(msg, "vendor.qti.hardware.qseecom@") ||
++		    (!strcmp(tag, "libvintf") && priority >= 5))
++			return msg;
++		return NULL;
++	}
++	if (owner == R8Q_SAMSUNG_KM && (strstr(msg, "Keymaster HAL service is Ready") ||
++	    strstr(msg, "Could not register service for Keymaster HAL") ||
++	    strstr(msg, "Keymaster HAL failed to join thread pool")))
++		return msg;
++	if ((!strcmp(tag, "HidlServiceManagement") || !strcmp(tag, "ServiceManagement")) &&
++	    (strstr(msg, "android.hardware.keymaster@") || strstr(msg, "vendor.qti.hardware.qseecom@") ||
++	     strstr(msg, "hwservicemanager")))
++		return msg;
++	if (strstr(msg, "QSEECom_start_app") && (strstr(msg, "fail") || strstr(msg, "Fail")))
++		return "QSEECom_start_app failed";
++	if (strstr(msg, "skeymaster is not registered yet"))
++		return "skeymaster is not registered yet";
++	return NULL;
++}
++
++static void r8q_tee_log(const struct sock *peer, const struct sk_buff *skb)
 +{
 +	static const char endpoint[] = "/dev/socket/logdw";
 +	const struct unix_address *address;
++	const char *status;
++	enum r8q_log_source owner;
 +	/* Android packed id (1), tid (2), realtime (8), then priority, tag and text. */
 +	enum { HEADER = 11, TEXT = HEADER + 1 };
 +	char data[513], *tag, *message, *end;
 +	size_t bytes, i;
 +	int priority;
 +
-+	if (!peer || skb->len <= TEXT || ktime_get_boottime_seconds() >= 180 ||
-+	    atomic_read(&r8q_keystore_messages) >= 48)
++	if (!peer || skb->len <= TEXT || ktime_get_boottime_seconds() >= 180)
 +		return;
 +	address = smp_load_acquire(&unix_sk(peer)->addr);
 +	if (!address ||
 +	    address->len < (int)(offsetof(struct sockaddr_un, sun_path) + sizeof(endpoint)) ||
 +	    memcmp(address->name->sun_path, endpoint, sizeof(endpoint)))
 +		return;
-+
 +	bytes = min_t(size_t, skb->len, sizeof(data) - 1);
 +	if (skb_copy_bits(skb, 0, data, bytes))
 +		return;
 +	priority = data[HEADER];
-+	/* MAIN, SYSTEM and CRASH are text buffers. WARN, ERROR and FATAL only. */
-+	if ((data[0] != 0 && data[0] != 3 && data[0] != 4) ||
-+	    priority < 5 || priority > 7 || !r8q_keystore_domain())
++	if ((data[0] != 0 && data[0] != 3 && data[0] != 4) || priority < 4 || priority > 7)
++		return;
++	owner = r8q_log_owner();
++	if (owner == R8Q_OTHER)
++		return;
++	if (owner == R8Q_KEYSTORE && priority == 4)
++		owner = R8Q_COMPAT;
++	if (atomic_read(&r8q_log_counts[owner]) >= 48)
 +		return;
 +	data[bytes] = '\0';
 +	tag = data + TEXT;
@@ -68,19 +138,38 @@
 +		if (data[i] && (data[i] < ' ' || data[i] > '~'))
 +			data[i] = ' ';
 +	}
-+	if (atomic_inc_return(&r8q_keystore_messages) <= 48)
++	status = owner == R8Q_KEYSTORE ? message : r8q_hal_status(owner, tag, message, priority);
++	if (!status || atomic_inc_return(&r8q_log_counts[owner]) > 48)
++		return;
++	if (owner == R8Q_KEYSTORE)
 +		pr_warn("R8QKEYSTORE pid=%d priority=%d tag=%s %s\n",
-+			task_tgid_nr(current), priority, tag, message);
++			task_tgid_nr(current), priority, tag, status);
++	else
++		pr_warn("R8QTEE origin=%s pid=%d priority=%d tag=%s %s\n",
++			r8q_names[owner], task_tgid_nr(current), priority, tag, status);
 +}
 +
  static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
  			      size_t len)
  {
-@@ -1723,6 +1785,7 @@
- 	err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
- 	if (err)
- 		goto out_free;
-+	r8q_keystore_log(other, skb);
+@@ -1667,6 +1805,7 @@
+ 	struct scm_cookie scm;
+ 	int data_len = 0;
+ 	int sk_locked;
++	bool r8q_checked = false;
  
- 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 	wait_for_unix_gc();
+ 	err = scm_send(sock, msg, &scm, false);
+@@ -1736,6 +1875,12 @@
+ 					hash, &err);
+ 		if (other == NULL)
+ 			goto out_free;
++	}
++
++	/* The destination is now resolved for both sendto and connected sockets. */
++	if (!r8q_checked) {
++		r8q_tee_log(other, skb);
++		r8q_checked = true;
+ 	}
  
+ 	if (sk_filter(other, skb) < 0) {
