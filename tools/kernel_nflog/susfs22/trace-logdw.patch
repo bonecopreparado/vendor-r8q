@@ -1,0 +1,86 @@
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -116,6 +116,7 @@
+ #include <linux/mount.h>
+ #include <net/checksum.h>
+ #include <linux/security.h>
++#include <linux/timekeeping.h>
+ #include <linux/freezer.h>
+ #include <linux/file.h>
+ 
+@@ -1651,6 +1652,67 @@
+  *	Send AF_UNIX data.
+  */
+ 
++/* The early keystore abort precedes the recovery-readable Android logs. */
++static atomic_t r8q_keystore_messages = ATOMIC_INIT(0);
++
++static bool r8q_keystore_domain(void)
++{
++	static const char expected[] = "u:r:keystore:s0";
++	char *context = NULL;
++	u32 secid, length;
++	bool matches;
++
++	security_task_getsecid(current, &secid);
++	if (!secid || security_secid_to_secctx(secid, &context, &length))
++		return false;
++	matches = context && length == sizeof(expected) &&
++		  !memcmp(context, expected, sizeof(expected));
++	security_release_secctx(context, length);
++	return matches;
++}
++
++static void r8q_keystore_log(const struct sock *peer, const struct sk_buff *skb)
++{
++	static const char endpoint[] = "/dev/socket/logdw";
++	const struct unix_address *address;
++	/* Android packed id (1), tid (2), realtime (8), then priority, tag and text. */
++	enum { HEADER = 11, TEXT = HEADER + 1 };
++	char data[513], *tag, *message, *end;
++	size_t bytes, i;
++	int priority;
++
++	if (!peer || skb->len <= TEXT || ktime_get_boottime_seconds() >= 180 ||
++	    atomic_read(&r8q_keystore_messages) >= 48)
++		return;
++	address = smp_load_acquire(&unix_sk(peer)->addr);
++	if (!address ||
++	    address->len < (int)(offsetof(struct sockaddr_un, sun_path) + sizeof(endpoint)) ||
++	    memcmp(address->name->sun_path, endpoint, sizeof(endpoint)))
++		return;
++
++	bytes = min_t(size_t, skb->len, sizeof(data) - 1);
++	if (skb_copy_bits(skb, 0, data, bytes))
++		return;
++	priority = data[HEADER];
++	/* MAIN, SYSTEM and CRASH are text buffers. WARN, ERROR and FATAL only. */
++	if ((data[0] != 0 && data[0] != 3 && data[0] != 4) ||
++	    priority < 5 || priority > 7 || !r8q_keystore_domain())
++		return;
++	data[bytes] = '\0';
++	tag = data + TEXT;
++	end = memchr(tag, '\0', min_t(size_t, bytes - TEXT, 64));
++	if (!end || end == tag || end + 1 >= data + bytes || !end[1])
++		return;
++	message = end + 1;
++	for (i = TEXT; i < bytes; i++) {
++		if (data[i] && (data[i] < ' ' || data[i] > '~'))
++			data[i] = ' ';
++	}
++	if (atomic_inc_return(&r8q_keystore_messages) <= 48)
++		pr_warn("R8QKEYSTORE pid=%d priority=%d tag=%s %s\n",
++			task_tgid_nr(current), priority, tag, message);
++}
++
+ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+ 			      size_t len)
+ {
+@@ -1723,6 +1785,7 @@
+ 	err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
+ 	if (err)
+ 		goto out_free;
++	r8q_keystore_log(other, skb);
+ 
+ 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 

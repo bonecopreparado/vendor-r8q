@@ -24,7 +24,9 @@ NEW = sorted(row['path'] for row in ROWS if row['before_sha256'] is None)
 TRACKED = sorted(set(original.PINS) | {row['path'] for row in ROWS if row['before_sha256'] is not None} | {memory_compat.PINS['path']})
 TRACE_PINS = json.loads((HERE / 'trace-kmsg-pins.json').read_text())
 TRACE_PATCH = HERE / 'trace-kmsg.patch'
-TRACKED = sorted([*TRACKED, TRACE_PINS['path']])
+LOGDW_PINS = json.loads((HERE / 'trace-logdw-pins.json').read_text())
+LOGDW_PATCH = HERE / 'trace-logdw.patch'
+TRACKED = sorted([*TRACKED, TRACE_PINS['path'], LOGDW_PINS['path']])
 SUSFS_SYMBOLS=frozenset((
     'susfs_init','susfs_start_sdcard_monitor_fn','susfs_add_sus_path',
     'susfs_add_sus_path_loop','susfs_is_inode_sus_path','susfs_add_sus_map',
@@ -36,7 +38,7 @@ def expected_overlay():
                 original_compatibility=original.expected_report(),susfs22=PINS,
                 susfs_disabled=False,boot_image_created=False,
                 memory_compatibility=memory_compat.expected_report(),
-                trace_kmsg=TRACE_PINS)
+                trace_kmsg=TRACE_PINS, trace_logdw=LOGDW_PINS)
 
 
 def sha(path):
@@ -49,6 +51,8 @@ def verify(source, env):
     memory_compat.verify(source)
     if sha(source / TRACE_PINS['path']) != TRACE_PINS['after_sha256']:
         raise ValueError('Boot trace source differs')
+    if sha(source / LOGDW_PINS['path']) != LOGDW_PINS['after_sha256']:
+        raise ValueError('Boot log transport source differs')
     for row in ROWS:
         if sha(source/row['path']) != row['after_sha256']:
             raise ValueError('Derived SUSFS source differs: '+row['path'])
@@ -85,8 +89,14 @@ def apply(source, evidence, env):
         raise ValueError('Boot trace patch or upstream printk source differs')
     build.audit.run(command + ['--check', TRACE_PATCH], evidence / 'trace-kmsg-check.log', env)
     build.audit.run(command + [TRACE_PATCH], evidence / 'trace-kmsg-apply.log', env)
+    if (sha(LOGDW_PATCH) != LOGDW_PINS['patch_sha256']
+        or sha(source / LOGDW_PINS['path']) != LOGDW_PINS['before_sha256']):
+        raise ValueError('Early keystore log patch or source differs')
+    build.audit.run(command + ['--check', LOGDW_PATCH], evidence / 'trace-logdw-check.log', env)
+    build.audit.run(command + [LOGDW_PATCH], evidence / 'trace-logdw-apply.log', env)
     verify(source,env)
     build.audit.run([sys.executable, HERE/'test_trace_kmsg.py', source], evidence/'trace-kmsg-test.log', env)
+    build.audit.run([sys.executable, HERE/'test_trace_logdw.py', source], evidence/'trace-logdw-test.log', env)
     # Exercise the real patched ownership statements before starting a long
     # build; no patched kernel binary or Android ELF is executed on the host.
     build.audit.run([sys.executable,HERE/'test_ownership.py',source],evidence/'susfs22-ownership-test.log',env)
