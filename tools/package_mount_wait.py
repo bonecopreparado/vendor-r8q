@@ -14,14 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools/kernel_nflog/susfs22'))
 import repack_verified as repack
 
-BASE_BOOT = '1586cb9dd7f4cb8d5d18bf342b18ca4e6a77a0f82f4390414a5d63bffc82ac4f'
-SOURCE_COMMIT = '0fc3f65af331c896e5404e2e7b12c8e78cc3dd72'
+BASE_BOOT = '0d1263cb81848ae5b935d89df1224f42f6160e452950dd627550901926cd66c2'
+SOURCE_COMMIT = '80fd3830478095a4cdeae4e1e708f30b9ca5cef8'
 BOOT_BYTES = repack.BOOT_BYTES
-README = """For the exact P1r5 LATEFS MOUNT-WAIT already installed on Snapdragon r8q only.
-Install R8Q-P1r5-LATEFS-VOLD-LOG.zip in recovery, then reboot once into
+README = """For the exact P1r5 LATEFS VOLD-LOG already installed on Snapdragon r8q only.
+Install R8Q-P1r5-LATEFS-KEYSTORE-LOG.zip in recovery, then reboot once into
 recovery and finally into System. If stuck, wait about three minutes and
-send a fresh TAR from the same collector. This records early vdc/vold errors and service exit status in last_kmsg. Android boot remains unverified.
-Keep R8Q-P1r5-LATEFS-RESTORE-MOUNT-WAIT.zip accessible to restore the previous boot
+send a fresh TAR from the same collector. This preserves early keystore warnings and abort details in last_kmsg. Android boot remains unverified.
+Keep R8Q-P1r5-LATEFS-RESTORE-VOLD-LOG.zip accessible to restore the previous boot
 image after testing. Neither ZIP requires Data mounted.
 """
 
@@ -92,7 +92,7 @@ def main():
             parser.error('Invalid input size or file: ' + str(path))
     previous = args.previous.read_bytes()
     if len(previous) != BOOT_BYTES or sha(previous) != BASE_BOOT:
-        raise ValueError('Reproduced previous boot differs from the published LATEFS MOUNT-WAIT release')
+        raise ValueError('Reproduced previous boot differs from the published LATEFS VOLD-LOG release')
     kernel = args.image.read_bytes()
     provenance = json.loads(args.provenance.read_text())
     if provenance.get('source_commit') != SOURCE_COMMIT or provenance.get('kernel_sha256') != sha(kernel):
@@ -117,8 +117,8 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     outputs = []
     for action, suffix, before, target in (
-        ('diagnostic', 'VOLD-LOG', BASE_BOOT, candidate),
-        ('restore', 'RESTORE-MOUNT-WAIT', sha(candidate), previous),
+        ('diagnostic', 'KEYSTORE-LOG', BASE_BOOT, candidate),
+        ('restore', 'RESTORE-VOLD-LOG', sha(candidate), previous),
     ):
         path = args.output / f'R8Q-P1r5-LATEFS-{suffix}.zip'
         outputs.append(emit(path, before, target, helper, args.ndk_notice.read_bytes(), action,
