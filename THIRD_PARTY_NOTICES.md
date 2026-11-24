@@ -65,3 +65,7 @@ The baseline vendor archive and external ROM/vendor releases are not licensed
 under the project's MIT license. Obtain external images from their maintainers
 and observe their applicable distribution terms. A source/tooling release is
 separate from a complete ROM distribution.
+
+## Galaxy S20 FE photographs
+
+The README uses cropped photographs by Kth696586 (CC BY-SA 3.0) and X-SHLIED (CC BY-SA 4.0). Each image retains its respective license. [Sources, attribution and modifications](docs/imagens/CREDITOS.md)

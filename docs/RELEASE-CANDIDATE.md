@@ -1,5 +1,7 @@
 # P0r8 installer candidate — HOLD
 
+Historical P0 document. [Current build and downloads](../README.md#downloads) · [Current device findings](../STATUS.md)
+
 This draft contains a complete recovery installer candidate and its checksum,
 build attestation, English instructions, readiness status and a separate audit
 report TAR. The small ZIP reuses the original 22 external gzip payloads; it does

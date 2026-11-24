@@ -1,43 +1,45 @@
-# Estado atual — HyperOS para r8q
+# Onde o boot parou
 
-## Versão que foi entregue
+A **P1r5 KEYMASTER-TEE** é a base em teste. O diagnóstico mais recente, **TEE-HAL-LOG**, saiu em 23/11/2026 (UTC). O flash funcionou em testes de campo. O primeiro boot completo do HyperOS segue pendente.
 
-**P1r2**, experimental, sem boot confirmado.
+## O último teste no aparelho
 
-- Fonte: [a036e2ed34f82eab1cf6bea34b8ae8c81b6a0fa8](https://github.com/bonecopreparado/vendor-r8q/tree/a036e2ed34f82eab1cf6bea34b8ae8c81b6a0fa8).
-- [Release e instruções](https://github.com/bonecopreparado/vendor-r8q/releases/tag/p1r2-single-experimental-1-1).
-- [Build concluído](https://github.com/bonecopreparado/vendor-r8q/actions/runs/41570865668).
-- Arquivo: `HyperOS4-R8Q-P1r2-SINGLE-EXPERIMENTAL.zip`.
-- Tamanho: 5.387.889.413 bytes.
-- SHA256: `014965aadd4c35ab171dc1c3e7e7d3d633fd208c12e0ce6f3d556e594e5e5bcf`.
+Na tentativa `6HJfVN`, o recovery enxergava duas árvores de arquivos diferentes. A primeira leitura de `/vendor` encontrou a biblioteca do próprio TWRP. Ao identificar `dm-1` pelo nome lógico `vendor` e montar a partição em modo de leitura, **os quatro SHA-256 conferiram** com os da release. Isso confirma qual conjunto Keymaster estava instalado. [Identidades dos quatro arquivos](https://github.com/bonecopreparado/vendor-r8q/releases/download/p1r5-keymaster-tee-experimental-5-1/keymaster-tee.json)
 
-A fonte dessa release está no commit acima. O código histórico de P0 na
-`main` não foi substituído por esta atualização de documentação.
+| Tempo desde o início do kernel | O que apareceu no último boot Android do TAR |
+| --- | --- |
+| 11,78 s | O init informou `keymaster=running` depois de iniciar a classe de serviços. Ainda faltava confirmar o registro de `IKeymasterDevice/default`. |
+| 11,92 s | A `keystore2` tentou obter o TEE pelo adaptador legado, recebeu `HARDWARE_TYPE_UNAVAILABLE` e encerrou com `SIGABRT`. |
+| 12,07 s | O `vdc` iniciou `cryptfs encryptFstab` e encontrou o serviço `vold` imediatamente. |
+| 93,15 s | A última amostra ainda mostrava o `vdc` esperando. Faltava o marcador de saída de `mount_all --late`. |
 
-## O que foi corrigido e o que permanece aberto
+A fonte dessas observações é o `last_kmsg` do TAR enviado pelo tester. O mesmo arquivo conserva vários boots. Os horários acima pertencem à última sequência iniciada por `Booting Linux`. O `recovery.log` dessa coleta registra o sideload do coletor de 6.562 bytes.
 
-| Item | Situação da P1r2 | Limite da evidência |
+## Bugs, hipóteses e critérios para encerrar cada item
+
+| Prioridade | Situação | O que falta observar |
 | --- | --- | --- |
-| Redeclaração de sysfs_battery_supply/sysfs_memory | Declarações conflitantes removidas do CIL de system_ext; alias Samsung preservado | Compilação host dos CIL exatos passou; carga no aparelho não demonstrada |
-| Nove referências inválidas de contexto da P0 | Revisão de seapp e remoção do serviço/trigger logdumpd aplicadas; 2.879 válidas, zero inválidas | Não valida todas as decisões de acesso em runtime |
-| Mapping system_ext/product | 23 arquivos removidos conforme experimento indicado pelo doador; mappings de system mantidos | Experimento, sem confirmação de que resolve o bootloop |
-| ZIP/flash | ZIP64 corrigido; pacote completo; 22 payloads relidos pelo executável ARM64 emulado; 179 testes, 42 cenários mksh e 6 fixtures EROFS passaram | Não testa o cartão, driver ou recovery real |
-| Readback do aparelho | Escrita usa fsync/sync; releitura atual pode usar cache do kernel | Não é prova independente de persistência física após perda de energia |
-| hyper_bpfloader | Kernel sem FTRACE e comando reboot_on_failure confirmados; loader possui filtros e tratamento de objetos/programas opcionais | Falha obrigatória e motivo de reboot não capturados |
-| VINTF, kernel e HALs | Incompatibilidades conhecidas permanecem | CI verde não significa compatibilidade geral |
-| NFC, overlays, health e outros recursos | Há correção da declaração duplicada do serviço NFC Samsung; ausência da biblioteca Oplus e demais pontos continuam abertos | Nenhum hardware validado pelo boot de HyperOS |
+| **1 · bloqueia o boot** | A `keystore2` encerra porque o TEE obrigatório fica indisponível. A Vendor traz o serviço Samsung e o manifesto declara o Keymaster 4.0 `default`. | No TEE-HAL-LOG, procurar a primeira mensagem do linker, do serviço Samsung ou do `hwservicemanager`. Confirmar registro e acesso pelo cliente. |
+| **2 · montagem de Data** | O F2FS chegou a montar o dispositivo em leitura. Depois, `encryptFstab` ficou pendente durante a tentativa observada. | Capturar o retorno da operação, o fim de `mount_all` e a entrada em `post-fs-data`. Formatar Data novamente não é necessário para este teste. |
+| **3 · compatibilidade de bibliotecas** | O `libcrypto.so` principal do doador carece de `sk_delete`. O VNDK 30 embarcado exporta esse símbolo. A KEYMASTER-TEE também leva o provedor legado `libcrypto-v33.so`. | Identificar a resolução real do linker no boot se houver erro de biblioteca ou símbolo. A análise estática sozinha não atribui a causa. |
+| **4 · compatibilidade do sistema** | Há achados históricos em VINTF, BPF, políticas e HALs. Na P1, a política compilou em host após correções; os relatórios registram separadamente os resultados de compatibilidade. | Revalidar com a composição exata em teste e o primeiro erro de runtime. A falha do TEE é a primeira fatalidade observada nesta tentativa. |
+| **5 · uso cotidiano** | Tela após a logo, SurfaceFlinger, rádio, Wi-Fi, áudio, câmeras, sensores, NFC e desbloqueio de dados aguardam validação no Android do port. | Primeiro atingir `sys.boot_completed=1`. Depois registrar os resultados por modelo, firmware, build e função. |
 
-## Evidência que falta
+## Sintomas que já confundiram os testes
 
-Os últimos logs enviados são do recovery. A tentativa P1r1 com CRC em
-`super-012.gz` abortou antes das escritas; o cartão foi identificado como
-exFAT. O SHA256 daquela cópia ainda não foi recebido. Não há retorno de teste
-de boot da P1r2 até esta revisão.
+| Sintoma | Como interpretar |
+| --- | --- |
+| Recovery mostra `Invalid zip file` antes de iniciar o instalador | Em um teste antigo foi selecionado o ZIP da auditoria. Confira o nome, tamanho e SHA-256 da ROM. Cartões FAT32 não comportam o arquivo completo da P1r5. |
+| ADB só reconhece o aparelho no TWRP | Foi o comportamento relatado na logo. O coletor lê o kernel anterior ao voltar ao recovery. Um logcat obtido nesse momento pode descrever o próprio TWRP. |
+| V6 devolve TAR `PARTIAL`, ou falta `/metadata/r8q-bootdiag-v6` | Nessa etapa precoce pode faltar a captura persistida do Android. Verifique os arquivos de status do coletor e o `last_kmsg` antes de tentar outro flash. |
+| Faltam arquivos em `/vendor` no TWRP | O recovery pode expor sua própria árvore em RAM. Confira a origem em `/proc/mounts` e o nome lógico em sysfs antes de comparar arquivos com o manifesto da ROM. O número de `dm-*` pode mudar. |
+| Format Data falha com o dispositivo ocupado | Em uma sessão anterior o mapeamento `userdata` ainda mantinha a partição em uso. É um problema de estado do recovery. O teste atual de registro do TEE dispensa a formatação. |
 
-Se uma instalação terminar e o aparelho reiniciar, precisamos do registro
-daquele boot — pstore/last_kmsg ou o coletor já fornecido — para distinguir
-falha de init/política, BPF, kernel, APEX ou outro serviço. Alterar somente o
-reinício automático do BPF seria um experimento diagnóstico separado, não
-uma implementação de FTRACE nem uma correção comprovada.
+## Mudanças já incorporadas
 
-[Comparação detalhada com o relatório externo](reports/review-20261103/RESULTADO.md).
+- **Imagem e instalador.** A P1r2 corrigiu o empacotamento ZIP64. A revisão EROFS tratou o limite de links simbólicos que afetava a leitura de `libc`. [Evidência EROFS](https://github.com/bonecopreparado/vendor-r8q/tree/f1351e4a92f1db4e1dfcf167acb0e8f443547350/reports/p1/erofs-boot-failure-20261107)
+- **Kernel.** A linha P1r3/P1r4 reuniu NFLOG, KernelSU/SUSFS e a correção do índice de CPU no scheduler. A P1r5 incorporou MEMCG, PSI e freezer v1. [Scheduler](https://github.com/bonecopreparado/vendor-r8q/tree/f1351e4a92f1db4e1dfcf167acb0e8f443547350/reports/p1/p1r4-scheduler-20261115) · [Composição P1r5](https://github.com/bonecopreparado/vendor-r8q/tree/f1351e4a92f1db4e1dfcf167acb0e8f443547350/reports/p1/p1r5-complete-20261117)
+- **Vendor.** A sequência IPA/R2 alinhou o firmware IPA/IPA UC ao perfil Samsung avaliado e corrigiu os rótulos da raiz da Vendor e dos arquivos de contexto. A P1r5 completa incorpora o R2. [Relatório técnico R2](https://github.com/bonecopreparado/vendor-r8q/tree/f1351e4a92f1db4e1dfcf167acb0e8f443547350/reports/p1/security-r2-20261116)
+- **Keymaster.** A KEYMASTER-TEE integrou o serviço Samsung e o backend da referência oficial LineageOS para r8q. Os testes do pacote e os hashes no aparelho passaram. O registro do serviço em runtime continua em investigação. [Código da integração](https://github.com/bonecopreparado/vendor-r8q/blob/f1351e4a92f1db4e1dfcf167acb0e8f443547350/tools/vendor_security/keymaster_tee.py)
+
+O próximo marco é receber um TAR do TEE-HAL-LOG e confrontar as linhas `R8QTEE` com `R8QKEYSTORE` no mesmo boot. [Roteiro do teste](docs/RETOMADA.md) · [Estado histórico na época da P1r2](https://github.com/bonecopreparado/vendor-r8q/blob/17669efee036c538e10ed0d6f3f5ee524c1b3fc1/STATUS.md)
