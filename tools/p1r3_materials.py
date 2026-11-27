@@ -60,6 +60,12 @@ def collect(manifest,root):
     kernel=input_file(root,inputs['kernel_file'],67108864).read_bytes()
     summary=json.loads(input_file(root,inputs['summary_file'],1024**2).read_text())
     candidate,proof=repack_verified.repack(old,kernel,summary)
+    if isinstance(manifest.get('kernel_repack'),dict)and manifest['kernel_repack'].get('ramdisk_fbe2'):
+        sys.path.insert(0,str(root/'tools'))
+        from vendor_security import audit_fixes
+        candidate,ramdisk_fbe2=audit_fixes.patch_boot_ramdisk_fbe2(candidate)
+        proof['candidate_boot_sha256']=ramdisk_fbe2['after_sha256']
+        proof['ramdisk_fbe2']=ramdisk_fbe2
     if proof!=manifest.get('kernel_repack'):
         raise ValueError('Regenerated boot evidence differs from manifest')
     stage=manifest.get('diagnostic_stage')

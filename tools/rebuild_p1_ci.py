@@ -250,6 +250,7 @@ def main():
             from vendor_security import audit_fixes
             candidate, ramdisk_fbe2 = audit_fixes.patch_boot_ramdisk_fbe2(candidate)
             kernel_repack['candidate_boot_sha256'] = ramdisk_fbe2['after_sha256']
+            kernel_repack['ramdisk_fbe2'] = ramdisk_fbe2
             write_json(WORK/'ramdisk-fbe2.json', ramdisk_fbe2)
         boot=ROOT/'candidates/p0'/('boot-r8q-hyperos-'+build_label.lower()+'.img')
         with boot.open('xb')as stream:stream.write(candidate)
