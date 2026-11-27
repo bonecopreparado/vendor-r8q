@@ -162,6 +162,7 @@ def main():
     ap.add_argument('--legacy-kernel-symlinks',action='store_true')
     ap.add_argument('--keymaster-lineage-ota', type=Path)
     ap.add_argument('--boot-trace', action='store_true', help='Add bounded init milestones to the system log')
+    ap.add_argument('--audit-fixes', action='store_true', help='Apply confirmed Vendor/ODM/Product/Boot audit fixes')
     ap.add_argument('--discard-downloads',action='store_true',
                     help='CI only: delete the two verified downloaded archives after source image verification')
     ap.add_argument('--host-tools',type=Path,
@@ -245,6 +246,11 @@ def main():
         import repack_verified
         original_boot=boot
         candidate,kernel_repack=repack_verified.repack(boot.read_bytes(),args.kernel_image.read_bytes(),current_kernel)
+        if args.audit_fixes:
+            from vendor_security import audit_fixes
+            candidate, ramdisk_fbe2 = audit_fixes.patch_boot_ramdisk_fbe2(candidate)
+            kernel_repack['candidate_boot_sha256'] = ramdisk_fbe2['after_sha256']
+            write_json(WORK/'ramdisk-fbe2.json', ramdisk_fbe2)
         boot=ROOT/'candidates/p0'/('boot-r8q-hyperos-'+build_label.lower()+'.img')
         with boot.open('xb')as stream:stream.write(candidate)
         boot_digest=kernel_repack['candidate_boot_sha256']
@@ -297,6 +303,10 @@ def main():
         from prepare_p1_plans import read
         erofs = ROOT/'tools/image-tools/bin/dump.erofs'
         write_json(WORK/'keymaster-tee.json', stage(plans, args.keymaster_lineage_ota, read, erofs))
+    if args.audit_fixes:
+        from vendor_security import audit_fixes
+        from prepare_p1_plans import read
+        write_json(WORK/'audit-fixes.json', audit_fixes.stage(plans, read))
     for part in erofs_parts:
         run('tools/rebuild_erofs_candidate.py','--source',ROOT/'extracted/hyperos'/(part+'.img'),
             '--plan',plans/(part+'-plan.json'),'--output',out/(part+'.img'),
@@ -308,6 +318,11 @@ def main():
         run('tools/verify_ext4_tree_diff.py','--before',ROOT/'extracted/r8q'/(part+'.img'),
             '--after',out/(part+'.img'),'--build-report',report,'--report',WORK/(part+'-tree-diff.json'))
     vendor_label_repair = repair_rebuilt_vendor_labels(out/'vendor.img', WORK) if build_label in ('P1r4','P1r5') else None
+    if args.audit_fixes and vendor_label_repair is not None:
+        from vendor_security import audit_fixes
+        meta_repair = audit_fixes.repair_vendor_metadata(out/'vendor.img', vendor_label_repair['candidate_sha256'])
+        vendor_label_repair['candidate_sha256'] = meta_repair['after_sha256']
+        write_json(WORK/'vendor-metadata-repair.json', meta_repair)
     vendor_firmware=None
     if build_label=='P1r5':
         from vendor_security.full_rom import inspect

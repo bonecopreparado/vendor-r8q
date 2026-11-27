@@ -82,8 +82,8 @@ jobs:
         run: |
           curl -fLSs --retry 2 --max-time 600 https://mirrorbits.lineageos.org/full/r8q/20261121/lineage-24.0-20261121-nightly-r8q-signed.zip -o build/lineage-r8q.zip
           printf '%s  %s\n' 8fcf4ffdf47d549aa8fd0e30e31872aa45074cb6081a09b8b4f8cbe81e1711f4 build/lineage-r8q.zip | sha256sum -c -
-      - name: Build P1r5 with the verified Samsung TEE backend
-        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --boot-trace --keymaster-lineage-ota build/lineage-r8q.zip --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
+      - name: Build P1r5 with verified Samsung TEE, Gatekeeper, ODM cleanup and audit fixes
+        run: /usr/bin/python3 tools/rebuild_p1_ci.py --discard-downloads --discard-intermediate-images --host-tools ci-vintf/otatools --omit-optional-mappings --build-label P1r5 --legacy-kernel-symlinks --boot-trace --audit-fixes --keymaster-lineage-ota build/lineage-r8q.zip --kernel-image ci-kernel/Image --kernel-summary ci-kernel/summary.json --diagnostic-probe-dir ci-native-probe
       - name: Build one complete ZIP and verify every stored member and image
         id: package
         run: |
@@ -103,10 +103,12 @@ jobs:
           assert r['build_label']=='P1r5' and len(r['omitted_optional_mappings'])==23
           images = {item['partition']: item['sha256'] for item in r['images']}
           assert images['dtbo'] == '3d78f213d52a5d4875b634c4ea914d04dea678bfd70dd81625d6c9f056b60468'
-          assert images['boot'] == '808b033a7091879f9dc0be3a5d2d6ed50b9386ceefa7bfb84fb3c2bf0cef1162'
+          reports = Path('reports/p1/ci-build')
+          ramdisk_fbe2 = json.loads((reports / 'ramdisk-fbe2.json').read_text())
+          assert ramdisk_fbe2['before_sha256'] == '808b033a7091879f9dc0be3a5d2d6ed50b9386ceefa7bfb84fb3c2bf0cef1162'
+          assert images['boot'] == ramdisk_fbe2['after_sha256']
           kernel = json.loads(Path('ci-kernel/PROVENANCE.json').read_text())
           assert kernel['embedded_config_sha256'] == '693bbb603e7d4084986f76dfc6cc373ddedacee86f8e468fa7d7ed16ab5daab0'
-          reports = Path('reports/p1/ci-build')
           trace = json.loads((reports / 'boot-trace.json').read_text())
           assert trace['sink'] == '/dev/kmsg' and 'late-fs' in trace['events']
           expected_paths = {
@@ -125,12 +127,17 @@ jobs:
               assert row['sha256'] == trace_file['sha256']
               assert row['old_sha256'] == trace_file['old_sha256']
           tee = json.loads((reports / 'keymaster-tee.json').read_text())
-          assert len(tee['files']) == 4 and tee['resolved_legacy_symbol'] == 'sk_delete'
+          assert len(tee['files']) == 5 and tee['resolved_legacy_symbol'] == 'sk_delete'
+          assert tee['vndk30_native_service_preserved'] is True and tee['gatekeeper_shimmed'] is True
           for row in tee['files']:
               packed = readback['vendor'][row['path']]
               assert packed['sha256'] == row['sha256'] and packed['old_sha256'] == row['old_sha256']
           assert readback['vendor']['/bin/hw/android.hardware.keymaster@4.0-service']['metadata']['xattrs']['security.selinux'].startswith(
               b'u:object_r:hal_keymaster_default_exec:s0'.hex())
+          audit = json.loads((reports / 'audit-fixes.json').read_text())
+          assert audit['status'] == 'AUDIT_FIXES_STAGED_NOT_BOOT_TESTED'
+          meta = json.loads((reports / 'vendor-metadata-repair.json').read_text())
+          assert meta['status'] == 'VENDOR_METADATA_HARDENED_NOT_BOOT_TESTED' and meta['changes']
           import io, zipfile
           with zipfile.ZipFile(Path('output')/os.environ['ZIP_NAME']) as z:
               manifest=json.loads(z.read('P1-MANIFEST.json'))

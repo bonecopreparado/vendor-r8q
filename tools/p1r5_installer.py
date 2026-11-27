@@ -1,20 +1,39 @@
-"""Specialize the full-ROM writer for baked R2 firmware and direct readback."""
+"""Specialize the full-ROM writer for baked R2 firmware, G780G/G781B APNHLOS sync and direct readback."""
 from pathlib import Path
 from package_vendor_security import profile
+
+# Verified SM-G780G (G780GXXSHEYJ1) APNHLOS IPA hashes from TheMuppets r8q/sm8250-common.
+# Immutable code segments ipa_fws.b00/b02/b03/b04 are byte-identical to G781BXXSIHYJ2.
+G780G_EYJ1_STOCK = (
+    ('ipa_fws.b01', '927354814bdad5f3e2a5f4bdfcea90cebb501af4c8c6a91563cd3d4d645d8a90'),
+    ('ipa_fws.mdt', 'ad259724b647ab1c3eb5c45bcd282206bfb552a8f0274adb586cbea9e560becf'),
+    ('ipa_uc.b00', 'e5e337f396e3d27e4ecf6306c1edd5268a9f58f4c89476f5c39d15b39bb52214'),
+    ('ipa_uc.b01', '304cf15fbecf6f97530b78961bf8cf203aa81fdef9b3cd0637a6f34fe0998cf7'),
+    ('ipa_uc.b02', '546ba47b9407b94a866d12c526d5343d88a6e8cb6b8039664b7b88f2ff5a9668'),
+    ('ipa_uc.mdt', '44334668c52393d6050942876fde275bc623db195ce84365ab50177f36ec7951'),
+)
 
 
 def upgrade(script):
     rows='\n'.join(r['name']+' '+r['sha256']for r in profile()['stock'])
+    rows_g780g='\n'.join(name+' '+digest for name,digest in G780G_EYJ1_STOCK)
     anchor='ui_print "Single ZIP: native 64-bit stored-member reader is ready."\n'
     if script.count(anchor)!=1:raise ValueError('Native bootstrap anchor changed')
     guard='''STOCK_MOUNTED=0
+VENDOR_SYNC_MOUNTED=0
+IPA_SYNC_NEEDED=0
 p1r5_cleanup() {
     result=$?
     trap - EXIT HUP INT TERM
+    if [ "$VENDOR_SYNC_MOUNTED" = 1 ]; then
+        umount "$WORK/vendor-sync" || { ui_print "ERROR: temporary vendor sync mount could not be released."; result=1; }
+    fi
     if [ "$STOCK_MOUNTED" = 1 ]; then
         umount "$WORK/stock-fw" || { ui_print "ERROR: temporary read-only firmware mount could not be released."; result=1; }
     fi
-    for name in zipread probe flush-check payload.rows stock.rows direct-probe; do rm -f "$WORK/$name" || result=1; done
+    for name in zipread probe flush-check payload.rows stock.rows stock-g780g.rows direct-probe; do rm -f "$WORK/$name" || result=1; done
+    if [ -d "$WORK/apnhlos-sync" ]; then rm -rf "$WORK/apnhlos-sync" || result=1; fi
+    if [ -d "$WORK/vendor-sync" ]; then rmdir "$WORK/vendor-sync" 2>/dev/null || result=1; fi
     if [ -d "$WORK/stock-fw" ]; then rmdir "$WORK/stock-fw" 2>/dev/null || result=1; fi
     rmdir "$WORK" 2>/dev/null || result=1
     exit "$result"
@@ -33,16 +52,42 @@ set -- $stock_row
 [ "$#" -eq 3 ] && [ "$(readlink -f "$1")" = "$APNHLOS_REAL" ] && [ "$2" = vfat ] || abort "Unexpected firmware mount. Nothing was written."
 case ",$3," in *,ro,*) ;; *) abort "Stock firmware must remain read-only. Nothing was written.";; esac
 printf '%s\n' '@@STOCK@@' > "$WORK/stock.rows"
-while read -r file expected; do
-    stock_path=$WORK/stock-fw/image/$file
-    [ -f "$stock_path" ] && [ ! -L "$stock_path" ] || abort "Missing stock firmware: $file. Nothing was written."
-    actual="$(sha256sum "$stock_path" | awk '{print $1}')" || abort "Cannot hash stock firmware. Nothing was written."
-    [ "$actual" = "$expected" ] || abort "Stock firmware differs: $file ($actual). Nothing was written; send recovery.log."
-done < "$WORK/stock.rows"
+printf '%s\n' '@@STOCK_G780G@@' > "$WORK/stock-g780g.rows"
+check_stock_profile() {
+    rows_file="$1"
+    MISMATCH_FILE=""
+    MISMATCH_ACTUAL=""
+    while read -r file expected; do
+        stock_path=$WORK/stock-fw/image/$file
+        [ -f "$stock_path" ] && [ ! -L "$stock_path" ] || abort "Missing stock firmware: $file. Nothing was written."
+        actual="$(sha256sum "$stock_path" | awk '{print $1}')" || abort "Cannot hash stock firmware. Nothing was written."
+        if [ "$actual" != "$expected" ]; then
+            MISMATCH_FILE="$file"
+            MISMATCH_ACTUAL="$actual"
+            return 1
+        fi
+    done < "$rows_file"
+    return 0
+}
+if check_stock_profile "$WORK/stock.rows"; then
+    IPA_SYNC_NEEDED=0
+    IPA_PROFILE_NOTE="R2 is already baked into Vendor."
+elif check_stock_profile "$WORK/stock-g780g.rows"; then
+    IPA_SYNC_NEEDED=1
+    IPA_PROFILE_NOTE="G780G Vendor IPA will sync from read-only APNHLOS."
+    mkdir "$WORK/apnhlos-sync" || abort "Cannot stage G780G stock firmware. Nothing was written."
+    while read -r file expected; do
+        cp "$WORK/stock-fw/image/$file" "$WORK/apnhlos-sync/$file" || abort "Cannot stage stock firmware: $file. Nothing was written."
+        staged_sha="$(sha256sum "$WORK/apnhlos-sync/$file" | awk '{print $1}')" || abort "Cannot verify staged firmware: $file. Nothing was written."
+        [ "$staged_sha" = "$expected" ] || abort "Staged stock firmware differs: $file. Nothing was written."
+    done < "$WORK/stock-g780g.rows"
+else
+    abort "Stock firmware differs: $MISMATCH_FILE ($MISMATCH_ACTUAL). Nothing was written; send recovery.log."
+fi
 umount "$WORK/stock-fw" || abort "Cannot release firmware preflight mount. Nothing was written."
 STOCK_MOUNTED=0
-ui_print "P1r5: Samsung firmware profile matches; R2 is already baked into Vendor."
-'''.replace('@@STOCK@@',rows)
+ui_print "P1r5: Samsung firmware profile matches; $IPA_PROFILE_NOTE"
+'''.replace('@@STOCK@@',rows).replace('@@STOCK_G780G@@',rows_g780g)
     script=script.replace(anchor,anchor+guard)
     start=script.index('verify_written() (')
     end=script.index('# Resolve target devices through sysfs',start)
@@ -84,6 +129,36 @@ verify_written super "$SUPER"'''
     new='''verify_written super "$SUPER"
 super_real="$(readlink -f "$SUPER")" || abort "Cannot resolve Super after writing."
 prefix_after="$("$ZIPREAD" --read-block "$super_real" 0 4096 | hash_stream)" || abort "Cannot reread preserved Super prefix."
-[ "${prefix_after%% *}" = "$prefix_before" ] || abort "Super prefix changed; restore the base."'''
+[ "${prefix_after%% *}" = "$prefix_before" ] || abort "Super prefix changed; restore the base."
+if [ "$IPA_SYNC_NEEDED" = 1 ]; then
+    ui_print "P1r5: Syncing verified G780G stock IPA firmware into logical Vendor..."
+    VENDOR_DM=""
+    for dm_name in /sys/block/dm-*/dm/name; do
+        [ -r "$dm_name" ] || continue
+        if [ "$(cat "$dm_name")" = vendor ]; then
+            dm_dev="/dev/block/$(basename "$(dirname "$(dirname "$dm_name")")")"
+            [ -b "$dm_dev" ] && VENDOR_DM="$dm_dev" && break
+        fi
+    done
+    [ -n "$VENDOR_DM" ] || [ ! -e /dev/block/mapper/vendor ] || VENDOR_DM="$(readlink -f /dev/block/mapper/vendor)"
+    [ -n "$VENDOR_DM" ] && [ -b "$VENDOR_DM" ] || abort "Cannot locate logical Vendor block device for G780G IPA sync."
+    mkdir "$WORK/vendor-sync" || abort "Cannot create temporary Vendor mount for G780G IPA sync."
+    mount -t ext4 -o rw "$VENDOR_DM" "$WORK/vendor-sync" || abort "Cannot mount logical Vendor for G780G IPA sync."
+    VENDOR_SYNC_MOUNTED=1
+    while read -r file expected; do
+        dest="$WORK/vendor-sync/firmware/$file"
+        cp "$WORK/apnhlos-sync/$file" "$dest" || abort "Cannot write G780G IPA firmware: $file."
+        chmod 0644 "$dest" || abort "Cannot chmod G780G IPA firmware: $file."
+        chown 0:0 "$dest" 2>/dev/null || true
+        chcon u:object_r:vendor_firmware_file:s0 "$dest" 2>/dev/null || true
+        actual="$(sha256sum "$dest" | awk '{print $1}')" || abort "Cannot verify written G780G IPA firmware: $file."
+        [ "$actual" = "$expected" ] || abort "Written G780G IPA firmware hash differs: $file."
+    done < "$WORK/stock-g780g.rows"
+    sync
+    umount "$WORK/vendor-sync" || abort "Cannot unmount logical Vendor after G780G IPA sync."
+    VENDOR_SYNC_MOUNTED=0
+    ui_print "P1r5: Verified G780G IPA firmware synced to Vendor."
+fi'''
     if script.count(old)!=1:raise ValueError('Super prefix readback anchor differs')
     return script.replace(old,new)
+
