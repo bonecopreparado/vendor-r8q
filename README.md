@@ -4,7 +4,7 @@
 
 Port comunitário do HyperOS do Xiaomi Mi 10 (`umi`) para o **Galaxy S20 FE Snapdragon** (`r8q`), com a base Vendor/ODM do port de ColorOS e adaptações para o hardware Samsung. Os modelos previstos são **SM-G780G (4G)** e **SM-G781B (5G)**. O SM-G780F usa Exynos e fica fora deste port.
 
-**Estado do projeto · P1r5 experimental.** O flash já terminou em aparelhos de teste. O Android ainda trava na logo Samsung. Na última tentativa analisada, a `keystore2` encerrou ao procurar o serviço de chaves do ambiente seguro (TEE). O próximo teste já tem pacote próprio. [Evidência do boot e pendências](STATUS.md)
+**Estado do projeto · P1r5 experimental.** O flash já terminou em aparelhos de teste. A tentativa mais recente não começou a gravar: o preflight aceitou a carga de 24% enquanto o telefone carregava, mas encontrou firmware IPA diferente do perfil testado. O pacote declara G780G e G781B, e o perfil IPA publicado ainda precisa ser conferido contra o APNHLOS G780G. O Android também segue sem um boot completo confirmado. [Evidência, erro atual e pendências](STATUS.md)
 
 [Downloads](#downloads) · [Retomar o desenvolvimento](docs/RETOMADA.md) · [Histórico de versões](docs/HISTORICO.md) · [Mapa das 58 branches](docs/BRANCHES.md)
 

@@ -2,6 +2,10 @@
 
 O primeiro teste ao voltar é o **TEE-HAL-LOG sobre a P1r5 KEYMASTER-TEE**. A pergunta é se o serviço de chaves da Samsung inicia, registra a instância padrão via HIDL e fica visível para a `keystore2`. A montagem de Data e o boot completo vêm em seguida. [Última observação no aparelho](../STATUS.md)
 
+## Compatibilidade do perfil IPA no teste de 26/11/2026
+
+Um SM-G780G que identifica o firmware como `G780GXXSHEYJ1` tentou instalar a P1r5. A bateria de 24% estava carregando e passou. O AVB também passou com flags 3. O pacote parou ao conferir `ipa_fws.b01`, antes de qualquer gravação. O perfil publicado contém o hash `8bc6bf3243e4a76cd18e5128cccf1cf1b7c6653ee228116d16b3b8e086cf8231`, proveniente do perfil testado com G781BXXSIHYJ2. A release menciona G780G e G781B, então essa diferença precisa ser resolvida no perfil de firmware antes de outro flash nessa versão. Preserve o `recovery.log` com `adb pull /tmp/recovery.log recovery-p1r5-26nov.log`. A foto e a linha de erro estão resumidas em [STATUS](../STATUS.md).
+
 ## Para quem está com o telefone
 
 1. **Se o aparelho está na stock**, leia os pré-requisitos da release completa. Ela exige um SM-G780G ou SM-G781B compatível, bootloader desbloqueado, recovery compatível, AVB já em flags 3 e o perfil esperado de firmware. Guarde os dados pessoais e os arquivos de restauração fora do aparelho. O instalador confere a carga e o firmware antes da escrita de `super`, `dtbo` e `boot`. O ZIP completo tem **5.389.737.668 bytes** e excede o limite de arquivo único do FAT32. Confira o SHA-256, salve o ZIP inteiro no armazenamento interno, em um cartão exFAT ou em USB OTG e selecione **Install** no recovery. Aguarde a confirmação de sucesso da P1r5. Em caso de erro, guarde o `/tmp/recovery.log` antes de reiniciar. Após o sucesso, reinicie primeiro em **Recovery** para recarregar as partições e siga a etapa 2 para o teste com diagnóstico. [Release da base e instruções](https://github.com/bonecopreparado/vendor-r8q/releases/tag/p1r5-keymaster-tee-experimental-5-1)

@@ -1,7 +1,20 @@
 # Onde o boot parou
 
-A **P1r5 KEYMASTER-TEE** é a base em teste. O diagnóstico mais recente, **TEE-HAL-LOG**, saiu em 23/11/2026 (UTC). O flash funcionou em testes de campo. O primeiro boot completo do HyperOS segue pendente.
+A **P1r5 KEYMASTER-TEE** é a base experimental. A tentativa de instalação mais recente, em 26/11/2026, foi bloqueada durante o preflight do firmware. Os registros de boot anteriores ainda não chegaram a um início completo do HyperOS.
 
+## Atualização de 26/11/2026 · perfil IPA não confere
+
+A foto do recovery mostra duas tentativas. Na primeira, a bateria estava em 24% e o estado era **Discharging**, então a guarda interrompeu o processo. Na segunda, continuava em 24%, mas aparecia **Charging**. Essa vez o preflight de bateria passou. A checagem de AVB encontrou flags 3 e o leitor ZIP64 também passou. O instalador exibiu o diagnóstico aritmético de 32 bits e depois interrompeu em:
+
+`ERROR: Stock firmware differs: ipa_fws.b01 (...). Nothing was written.`
+
+A P1r5 exige o SHA-256 `8bc6bf3243e4a76cd18e5128cccf1cf1b7c6653ee228116d16b3b8e086cf8231` para `ipa_fws.b01`, obtido de um perfil Samsung conferido com a captura `G781BXXSIHYJ2`. A identificação no topo da foto parece ser `G780GXXSHEYJ1`. A release declara ambos os modelos, mas a foto mostra que o APNHLOS desse G780G não passa pelo perfil exato atual.
+
+**Resultado da tentativa:** o script confere os seis arquivos IPA por montagem APNHLOS somente leitura antes de gravar qualquer imagem. A linha de erro afirma que nada foi escrito. O Super, o Boot e o DTBO do telefone permaneceram como estavam. Não contorne a checagem e não grave firmware IPA ou APNHLOS manualmente.
+
+**Pendência de compatibilidade:** verificar os seis hashes completos do APNHLOS G780GXXSHEYJ1 e conferir qual conjunto autenticado de firmware deve corresponder à Vendor dessa variante. A imagem só mostra o hash que divergiu, e o valor ficou ilegível na foto. O `recovery.log` da segunda tentativa pode confirmar o hash integral e o modelo. Até então, não tratar a P1r5 como pré-validada para esse perfil G780G.
+
+Para preservar o registro sem reiniciar o recovery, no CMD do Windows use `adb pull /tmp/recovery.log recovery-p1r5-26nov.log`. Confira o modelo e a versão de firmware indicados no começo do log.
 ## O último teste no aparelho
 
 Na tentativa `6HJfVN`, o recovery enxergava duas árvores de arquivos diferentes. A primeira leitura de `/vendor` encontrou a biblioteca do próprio TWRP. Ao identificar `dm-1` pelo nome lógico `vendor` e montar a partição em modo de leitura, **os quatro SHA-256 conferiram** com os da release. Isso confirma qual conjunto Keymaster estava instalado. [Identidades dos quatro arquivos](https://github.com/bonecopreparado/vendor-r8q/releases/download/p1r5-keymaster-tee-experimental-5-1/keymaster-tee.json)
